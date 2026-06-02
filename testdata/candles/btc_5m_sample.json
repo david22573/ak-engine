@@ -1,0 +1,28 @@
+[
+  {
+    "open_time_ms": 1704067200000,
+    "open": 42000.0,
+    "high": 42500.0,
+    "low": 41800.0,
+    "close": 42200.0,
+    "volume": 100.0,
+    "close_time_ms": 1704067499999,
+    "quote_asset_volume": 4200000.0,
+    "number_of_trades": 500,
+    "taker_buy_base_volume": 60.0,
+    "taker_buy_quote_volume": 2520000.0
+  },
+  {
+    "open_time_ms": 1704067500000,
+    "open": 42200.0,
+    "high": 42600.0,
+    "low": 42100.0,
+    "close": 42400.0,
+    "volume": 120.0,
+    "close_time_ms": 1704067799999,
+    "quote_asset_volume": 5040000.0,
+    "number_of_trades": 600,
+    "taker_buy_base_volume": 70.0,
+    "taker_buy_quote_volume": 2940000.0
+  }
+]

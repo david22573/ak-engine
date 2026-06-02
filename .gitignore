@@ -30,3 +30,15 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Local/Project files
+.cache/
+.ak-engine/
+.planning/
+bin/
+runs/
+.codepicker/
+codepicker.yaml
+policy.json
+.codepickerignore
+codepicker_context.txt
