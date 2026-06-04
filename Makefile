@@ -1,4 +1,4 @@
-.PHONY: fmt test vet build ci run-version proof-local proof-r2 help
+.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-r2 help
  
 # Default target
 all: build
@@ -29,6 +29,59 @@ run-version:
 ## proof-local: Run local proof flow
 proof-local: ci
 	go run ./cmd/ak-engine inspect-dataset --source local-json --path testdata/candles/btc_5m_sample.json --market futures-um --symbol BTCUSDT --interval 5m --from 2024-01-01 --to 2024-01-02 --format json
+
+## proof-backtest-local: Run local backtest proof flow
+proof-backtest-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy baseline \
+		--format json
+
+## proof-fast-accumulation-local: Run local Fast Accumulation proof flow
+proof-fast-accumulation-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation \
+		--format json
+
+## proof-fast-accumulation-diagnostics-local: Run local Fast Accumulation diagnostics proof flow
+proof-fast-accumulation-diagnostics-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation \
+		--format json \
+		--include-decisions
+
+## proof-fast-accumulation-sweep-local: Run local Fast Accumulation parameter sweep proof flow
+proof-fast-accumulation-sweep-local: ci
+	go run ./cmd/ak-engine sweep \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation \
+		--format json
 
 ## proof-r2: Run R2 proof flow
 proof-r2: ci
