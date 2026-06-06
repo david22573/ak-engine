@@ -25,6 +25,28 @@ type FastAccumulationReport struct {
 	LossesByReasonCode   map[string]int                  `json:"losses_by_reason_code"`
 	FeesByAction         map[string]float64              `json:"fees_by_action"`
 	SlippageByAction     map[string]float64              `json:"slippage_by_action"`
+	LongVsShortMetrics   map[string]float64              `json:"long_vs_short_metrics"`
+	AvgMFEBPS            float64                         `json:"avg_mfe_bps"`
+	AvgMAEBPS            float64                         `json:"avg_mae_bps"`
+	AvgMFER              float64                         `json:"avg_mfe_r"`
+	AvgMAER              float64                         `json:"avg_mae_r"`
+	MedianMFER           float64                         `json:"median_mfe_r"`
+	MedianMAER           float64                         `json:"median_mae_r"`
+	WinnerAvgMFER        float64                         `json:"winner_avg_mfe_r"`
+	LoserAvgMFER         float64                         `json:"loser_avg_mfe_r"`
+	WinnerAvgMAER        float64                         `json:"winner_avg_mae_r"`
+	LoserAvgMAER         float64                         `json:"loser_avg_mae_r"`
+	AvgRealizedR         float64                         `json:"avg_realized_r"`
+	AvgMaxPossibleR      float64                         `json:"avg_max_possible_r"`
+	AvgAdverseR          float64                         `json:"avg_adverse_r"`
+	WinnerAvgRealizedR   float64                         `json:"winner_avg_realized_r"`
+	LoserAvgRealizedR    float64                         `json:"loser_avg_realized_r"`
+	MFEByAction          map[string]float64              `json:"mfe_by_action"`
+	MAEByAction          map[string]float64              `json:"mae_by_action"`
+	MFEByScoreBucket     map[string]float64              `json:"mfe_by_score_bucket"`
+	MAEByScoreBucket     map[string]float64              `json:"mae_by_score_bucket"`
+	MFEByReasonCode      map[string]float64              `json:"mfe_by_reason_code"`
+	MAEByReasonCode      map[string]float64              `json:"mae_by_reason_code"`
 }
 
 type Report struct {
@@ -33,6 +55,7 @@ type Report struct {
 	Symbol               string                    `json:"symbol"`
 	Interval             string                    `json:"interval"`
 	Strategy             string                    `json:"strategy"`
+	PresetName           string                    `json:"preset_name,omitempty"`
 	FromMS               int64                     `json:"from_ms"`
 	ToMS                 int64                     `json:"to_ms"`
 	TotalCandles         int                       `json:"total_candles"`
@@ -52,6 +75,8 @@ type Report struct {
 	Expectancy           float64                   `json:"expectancy"`
 	AverageHoldMinutes   float64                   `json:"average_hold_minutes"`
 	Status               string                    `json:"status"`
+	PromotionCandidate   bool                      `json:"promotion_candidate"`
+	RejectionReasons     []string                  `json:"rejection_reasons"`
 	StartingCash         float64                   `json:"starting_cash"`
 	EndingCash           float64                   `json:"ending_cash"`
 	MaxPosition          float64                   `json:"max_position_size"`

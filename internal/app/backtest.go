@@ -90,6 +90,8 @@ var backtestCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		report.Strategy = backtestStrategy
+		report.PresetName = backtestStrategy
 
 		enc := json.NewEncoder(cmd.OutOrStdout())
 		enc.SetIndent("", "  ")
@@ -108,6 +110,7 @@ func newBacktestStrategy() (strategy.Strategy, error) {
 		})
 	case "fast_accumulation":
 		cfg := strategy.DefaultFastAccumulationConfig()
+		cfg.StrategyName = strategyFastAccumulation
 		cfg.FullTradeMinScore = faFullTradeMinScore
 		cfg.NormalTradeMinScore = faNormalTradeMinScore
 		cfg.ProbeMinScore = faProbeMinScore
@@ -115,6 +118,26 @@ func newBacktestStrategy() (strategy.Strategy, error) {
 		cfg.AllowProbeTrade = faAllowProbe
 		cfg.ForceFullTrade = faForceFullTrade
 		cfg.EstimatedCostBPS = takerFeeBPS + slippageBPS
+		return strategy.NewFastAccumulation(cfg)
+	case strategyFastAccumulationStrict,
+		strategyFastAccumulationStrictShortBias,
+		strategyFastAccumulationStrictHighConf,
+		strategyFastAccumulationStrictLowFreq,
+		strategyFastAccumulationStrictCostGuard,
+		strategyFastAccumulationStrictNo7084Longs,
+		strategyFastAccumulationStrict30m,
+		strategyFastAccumulationStrict1h,
+		strategyFastAccumulationPullbackReclaim,
+		strategyFastAccumulationBreakoutRetest,
+		strategyFastAccumulationMomentumCont,
+		strategyFastAccumulationPartialTrail,
+		strategyFastAccumulationBreakevenGuard,
+		strategyFastAccumulationCutNoProgress,
+		strategyFastAccumulationEconomicsGuard:
+		cfg, err := fastAccumulationPresetConfig(backtestStrategy, takerFeeBPS+slippageBPS)
+		if err != nil {
+			return nil, err
+		}
 		return strategy.NewFastAccumulation(cfg)
 	default:
 		return nil, fmt.Errorf("unknown strategy %q", backtestStrategy)

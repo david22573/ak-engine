@@ -1,4 +1,4 @@
-.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-r2 help
+.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 help
  
 # Default target
 all: build
@@ -81,6 +81,104 @@ proof-fast-accumulation-sweep-local: ci
 		--from 2024-01-01 \
 		--to 2024-01-02 \
 		--strategy fast_accumulation \
+		--format json
+
+## proof-walk-forward-local: Run local Fast Accumulation walk-forward proof flow
+proof-walk-forward-local: ci
+	go run ./cmd/ak-engine walk-forward \
+		--source local-json \
+		--path testdata/candles/btc_5m_walk_forward_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation \
+		--train-window 45m \
+		--test-window 15m \
+		--format json
+
+## proof-fast-accumulation-strict-local: Run local strict Fast Accumulation proof flow
+proof-fast-accumulation-strict-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation_strict \
+		--format json
+
+## proof-walk-forward-strict-local: Run local strict Fast Accumulation walk-forward proof flow
+proof-walk-forward-strict-local: ci
+	go run ./cmd/ak-engine walk-forward \
+		--source local-json \
+		--path testdata/candles/btc_5m_walk_forward_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation_strict \
+		--train-window 45m \
+		--test-window 15m \
+		--format json
+
+## proof-fast-accumulation-calibration-local: Run local calibration-preset Fast Accumulation proof flow
+proof-fast-accumulation-calibration-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation_strict_no_70_84_longs \
+		--format json
+
+## proof-walk-forward-calibration-local: Run local calibration-preset walk-forward proof flow
+proof-walk-forward-calibration-local: ci
+	go run ./cmd/ak-engine walk-forward \
+		--source local-json \
+		--path testdata/candles/btc_5m_walk_forward_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation_strict_low_frequency \
+		--train-window 45m \
+		--test-window 15m \
+		--min-trades 0 \
+		--format json
+
+## proof-fast-accumulation-economics-local: Run local economics diagnostics proof flow
+proof-fast-accumulation-economics-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation_economics_guard \
+		--format json
+
+## proof-fast-accumulation-entry-variants-local: Run local entry-variant proof flow
+proof-fast-accumulation-entry-variants-local: ci
+	go run ./cmd/ak-engine backtest \
+		--source local-json \
+		--path testdata/candles/btc_5m_fast_accumulation_sample.json \
+		--market futures-um \
+		--symbol BTCUSDT \
+		--interval 5m \
+		--from 2024-01-01 \
+		--to 2024-01-02 \
+		--strategy fast_accumulation_pullback_reclaim \
 		--format json
 
 ## proof-r2: Run R2 proof flow

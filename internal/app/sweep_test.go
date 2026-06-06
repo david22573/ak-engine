@@ -93,7 +93,7 @@ func TestSweepCommandInvalidConfig(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected sweep to fail for non-fast_accumulation strategy")
 	}
-	if !strings.Contains(err.Error(), "sweep command only supports strategy 'fast_accumulation'") {
+	if !strings.Contains(err.Error(), "sweep command only supports Fast Accumulation strategies") {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -113,5 +113,131 @@ func TestSweepCommandInvalidConfig(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "missing source in request") {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestSweepCommandStrictProfile(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.8,"low":99.9,"close":100.5,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.5,"high":101.0,"low":100.4,"close":100.9,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":100.9,"high":101.8,"low":100.8,"close":101.6,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.6,"high":102.0,"low":101.3,"close":101.7,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":101.7,"high":103.0,"low":101.6,"close":102.7,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":102.7,"high":104.0,"low":102.6,"close":103.8,"volume":1,"close_time_ms":1704068999999,"interval":"5m"}
+	]`)
+
+	results := runSweepCommand(t, []string{
+		"sweep",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation",
+		"--sweep-profile", "strict",
+		"--format", "json",
+	})
+
+	if len(results) == 0 {
+		t.Fatal("expected strict sweep to produce results")
+	}
+
+	params := results[0]["params"].(map[string]any)
+	if _, ok := params["max_chop_score"]; !ok {
+		t.Fatal("strict params missing max_chop_score")
+	}
+	if _, ok := params["min_trend_score"]; !ok {
+		t.Fatal("strict params missing min_trend_score")
+	}
+	if got := params["disable_probe_trades"]; got != true {
+		t.Fatalf("disable_probe_trades = %#v, want true", got)
+	}
+	if got := params["require_expected_move_gt_cost_multiple"]; got != true {
+		t.Fatalf("require_expected_move_gt_cost_multiple = %#v, want true", got)
+	}
+	if params["long_enabled"] == false && params["short_enabled"] == false {
+		t.Fatal("strict sweep produced invalid both-disabled directional combo")
+	}
+}
+
+func TestSweepCommandCalibrationProfileSkipsBothDisabledCombo(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.8,"low":99.9,"close":100.5,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.5,"high":101.0,"low":100.4,"close":100.9,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":100.9,"high":101.8,"low":100.8,"close":101.6,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.6,"high":102.0,"low":101.3,"close":101.7,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":101.7,"high":103.0,"low":101.6,"close":102.7,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":102.7,"high":104.0,"low":102.6,"close":103.8,"volume":1,"close_time_ms":1704068999999,"interval":"5m"}
+	]`)
+
+	results := runSweepCommand(t, []string{
+		"sweep",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation",
+		"--sweep-profile", "calibration",
+		"--format", "json",
+	})
+
+	if len(results) == 0 {
+		t.Fatal("expected calibration sweep to produce results")
+	}
+
+	params := results[0]["params"].(map[string]any)
+	for _, field := range []string{
+		"long_min_entry_score",
+		"short_min_entry_score",
+		"long_cost_multiple_required",
+		"short_cost_multiple_required",
+		"disable_long_score_bucket_70_84",
+		"max_trades_per_day",
+		"min_minutes_between_entries",
+	} {
+		if _, ok := params[field]; !ok {
+			t.Fatalf("calibration params missing %q", field)
+		}
+	}
+
+	for _, res := range results {
+		p := res["params"].(map[string]any)
+		if p["long_enabled"] == false && p["short_enabled"] == false {
+			t.Fatal("calibration sweep produced invalid both-disabled directional combo")
+		}
+	}
+}
+
+func TestSweepCommandCalibrationAllowsStrictPresetStrategy(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.8,"low":99.9,"close":100.5,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.5,"high":101.0,"low":100.4,"close":100.9,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":100.9,"high":101.8,"low":100.8,"close":101.6,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.6,"high":102.0,"low":101.3,"close":101.7,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":101.7,"high":103.0,"low":101.6,"close":102.7,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":102.7,"high":104.0,"low":102.6,"close":103.8,"volume":1,"close_time_ms":1704068999999,"interval":"5m"}
+	]`)
+
+	results := runSweepCommand(t, []string{
+		"sweep",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation_strict",
+		"--sweep-profile", "calibration",
+		"--format", "json",
+	})
+
+	if len(results) == 0 {
+		t.Fatal("expected calibration sweep to accept fast_accumulation_strict")
 	}
 }

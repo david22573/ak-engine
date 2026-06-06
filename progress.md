@@ -1,70 +1,24 @@
-# Progress Log - Fast Accumulation Phase 7
+# Progress Log
 
-## Session: 2026-06-04
+## 2026-06-04
+- Initialized planning files based on directive.md.
+- Ready to start Phase 1.
 
-### Current Status
-- **Phase:** 7.5 - Fast Accumulation Diagnostics and Tuning Foundation
-- **Started:** 2026-06-04
+## 2026-06-05
+- Completed Phase 8.5 implementation across walk-forward diagnostics, candidate stability, strict Fast Accumulation config, strict preset, and strict sweep profile support.
+- Added strict-specific CLI and unit coverage in `internal/app`, `internal/strategy`, and `internal/walkforward`.
+- Ran required validation set: `go fmt ./...`, `go test ./...`, `go vet ./...`, `make ci`, `make proof-backtest-local`, `make proof-fast-accumulation-local`, `make proof-fast-accumulation-diagnostics-local`, `make proof-fast-accumulation-sweep-local`, `make proof-walk-forward-local`, `make proof-fast-accumulation-strict-local`, `make proof-walk-forward-strict-local`.
+- Ran required strict local-parquet commands for LINKUSDT Jan-Jun 2023 and captured outputs to `/tmp/ak_engine_phase85_backtest_strict.json` and `/tmp/ak_engine_phase85_walkforward_strict.json`.
+- Strict local-parquet backtest remained losing (`net_pnl=-1515.1292370567169`, `profit_factor=0.3890146164478057`).
+- Strict local-parquet walk-forward remained non-promotable with zero selected candidates (`split_count=188`, `candidate_count=81216`, `selected_candidate_count=0`, `promotion_candidate=false`).
+- Started Phase 8.6 planning update from the root directive in `../prompt.md`.
+- Replaced the old Phase 8.5 plan with Phase 8.6 phases covering baseline validation, side-specific calibration config, presets/sweep, reporting/proof targets, and final verification.
 
-### Actions Taken
-- Read planning files and recovered task context.
-- Extended `Position` and `Trade` structs with entry/exit window MS, entry reason codes, score at entry, risk fraction, expected move, estimated cost, and entry action.
-- Implemented real-time calculations for MAE, MFE, hold windows, and price-risk-based R-multiple during position closing.
-- Added Fast Accumulation summary buckets to backtest report (trades/PnL/fees/slippage by action, trades/PnL/win rate/avg PnL by score bucket, hard blocks by reason, losses by reason code).
-- Implemented `sweep` subcommand executing 432 parameter combinations using preloaded candle buffer to optimize memory execution speed.
-- Added Makefile targets `proof-fast-accumulation-diagnostics-local` and `proof-fast-accumulation-sweep-local`.
-- Wrote robust unit tests for decisions inclusion/exclusion, trade diagnostics, summary buckets, and grid sweep command under `internal/app/backtest_test.go` and `internal/app/sweep_test.go`.
-- Implemented flag parsing global variables cleanup utility `resetGlobals` to resolve command test run flag bleed-through in Go test process space.
-- Verified all tests in `internal/app` and other modules pass cleanly.
-- Ran local parquet diagnostics smoke and sweep grid runs on `LINKUSDT` `1m` (January 2023).
-
-### Test Results
-| Test | Expected | Actual | Status |
-|------|----------|--------|--------|
-| `go test ./...` | PASS | PASS | PASS |
-| `go vet ./...` | PASS | PASS | PASS |
-| `make ci` | PASS | PASS | PASS |
-| `make proof-backtest-local` | PASS | PASS | PASS |
-| `make proof-fast-accumulation-local` | PASS | PASS | PASS |
-| `make proof-fast-accumulation-diagnostics-local` | PASS | PASS; 3 decisions, 1 trade, decisions array printed | PASS |
-| `make proof-fast-accumulation-sweep-local` | PASS | PASS; 432 parameter combinations evaluated and sorted | PASS |
-| Local parquet smoke (`LINKUSDT`, `1m`, `2023-01-01` to `2023-01-31`) with `--include-decisions` | PASS | PASS; 2976 decisions, 428 trades, net PnL `-2108.50`, full diagnostics populated | PASS |
-| Local parquet sweep (`LINKUSDT`, `1m`, `2023-01-01` to `2023-01-31`) | PASS | PASS; 432 combinations evaluated, best net PnL `86.20685951268678` | PASS |
-
-### Errors
-| Error | Resolution |
-|-------|------------|
-| "math" imported but not used in sweep.go | Removed unused import |
-| undefined: math in backtest_test.go | Added `"math"` import in test file |
-| Global flags leakage across command test executions | Created `resetGlobals()` helper called before test command executes |
-
-## Session: 2026-06-03
-
-### Current Status
-- **Phase:** 7.5 - Fast Accumulation Diagnostics and Tuning Foundation
-- **Result:** Verified complete against `../directive.md`
-
-### Actions Taken
-- Read root and `ak-engine` planning files, then audited existing dirty worktree against directive acceptance.
-- Verified code paths for `--include-decisions`, trade diagnostics, decision summary buckets, sweep CLI, Makefile targets, and tests.
-- Ran required verification batch successfully with repo-local `GOCACHE` and `GOMODCACHE`.
-- Ran local-parquet diagnostics smoke on `LINKUSDT` `1m` for `2023-01-01` through `2023-01-31`.
-- Ran local-parquet parameter sweep on same dataset and captured top-ranked configurations.
-
-### Test Results
-| Test | Actual | Status |
-|------|--------|--------|
-| `go fmt ./...` | PASS | PASS |
-| `go test ./...` | PASS | PASS |
-| `go vet ./...` | PASS | PASS |
-| `make ci` | PASS | PASS |
-| `make proof-backtest-local` | PASS | PASS |
-| `make proof-fast-accumulation-local` | PASS | PASS |
-| `make proof-fast-accumulation-diagnostics-local` | PASS; 3 decisions, 1 trade, diagnostics and decisions present | PASS |
-| `make proof-fast-accumulation-sweep-local` | PASS; 432 parameter combinations evaluated and sorted | PASS |
-| Local parquet diagnostics (`LINKUSDT`, `1m`, January 2023) | PASS; 2976 decisions, 428 trades, net PnL `-2108.498336430317`, ending cash `7891.501663569686` | PASS |
-| Local parquet sweep (`LINKUSDT`, `1m`, January 2023) | PASS; 432 combinations evaluated, top net PnL `86.20685951268678` | PASS |
-
-### Notes
-- Existing `ak-engine` worktree already contained Phase 7.5 implementation before this verification session.
-- Earlier 2026-06-04 planning entries were pre-existing; 2026-06-03 verification confirms current code and outputs are consistent with directive stop condition.
+## 2026-06-06
+- Started Phase 10.2 from user directive: OOS rejection postmortem for `RegimeAwareCompressionBreakout_LONG` plus multi-symbol baseline rediscovery.
+- Read existing planning files and rescaled them from stale Phase 8.6 scope to Phase 10.2.
+- Confirmed hard boundaries: research-only, no `ak-trader`, no runtime/testnet/shadow/promotion/order/exchange behavior.
+- Implemented `analyze-candidate-decay` and `evaluate-alpha-baselines-multisymbol` CLI commands.
+- Generated Phase 10.2 formal decay rejection report for RegimeAwareCompressionBreakout_LONG.
+- Generated multi-symbol alpha baselines for all 8 symbols and output a unified leaderboard.
+- Added tests for new CLI commands; `go test ./...` passed.

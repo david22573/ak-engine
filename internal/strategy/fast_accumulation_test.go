@@ -200,6 +200,278 @@ func TestFastAccumulationHighScoreCreatesFullAction(t *testing.T) {
 	}
 }
 
+func TestFastAccumulationRejectsScoreBucket55To69(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.DisableScoreBucket55To69 = true
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        62,
+		ShortScore:       40,
+		TrendScore:       80,
+		ExpectedMoveBPS:  40,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "SCORE_BUCKET_DISABLED") {
+		t.Fatalf("ReasonCodes = %v, want SCORE_BUCKET_DISABLED", decision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationBlocksLowTrendScore(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.MinTrendScore = 60
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        80,
+		ShortScore:       30,
+		TrendScore:       45,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "LOW_TREND_SCORE") {
+		t.Fatalf("ReasonCodes = %v, want LOW_TREND_SCORE", decision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationRespectsLongShortEnabled(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.ShortEnabled = false
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	shortDecision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        20,
+		ShortScore:       82,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if shortDecision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", shortDecision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(shortDecision.ReasonCodes, "SHORT_DISABLED") {
+		t.Fatalf("ReasonCodes = %v, want SHORT_DISABLED", shortDecision.ReasonCodes)
+	}
+
+	cfg = DefaultFastAccumulationConfig()
+	cfg.LongEnabled = false
+	strat, err = NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	longDecision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        82,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if longDecision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", longDecision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(longDecision.ReasonCodes, "LONG_DISABLED") {
+		t.Fatalf("ReasonCodes = %v, want LONG_DISABLED", longDecision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationInvalidDirectionalConfig(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.LongEnabled = false
+	cfg.ShortEnabled = false
+	if _, err := NewFastAccumulation(cfg); err == nil {
+		t.Fatal("expected invalid directional config to fail")
+	}
+}
+
+func TestFastAccumulationInvalidCalibrationConfig(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.LongMinEntryScore = 101
+	if _, err := NewFastAccumulation(cfg); err == nil {
+		t.Fatal("expected invalid long_min_entry_score to fail")
+	}
+
+	cfg = DefaultFastAccumulationConfig()
+	cfg.MaxTradesPerDay = -1
+	if _, err := NewFastAccumulation(cfg); err == nil {
+		t.Fatal("expected invalid max_trades_per_day to fail")
+	}
+}
+
+func TestFastAccumulationBlocksWeakLongsWithSideSpecificEntryScore(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.LongMinEntryScore = 85
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        82,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "BELOW_MIN_ENTRY_SCORE") {
+		t.Fatalf("ReasonCodes = %v, want BELOW_MIN_ENTRY_SCORE", decision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationBlocksWeakShortsWithSideSpecificEntryScore(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.ShortMinEntryScore = 90
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        20,
+		ShortScore:       85,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "BELOW_MIN_ENTRY_SCORE") {
+		t.Fatalf("ReasonCodes = %v, want BELOW_MIN_ENTRY_SCORE", decision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationDisablesLongScoreBucket70To84(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.DisableLongScoreBucket70To84 = true
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        78,
+		ShortScore:       30,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "SCORE_BUCKET_70_84_DISABLED") {
+		t.Fatalf("ReasonCodes = %v, want SCORE_BUCKET_70_84_DISABLED", decision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationDisableLong70To84DoesNotBlockHighConfidenceShorts(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.DisableLongScoreBucket70To84 = true
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        25,
+		ShortScore:       88,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionFullShort {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionFullShort)
+	}
+}
+
+func TestFastAccumulationRateLimitsEntries(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.MaxTradesPerDay = 1
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+	strat.decisions = []WindowDecision{{Action: ActionFullLong, WindowEndMS: time.Unix(0, 0).Add(15*time.Minute - time.Millisecond).UnixMilli()}}
+
+	decision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 15*time.Minute), ScoreResult{
+		LongScore:        88,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "MAX_TRADES_PER_DAY") {
+		t.Fatalf("ReasonCodes = %v, want MAX_TRADES_PER_DAY", decision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationEnforcesMinMinutesBetweenEntries(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.MinMinutesBetweenEntries = 30
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+	strat.decisions = []WindowDecision{{Action: ActionFullLong, WindowEndMS: time.Unix(0, 0).Add(15*time.Minute - time.Millisecond).UnixMilli()}}
+
+	decision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 15*time.Minute), ScoreResult{
+		LongScore:        88,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+	})
+	if decision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("Action = %q, want %q", decision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(decision.ReasonCodes, "MIN_ENTRY_SPACING") {
+		t.Fatalf("ReasonCodes = %v, want MIN_ENTRY_SPACING", decision.ReasonCodes)
+	}
+}
+
 func TestFastAccumulationNoLookahead(t *testing.T) {
 	t.Parallel()
 
@@ -224,6 +496,21 @@ func TestFastAccumulationNoLookahead(t *testing.T) {
 	}
 	if !reflect.DeepEqual(firstDecisions[1], secondDecisions[1]) {
 		t.Fatalf("second window decision changed with future candles: %#v != %#v", firstDecisions[1], secondDecisions[1])
+	}
+}
+
+func TestScoreWindowHighChopHardBlocksEntry(t *testing.T) {
+	t.Parallel()
+
+	result := ScoreWindow(ScoreInput{
+		Window:               bullishWindow(100.0, 100.8, 99.9, 100.1, 15*time.Minute),
+		Previous:             []AggregatedWindow{bullishWindow(100.0, 100.7, 99.8, 100.05, 0)},
+		EstimatedCostBPS:     1,
+		CostMultipleRequired: 1,
+		MaxChopScore:         50,
+	})
+	if !result.HardBlock {
+		t.Fatal("HardBlock = false, want true for high chop window")
 	}
 }
 
@@ -308,4 +595,71 @@ func bullishWindow(open, high, low, close float64, offset time.Duration) Aggrega
 
 func bearishWindow(open, high, low, close float64, offset time.Duration) AggregatedWindow {
 	return bullishWindow(open, high, low, close, offset)
+}
+
+func containsReason(reasons []string, target string) bool {
+	for _, reason := range reasons {
+		if reason == target {
+			return true
+		}
+	}
+	return false
+}
+
+func TestFastAccumulationEconomicsGateRejectsLowRTrades(t *testing.T) {
+	strat := &FastAccumulation{cfg: FastAccumulationConfig{
+		MinExpectedRAfterCost: 1.0,
+		MinTargetBPSAfterCost: 20,
+		MinRewardToRisk:       1.5,
+	}}
+
+	decision := WindowDecision{
+		ExpectedMoveBPS:  18,
+		EstimatedCostBPS: 6,
+	}
+
+	if got := strat.economicsBlockReason(decision, SideLong); got != "TARGET_AFTER_COST_TOO_SMALL" {
+		t.Fatalf("economicsBlockReason() = %q, want TARGET_AFTER_COST_TOO_SMALL", got)
+	}
+}
+
+func TestFastAccumulationPullbackReclaimAvoidsOverextendedEntry(t *testing.T) {
+	strat := &FastAccumulation{
+		cfg: FastAccumulationConfig{EntryVariant: EntryVariantPullbackReclaim},
+	}
+	window := bullishWindow(100, 110, 99, 109.5, 0)
+	scored := ScoreResult{
+		PullbackScore: 60,
+		ReasonCodes:   []string{"5M_PULLBACK_RECLAIM"},
+	}
+
+	if got := strat.entryQualityBlockReason(window, scored, SideLong); got != "ENTRY_OVEREXTENDED" {
+		t.Fatalf("entryQualityBlockReason() = %q, want ENTRY_OVEREXTENDED", got)
+	}
+}
+
+func TestFastAccumulationBreakoutRetestWaitsForRetest(t *testing.T) {
+	strat := &FastAccumulation{
+		cfg: EntryVariantBreakoutRetestConfig(),
+		completedWindows: []AggregatedWindow{
+			bullishWindow(100, 101, 99, 100.5, 0),
+			bullishWindow(100.5, 102, 100.4, 101.8, 15*time.Minute),
+		},
+		recentCandles: []protocol.Candle{
+			test5mCandle(6, 101.8, 102.2, 101.7, 102.1),
+			test5mCandle(7, 102.1, 102.4, 102.0, 102.3),
+			test5mCandle(8, 102.3, 102.5, 102.2, 102.4),
+		},
+	}
+	scored := ScoreResult{BreakoutScore: 60}
+
+	if got := strat.entryQualityBlockReason(strat.completedWindows[1], scored, SideLong); got != "ENTRY_REQUIRES_BREAKOUT_RETEST" {
+		t.Fatalf("entryQualityBlockReason() = %q, want ENTRY_REQUIRES_BREAKOUT_RETEST", got)
+	}
+}
+
+func EntryVariantBreakoutRetestConfig() FastAccumulationConfig {
+	cfg := DefaultFastAccumulationConfig()
+	cfg.EntryVariant = EntryVariantBreakoutRetest
+	return cfg
 }

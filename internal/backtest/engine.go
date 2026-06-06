@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"sort"
 	"time"
 
 	"github.com/davidmiguel22573/ak-engine/internal/data"
@@ -70,7 +71,22 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 	for idx, candle := range candles {
 		if open != nil {
 			open.HeldCandles++
+			updatePositionExtremes(open, candle)
+			if shouldExit, exitPrice, reason, err := e.applyResearchExitManagement(open, candle); err != nil {
+				return Report{}, err
+			} else if shouldExit {
+				trade, nextEquity, err := e.closePosition(candles, *open, candle, idx, exitPrice, reason, equity)
+				if err != nil {
+					return Report{}, err
+				}
+				trades = append(trades, trade)
+				equity = nextEquity
+				equityCurve = append(equityCurve, equity)
+				open = nil
+			}
+		}
 
+		if open != nil {
 			exitBasePrice, reason, hit, err := ResolveExitPrice(*open, candle)
 			if err != nil {
 				return Report{}, err
@@ -163,6 +179,19 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 	lossesByReasonCode := make(map[string]int)
 	feesByAction := make(map[string]float64)
 	slippageByAction := make(map[string]float64)
+	longVsShortMetrics := make(map[string]float64)
+	mfeByAction := make(map[string]float64)
+	maeByAction := make(map[string]float64)
+	mfeByScoreBucket := make(map[string]float64)
+	maeByScoreBucket := make(map[string]float64)
+	mfeByReasonCode := make(map[string]float64)
+	maeByReasonCode := make(map[string]float64)
+	mfeCountByAction := make(map[string]int)
+	maeCountByAction := make(map[string]int)
+	mfeCountByScoreBucket := make(map[string]int)
+	maeCountByScoreBucket := make(map[string]int)
+	mfeCountByReasonCode := make(map[string]int)
+	maeCountByReasonCode := make(map[string]int)
 
 	// Pre-populate score buckets
 	scoreBuckets := []string{"0-39", "40-54", "55-69", "70-84", "85-100"}
@@ -197,6 +226,16 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 
 	// Track wins per bucket for win rate
 	winsByScoreBucket := make(map[string]int)
+	var longPnL, shortPnL float64
+	var longTrades, shortTrades int
+	var longFees, shortFees float64
+	var longSlippage, shortSlippage float64
+	var totalMFEBPS, totalMAEBPS, totalMFER, totalMAER float64
+	var totalRealizedR, totalMaxPossibleR, totalAdverseR float64
+	var mfeRs, maeRs []float64
+	var winnerMFER, loserMFER, winnerMAER, loserMAER float64
+	var winnerRealizedR, loserRealizedR float64
+	var winnerCount, loserCount int
 
 	for _, t := range trades {
 		act := t.EntryAction
@@ -207,6 +246,21 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 		pnlByAction[act] += t.NetPnL
 		feesByAction[act] += (t.EntryFee + t.ExitFee)
 		slippageByAction[act] += t.SlippagePaid
+		mfeByAction[act] += t.MFER
+		maeByAction[act] += t.MAER
+		mfeCountByAction[act]++
+		maeCountByAction[act]++
+		if t.Side == strategy.SideLong {
+			longPnL += t.NetPnL
+			longTrades++
+			longFees += t.EntryFee + t.ExitFee
+			longSlippage += t.SlippagePaid
+		} else if t.Side == strategy.SideShort {
+			shortPnL += t.NetPnL
+			shortTrades++
+			shortFees += t.EntryFee + t.ExitFee
+			shortSlippage += t.SlippagePaid
+		}
 
 		// Score bucket classification
 		score := t.ScoreAtEntry
@@ -229,15 +283,46 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 		if bucket != "unknown" {
 			tradesByScoreBucket[bucket]++
 			pnlByScoreBucket[bucket] += t.NetPnL
+			mfeByScoreBucket[bucket] += t.MFER
+			maeByScoreBucket[bucket] += t.MAER
+			mfeCountByScoreBucket[bucket]++
+			maeCountByScoreBucket[bucket]++
 			if t.NetPnL > 0 {
 				winsByScoreBucket[bucket]++
 			}
+		}
+
+		totalMFEBPS += t.MFEBPS
+		totalMAEBPS += t.MAEBPS
+		totalMFER += t.MFER
+		totalMAER += t.MAER
+		totalRealizedR += t.RealizedRMultiple
+		totalMaxPossibleR += t.MaxPossibleRMultiple
+		totalAdverseR += t.AdverseRMultiple
+		mfeRs = append(mfeRs, t.MFER)
+		maeRs = append(maeRs, t.MAER)
+		if t.NetPnL > 0 {
+			winnerCount++
+			winnerMFER += t.MFER
+			winnerMAER += t.MAER
+			winnerRealizedR += t.RealizedRMultiple
+		} else {
+			loserCount++
+			loserMFER += t.MFER
+			loserMAER += t.MAER
+			loserRealizedR += t.RealizedRMultiple
 		}
 
 		if t.NetPnL < 0 {
 			for _, rc := range t.EntryReasonCodes {
 				lossesByReasonCode[rc]++
 			}
+		}
+		for _, rc := range t.EntryReasonCodes {
+			mfeByReasonCode[rc] += t.MFER
+			maeByReasonCode[rc] += t.MAER
+			mfeCountByReasonCode[rc]++
+			maeCountByReasonCode[rc]++
 		}
 	}
 
@@ -248,6 +333,20 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 			avgPnLByScoreBucket[b] = pnlByScoreBucket[b] / float64(count)
 		}
 	}
+	longVsShortMetrics["long_pnl"] = longPnL
+	longVsShortMetrics["short_pnl"] = shortPnL
+	longVsShortMetrics["long_trades"] = float64(longTrades)
+	longVsShortMetrics["short_trades"] = float64(shortTrades)
+	longVsShortMetrics["long_fees_paid"] = longFees
+	longVsShortMetrics["short_fees_paid"] = shortFees
+	longVsShortMetrics["long_slippage_paid"] = longSlippage
+	longVsShortMetrics["short_slippage_paid"] = shortSlippage
+	averageMap(mfeByAction, mfeCountByAction)
+	averageMap(maeByAction, maeCountByAction)
+	averageMap(mfeByScoreBucket, mfeCountByScoreBucket)
+	averageMap(maeByScoreBucket, maeCountByScoreBucket)
+	averageMap(mfeByReasonCode, mfeCountByReasonCode)
+	averageMap(maeByReasonCode, maeCountByReasonCode)
 
 	report := Report{
 		Source:               e.source.Name(),
@@ -255,6 +354,7 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 		Symbol:               req.Symbol,
 		Interval:             req.Interval,
 		Strategy:             e.strategy.Name(),
+		PresetName:           e.strategy.Name(),
 		FromMS:               req.From.UnixMilli(),
 		ToMS:                 req.To.UnixMilli(),
 		TotalCandles:         len(candles),
@@ -274,6 +374,8 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 		Expectancy:           metrics.Expectancy,
 		AverageHoldMinutes:   metrics.AverageHoldMinutes,
 		Status:               "PASS",
+		PromotionCandidate:   false,
+		RejectionReasons:     []string{"RESEARCH_ONLY_BACKTEST"},
 		StartingCash:         e.cfg.StartingCash,
 		EndingCash:           equity,
 		MaxPosition:          e.cfg.MaxPositionSize,
@@ -312,6 +414,28 @@ func (e *Engine) runCandles(ctx context.Context, req data.CandleRequest, candles
 			LossesByReasonCode:   lossesByReasonCode,
 			FeesByAction:         feesByAction,
 			SlippageByAction:     slippageByAction,
+			LongVsShortMetrics:   longVsShortMetrics,
+			AvgMFEBPS:            averageFloat(totalMFEBPS, len(trades)),
+			AvgMAEBPS:            averageFloat(totalMAEBPS, len(trades)),
+			AvgMFER:              averageFloat(totalMFER, len(trades)),
+			AvgMAER:              averageFloat(totalMAER, len(trades)),
+			MedianMFER:           medianFloat(mfeRs),
+			MedianMAER:           medianFloat(maeRs),
+			WinnerAvgMFER:        averageFloat(winnerMFER, winnerCount),
+			LoserAvgMFER:         averageFloat(loserMFER, loserCount),
+			WinnerAvgMAER:        averageFloat(winnerMAER, winnerCount),
+			LoserAvgMAER:         averageFloat(loserMAER, loserCount),
+			AvgRealizedR:         averageFloat(totalRealizedR, len(trades)),
+			AvgMaxPossibleR:      averageFloat(totalMaxPossibleR, len(trades)),
+			AvgAdverseR:          averageFloat(totalAdverseR, len(trades)),
+			WinnerAvgRealizedR:   averageFloat(winnerRealizedR, winnerCount),
+			LoserAvgRealizedR:    averageFloat(loserRealizedR, loserCount),
+			MFEByAction:          mfeByAction,
+			MAEByAction:          maeByAction,
+			MFEByScoreBucket:     mfeByScoreBucket,
+			MAEByScoreBucket:     maeByScoreBucket,
+			MFEByReasonCode:      mfeByReasonCode,
+			MAEByReasonCode:      maeByReasonCode,
 		}
 	}
 	return report, nil
@@ -345,19 +469,24 @@ func (e *Engine) openPosition(candle protocol.Candle, idx int, signal strategy.S
 	}
 
 	pos := &Position{
-		Symbol:           candle.Symbol,
-		Market:           candle.Market,
-		Interval:         candle.Interval,
-		Side:             signal.Side,
-		EntryTimeMS:      candle.CloseTimeMS,
-		BaseEntryPrice:   baseEntryPrice,
-		EntryPrice:       entryPrice,
-		Quantity:         quantity,
-		Notional:         notional,
-		MaxHoldCandles:   signal.MaxHoldCandles,
-		EntryFee:         entryFee,
-		Strategy:         e.strategy.Name(),
-		EntryCandleIndex: idx,
+		Symbol:            candle.Symbol,
+		Market:            candle.Market,
+		Interval:          candle.Interval,
+		Side:              signal.Side,
+		EntryTimeMS:       candle.CloseTimeMS,
+		BaseEntryPrice:    baseEntryPrice,
+		EntryPrice:        entryPrice,
+		Quantity:          quantity,
+		OriginalQuantity:  quantity,
+		Notional:          notional,
+		OriginalNotional:  notional,
+		MaxHoldCandles:    signal.MaxHoldCandles,
+		EntryFee:          entryFee,
+		Strategy:          e.strategy.Name(),
+		EntryCandleIndex:  idx,
+		ExitPlan:          signal.ExitPlan,
+		MaxFavorablePrice: entryPrice,
+		MaxAdversePrice:   entryPrice,
 	}
 
 	if signal.Decision != nil {
@@ -382,6 +511,9 @@ func (e *Engine) openPosition(candle protocol.Candle, idx int, signal strategy.S
 	default:
 		return nil, fmt.Errorf("unsupported signal side %q", signal.Side)
 	}
+	pos.InitialStopPrice = pos.StopPrice
+	pos.InitialTargetPrice = pos.TargetPrice
+	pos.InitialRiskBPS = signal.StopLossBPS
 	return pos, nil
 }
 
@@ -407,6 +539,7 @@ func summarizeDecisions(decisions []strategy.WindowDecision) FastAccumulationSum
 }
 
 func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle protocol.Candle, idx int, baseExitPrice float64, reason ExitReason, equity float64) (Trade, float64, error) {
+	_ = candles
 	exitPrice, err := ApplySlippage(baseExitPrice, pos.Side, FillActionExit, e.cfg.SlippageBPS)
 	if err != nil {
 		return Trade{}, 0, err
@@ -417,41 +550,23 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 		return Trade{}, 0, err
 	}
 
-	grossPnL := (exitPrice - pos.EntryPrice) * pos.Quantity
+	finalGrossPnL := (exitPrice - pos.EntryPrice) * pos.Quantity
 	if pos.Side == strategy.SideShort {
-		grossPnL = (pos.EntryPrice - exitPrice) * pos.Quantity
+		finalGrossPnL = (pos.EntryPrice - exitPrice) * pos.Quantity
 	}
-	slippagePaid := calculateSlippagePaid(pos.Side, pos.Quantity, pos.BaseEntryPrice, pos.EntryPrice, baseExitPrice, exitPrice)
-	netPnL := grossPnL - pos.EntryFee - exitFee
+	slippagePaid := pos.RealizedSlippage + calculateSlippagePaid(pos.Side, pos.Quantity, pos.BaseEntryPrice, pos.EntryPrice, baseExitPrice, exitPrice)
+	grossPnL := pos.RealizedGrossPnL + finalGrossPnL
+	totalFees := pos.EntryFee + pos.RealizedFees + exitFee
+	netPnL := grossPnL - totalFees
 	nextEquity := equity + netPnL
-
-	// MAE and MFE calculation
-	minLow := pos.EntryPrice
-	maxHigh := pos.EntryPrice
-	if pos.EntryCandleIndex >= 0 && pos.EntryCandleIndex < len(candles) && idx >= pos.EntryCandleIndex && idx < len(candles) {
-		for i := pos.EntryCandleIndex; i <= idx; i++ {
-			c := candles[i]
-			if i == pos.EntryCandleIndex {
-				minLow = c.Low
-				maxHigh = c.High
-			} else {
-				if c.Low < minLow {
-					minLow = c.Low
-				}
-				if c.High > maxHigh {
-					maxHigh = c.High
-				}
-			}
-		}
-	}
 
 	var maeBPS, mfeBPS float64
 	if pos.Side == strategy.SideLong {
-		maeBPS = ((pos.EntryPrice - minLow) / pos.EntryPrice) * 10000
-		mfeBPS = ((maxHigh - pos.EntryPrice) / pos.EntryPrice) * 10000
+		maeBPS = ((pos.EntryPrice - pos.MaxAdversePrice) / pos.EntryPrice) * 10000
+		mfeBPS = ((pos.MaxFavorablePrice - pos.EntryPrice) / pos.EntryPrice) * 10000
 	} else if pos.Side == strategy.SideShort {
-		maeBPS = ((maxHigh - pos.EntryPrice) / pos.EntryPrice) * 10000
-		mfeBPS = ((pos.EntryPrice - minLow) / pos.EntryPrice) * 10000
+		maeBPS = ((pos.MaxAdversePrice - pos.EntryPrice) / pos.EntryPrice) * 10000
+		mfeBPS = ((pos.EntryPrice - pos.MaxFavorablePrice) / pos.EntryPrice) * 10000
 	}
 	if maeBPS < 0 {
 		maeBPS = 0
@@ -474,8 +589,18 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 	holdWindows := pos.HeldCandles / candlesPerWindow
 
 	// RMultiple calculation
-	plannedRisk := math.Abs(pos.EntryPrice - pos.StopPrice)
+	plannedRisk := math.Abs(pos.EntryPrice - pos.InitialStopPrice)
+	initialRiskBPS := pos.InitialRiskBPS
+	if initialRiskBPS == 0 && pos.EntryPrice > 0 && plannedRisk > 0 {
+		initialRiskBPS = (plannedRisk / pos.EntryPrice) * 10000
+	}
+	riskDollars := pos.OriginalNotional * initialRiskBPS / 10000
 	rMultiple := 0.0
+	realizedRMultiple := 0.0
+	maxPossibleRMultiple := 0.0
+	adverseRMultiple := 0.0
+	maeR := 0.0
+	mfeR := 0.0
 	if plannedRisk > 0 {
 		if pos.Side == strategy.SideLong {
 			rMultiple = (exitPrice - pos.EntryPrice) / plannedRisk
@@ -483,46 +608,240 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 			rMultiple = (pos.EntryPrice - exitPrice) / plannedRisk
 		}
 	}
+	if riskDollars > 0 {
+		realizedRMultiple = netPnL / riskDollars
+		maxPossibleRMultiple = mfeBPS / initialRiskBPS
+		adverseRMultiple = maeBPS / initialRiskBPS
+		maeR = adverseRMultiple
+		mfeR = maxPossibleRMultiple
+	}
 
 	trade := Trade{
-		Symbol:           pos.Symbol,
-		Market:           pos.Market,
-		Interval:         pos.Interval,
-		Side:             pos.Side,
-		EntryTimeMS:      pos.EntryTimeMS,
-		ExitTimeMS:       candle.CloseTimeMS,
-		EntryPrice:       pos.EntryPrice,
-		ExitPrice:        exitPrice,
-		Quantity:         pos.Quantity,
-		Notional:         pos.Notional,
-		StopPrice:        pos.StopPrice,
-		TargetPrice:      pos.TargetPrice,
-		MaxHoldCandles:   pos.MaxHoldCandles,
-		HeldCandles:      pos.HeldCandles,
-		EntryFee:         pos.EntryFee,
-		ExitFee:          exitFee,
-		SlippagePaid:     slippagePaid,
-		GrossPnL:         grossPnL,
-		NetPnL:           netPnL,
-		NetReturnBPS:     (netPnL / pos.Notional) * 10000,
-		ExitReason:       reason,
-		Strategy:         pos.Strategy,
-		EntryCandleIndex: pos.EntryCandleIndex,
-		ExitCandleIndex:  idx,
-		EntryWindowMS:    pos.EntryWindowMS,
-		ExitWindowMS:     alignWindowStart(candle.OpenTimeMS, 15*60*1000),
-		EntryReasonCodes: pos.EntryReasonCodes,
-		ScoreAtEntry:     pos.ScoreAtEntry,
-		RiskFraction:     pos.RiskFraction,
-		EstimatedCostBPS: pos.EstimatedCostBPS,
-		ExpectedMoveBPS:  pos.ExpectedMoveBPS,
-		RMultiple:        rMultiple,
-		MAEBPS:           maeBPS,
-		MFEBPS:           mfeBPS,
-		HoldWindows:      holdWindows,
-		EntryAction:      pos.EntryAction,
+		Symbol:               pos.Symbol,
+		Market:               pos.Market,
+		Interval:             pos.Interval,
+		Side:                 pos.Side,
+		EntryTimeMS:          pos.EntryTimeMS,
+		ExitTimeMS:           candle.CloseTimeMS,
+		EntryPrice:           pos.EntryPrice,
+		ExitPrice:            exitPrice,
+		Quantity:             pos.OriginalQuantity,
+		Notional:             pos.OriginalNotional,
+		StopPrice:            pos.InitialStopPrice,
+		TargetPrice:          pos.InitialTargetPrice,
+		MaxHoldCandles:       pos.MaxHoldCandles,
+		HeldCandles:          pos.HeldCandles,
+		EntryFee:             pos.EntryFee,
+		ExitFee:              pos.RealizedFees + exitFee,
+		SlippagePaid:         slippagePaid,
+		GrossPnL:             grossPnL,
+		NetPnL:               netPnL,
+		NetReturnBPS:         (netPnL / pos.OriginalNotional) * 10000,
+		ExitReason:           reason,
+		Strategy:             pos.Strategy,
+		EntryCandleIndex:     pos.EntryCandleIndex,
+		ExitCandleIndex:      idx,
+		EntryWindowMS:        pos.EntryWindowMS,
+		ExitWindowMS:         alignWindowStart(candle.OpenTimeMS, 15*60*1000),
+		EntryReasonCodes:     pos.EntryReasonCodes,
+		ScoreAtEntry:         pos.ScoreAtEntry,
+		RiskFraction:         pos.RiskFraction,
+		EstimatedCostBPS:     pos.EstimatedCostBPS,
+		ExpectedMoveBPS:      pos.ExpectedMoveBPS,
+		RMultiple:            rMultiple,
+		InitialRiskBPS:       initialRiskBPS,
+		RealizedRMultiple:    realizedRMultiple,
+		MaxPossibleRMultiple: maxPossibleRMultiple,
+		AdverseRMultiple:     adverseRMultiple,
+		MAEBPS:               maeBPS,
+		MFEBPS:               mfeBPS,
+		MAER:                 maeR,
+		MFER:                 mfeR,
+		TimeToMFEMinutes:     pos.TimeToMFEMinutes,
+		TimeToMAEMinutes:     pos.TimeToMAEMinutes,
+		MaxFavorablePrice:    pos.MaxFavorablePrice,
+		MaxAdversePrice:      pos.MaxAdversePrice,
+		HoldWindows:          holdWindows,
+		EntryAction:          pos.EntryAction,
+		PartialExitCount:     pos.PartialExitCount,
 	}
 	return trade, nextEquity, nil
+}
+
+func updatePositionExtremes(pos *Position, candle protocol.Candle) {
+	entryTime := time.UnixMilli(pos.EntryTimeMS)
+	if pos.Side == strategy.SideLong {
+		if candle.High > pos.MaxFavorablePrice {
+			pos.MaxFavorablePrice = candle.High
+			pos.TimeToMFEMinutes = candleDurationMinutes(entryTime, time.UnixMilli(candle.CloseTimeMS))
+		}
+		if candle.Low < pos.MaxAdversePrice {
+			pos.MaxAdversePrice = candle.Low
+			pos.TimeToMAEMinutes = candleDurationMinutes(entryTime, time.UnixMilli(candle.CloseTimeMS))
+		}
+		return
+	}
+	if candle.Low < pos.MaxFavorablePrice {
+		pos.MaxFavorablePrice = candle.Low
+		pos.TimeToMFEMinutes = candleDurationMinutes(entryTime, time.UnixMilli(candle.CloseTimeMS))
+	}
+	if candle.High > pos.MaxAdversePrice {
+		pos.MaxAdversePrice = candle.High
+		pos.TimeToMAEMinutes = candleDurationMinutes(entryTime, time.UnixMilli(candle.CloseTimeMS))
+	}
+}
+
+func candleDurationMinutes(start, end time.Time) float64 {
+	return end.Sub(start).Minutes()
+}
+
+func (e *Engine) applyResearchExitManagement(pos *Position, candle protocol.Candle) (bool, float64, ExitReason, error) {
+	riskPerUnit := math.Abs(pos.EntryPrice - pos.InitialStopPrice)
+	if riskPerUnit <= 0 {
+		return false, 0, "", nil
+	}
+	favorableR := favorableRMultiple(*pos)
+	if shouldArmBreakeven(pos.ExitPlan.Model) && pos.ExitPlan.BreakevenTriggerR > 0 && favorableR >= pos.ExitPlan.BreakevenTriggerR {
+		armBreakevenStop(pos)
+	}
+	if pos.ExitPlan.Model == strategy.ExitModelPartialTPTrail {
+		if err := e.applyPartialTakeProfit(pos, candle, riskPerUnit); err != nil {
+			return false, 0, "", err
+		}
+		if favorableR >= maxFloat(pos.ExitPlan.TrailAfterMFER, pos.ExitPlan.PartialTakeProfitR) {
+			applyTrailingStop(pos, riskPerUnit)
+		}
+	}
+	if pos.ExitPlan.Model == strategy.ExitModelTrailAfterMFE && favorableR >= pos.ExitPlan.TrailAfterMFER {
+		applyTrailingStop(pos, riskPerUnit)
+	}
+	if pos.ExitPlan.Model == strategy.ExitModelCutIfNoProgress && pos.ExitPlan.CutNoProgressCandles > 0 && pos.HeldCandles >= pos.ExitPlan.CutNoProgressCandles && favorableR < pos.ExitPlan.CutNoProgressR {
+		return true, candle.Close, ExitReasonCutNoProg, nil
+	}
+	return false, 0, "", nil
+}
+
+func shouldArmBreakeven(model strategy.ExitModel) bool {
+	return model == strategy.ExitModelBreakevenAfter1R || model == strategy.ExitModelPartialTPTrail
+}
+
+func armBreakevenStop(pos *Position) {
+	if pos.BreakevenArmed {
+		return
+	}
+	switch pos.Side {
+	case strategy.SideLong:
+		pos.StopPrice = math.Max(pos.StopPrice, pos.EntryPrice*(1+pos.EstimatedCostBPS/10000))
+	case strategy.SideShort:
+		pos.StopPrice = math.Min(pos.StopPrice, pos.EntryPrice*(1-pos.EstimatedCostBPS/10000))
+	}
+	pos.BreakevenArmed = true
+}
+
+func (e *Engine) applyPartialTakeProfit(pos *Position, candle protocol.Candle, riskPerUnit float64) error {
+	if pos.PartialExitCount > 0 || pos.ExitPlan.PartialTakeProfitFraction <= 0 || pos.ExitPlan.PartialTakeProfitR <= 0 {
+		return nil
+	}
+	targetPrice := partialTakeProfitPrice(*pos, riskPerUnit, pos.ExitPlan.PartialTakeProfitR)
+	hit := false
+	switch pos.Side {
+	case strategy.SideLong:
+		hit = candle.High >= targetPrice
+	case strategy.SideShort:
+		hit = candle.Low <= targetPrice
+	}
+	if !hit {
+		return nil
+	}
+	partialQty := pos.Quantity * pos.ExitPlan.PartialTakeProfitFraction
+	if partialQty <= 0 || partialQty >= pos.Quantity {
+		return nil
+	}
+	exitPrice, err := ApplySlippage(targetPrice, pos.Side, FillActionExit, e.cfg.SlippageBPS)
+	if err != nil {
+		return err
+	}
+	exitNotional := exitPrice * partialQty
+	exitFee, err := CalculateFee(exitNotional, e.cfg.Fees)
+	if err != nil {
+		return err
+	}
+	grossPnL := (exitPrice - pos.EntryPrice) * partialQty
+	if pos.Side == strategy.SideShort {
+		grossPnL = (pos.EntryPrice - exitPrice) * partialQty
+	}
+	pos.RealizedGrossPnL += grossPnL
+	pos.RealizedFees += exitFee
+	pos.RealizedSlippage += calculateSlippagePaid(pos.Side, partialQty, pos.BaseEntryPrice, pos.EntryPrice, targetPrice, exitPrice)
+	pos.Quantity -= partialQty
+	pos.PartialExitCount++
+	armBreakevenStop(pos)
+	return nil
+}
+
+func partialTakeProfitPrice(pos Position, riskPerUnit, partialR float64) float64 {
+	if pos.Side == strategy.SideLong {
+		return pos.EntryPrice + riskPerUnit*partialR
+	}
+	return pos.EntryPrice - riskPerUnit*partialR
+}
+
+func applyTrailingStop(pos *Position, riskPerUnit float64) {
+	distance := riskPerUnit * maxFloat(pos.ExitPlan.TrailDistanceR, 0.5)
+	switch pos.Side {
+	case strategy.SideLong:
+		trailStop := pos.MaxFavorablePrice - distance
+		pos.StopPrice = math.Max(pos.StopPrice, trailStop)
+	case strategy.SideShort:
+		trailStop := pos.MaxFavorablePrice + distance
+		pos.StopPrice = math.Min(pos.StopPrice, trailStop)
+	}
+}
+
+func favorableRMultiple(pos Position) float64 {
+	riskPerUnit := math.Abs(pos.EntryPrice - pos.InitialStopPrice)
+	if riskPerUnit <= 0 {
+		return 0
+	}
+	if pos.Side == strategy.SideLong {
+		return (pos.MaxFavorablePrice - pos.EntryPrice) / riskPerUnit
+	}
+	return (pos.EntryPrice - pos.MaxFavorablePrice) / riskPerUnit
+}
+
+func maxFloat(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func averageFloat(total float64, count int) float64 {
+	if count <= 0 {
+		return 0
+	}
+	return total / float64(count)
+}
+
+func averageMap(values map[string]float64, counts map[string]int) {
+	for key, total := range values {
+		if counts[key] > 0 {
+			values[key] = total / float64(counts[key])
+		}
+	}
+}
+
+func medianFloat(values []float64) float64 {
+	if len(values) == 0 {
+		return 0
+	}
+	sorted := append([]float64(nil), values...)
+	sort.Float64s(sorted)
+	mid := len(sorted) / 2
+	if len(sorted)%2 == 1 {
+		return sorted[mid]
+	}
+	return (sorted[mid-1] + sorted[mid]) / 2
 }
 
 func alignWindowStart(openTimeMS, targetMS int64) int64 {

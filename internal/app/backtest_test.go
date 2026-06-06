@@ -334,6 +334,17 @@ func resetGlobals() {
 	sweepMakerFeeBPS = 0
 	sweepTakerFeeBPS = 5
 	sweepSlippageBPS = 1
+	sweepProfile = "default"
+
+	wfTrainWindow = ""
+	wfTestWindow = ""
+	wfTopCandidates = 5
+	wfMinTrades = 5
+	wfMaxDrawdown = 1000000
+	wfMaxLossStreak = 999
+	wfMinProfitFactor = 0
+	wfSweepProfile = "default"
+	wfStrategy = "fast_accumulation"
 }
 
 func TestBacktestIncludeDecisions(t *testing.T) {
@@ -499,5 +510,182 @@ func TestBacktestDiagnosticsAndSummaryBuckets(t *testing.T) {
 				t.Errorf("hard block reason %q has non-positive count: %v", reason, count)
 			}
 		}
+	}
+}
+
+func TestBacktestFastAccumulationStrictLocalJSON(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.8,"low":99.9,"close":100.5,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.5,"high":101.0,"low":100.4,"close":100.9,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":100.9,"high":101.8,"low":100.8,"close":101.6,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.6,"high":102.0,"low":101.3,"close":101.7,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":101.7,"high":103.0,"low":101.6,"close":102.7,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":102.7,"high":104.0,"low":102.6,"close":103.8,"volume":1,"close_time_ms":1704068999999,"interval":"5m"},
+		{"open_time_ms":1704069000000,"open":103.8,"high":104.1,"low":103.0,"close":103.2,"volume":1,"close_time_ms":1704069299999,"interval":"5m"},
+		{"open_time_ms":1704069300000,"open":103.2,"high":103.4,"low":102.4,"close":102.6,"volume":1,"close_time_ms":1704069599999,"interval":"5m"},
+		{"open_time_ms":1704069600000,"open":102.6,"high":102.8,"low":101.8,"close":102.0,"volume":1,"close_time_ms":1704069899999,"interval":"5m"}
+	]`)
+
+	report := runBacktestCommand(t, []string{
+		"backtest",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation_strict",
+		"--slippage-bps", "1",
+		"--taker-fee-bps", "5",
+		"--format", "json",
+	})
+
+	if got := report["strategy"]; got != "fast_accumulation_strict" {
+		t.Fatalf("strategy = %#v, want fast_accumulation_strict", got)
+	}
+	if got := report["preset_name"]; got != "fast_accumulation_strict" {
+		t.Fatalf("preset_name = %#v, want fast_accumulation_strict", got)
+	}
+	if got := report["promotion_candidate"]; got != false {
+		t.Fatalf("promotion_candidate = %#v, want false", got)
+	}
+
+	faReport := report["fast_accumulation"].(map[string]any)
+	cfg := faReport["config"].(map[string]any)
+	if got := cfg["disable_probe_trades"]; got != true {
+		t.Fatalf("disable_probe_trades = %#v, want true", got)
+	}
+	if got := cfg["require_score_bucket_70_plus"]; got != true {
+		t.Fatalf("require_score_bucket_70_plus = %#v, want true", got)
+	}
+	if got := cfg["disable_score_bucket_55_69"]; got != true {
+		t.Fatalf("disable_score_bucket_55_69 = %#v, want true", got)
+	}
+	if got := cfg["require_expected_move_gt_cost_multiple"]; got != true {
+		t.Fatalf("require_expected_move_gt_cost_multiple = %#v, want true", got)
+	}
+	if _, ok := faReport["long_vs_short_metrics"]; !ok {
+		t.Fatal("fast_accumulation report missing long_vs_short_metrics")
+	}
+	for _, field := range []string{
+		"avg_mfe_bps",
+		"avg_mae_bps",
+		"avg_realized_r",
+		"mfe_by_action",
+		"mae_by_score_bucket",
+	} {
+		if _, ok := faReport[field]; !ok {
+			t.Fatalf("fast_accumulation report missing %q", field)
+		}
+	}
+}
+
+func TestBacktestCalibrationPresetSelection(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.8,"low":99.9,"close":100.5,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.5,"high":101.0,"low":100.4,"close":100.9,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":100.9,"high":101.8,"low":100.8,"close":101.6,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.6,"high":102.0,"low":101.3,"close":101.7,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":101.7,"high":103.0,"low":101.6,"close":102.7,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":102.7,"high":104.0,"low":102.6,"close":103.8,"volume":1,"close_time_ms":1704068999999,"interval":"5m"}
+	]`)
+
+	report := runBacktestCommand(t, []string{
+		"backtest",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation_strict_no_70_84_longs",
+		"--slippage-bps", "1",
+		"--taker-fee-bps", "5",
+		"--format", "json",
+	})
+
+	if got := report["strategy"]; got != "fast_accumulation_strict_no_70_84_longs" {
+		t.Fatalf("strategy = %#v, want fast_accumulation_strict_no_70_84_longs", got)
+	}
+
+	cfg := report["fast_accumulation"].(map[string]any)["config"].(map[string]any)
+	if got := cfg["disable_long_score_bucket_70_84"]; got != true {
+		t.Fatalf("disable_long_score_bucket_70_84 = %#v, want true", got)
+	}
+	if got := cfg["long_min_entry_score"]; got != float64(85) {
+		t.Fatalf("long_min_entry_score = %#v, want 85", got)
+	}
+	if got := cfg["short_min_entry_score"]; got != float64(75) {
+		t.Fatalf("short_min_entry_score = %#v, want 75", got)
+	}
+}
+
+func TestBacktestResearchVariantSelection(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.6,"low":99.9,"close":100.4,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.4,"high":101.0,"low":100.3,"close":100.9,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":100.9,"high":101.9,"low":100.8,"close":101.7,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.7,"high":102.4,"low":101.6,"close":102.1,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":102.1,"high":102.5,"low":101.5,"close":101.8,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":101.8,"high":102.0,"low":101.1,"close":101.3,"volume":1,"close_time_ms":1704068999999,"interval":"5m"}
+	]`)
+
+	report := runBacktestCommand(t, []string{
+		"backtest",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation_pullback_reclaim",
+		"--slippage-bps", "1",
+		"--taker-fee-bps", "5",
+		"--format", "json",
+	})
+
+	if got := report["strategy"]; got != "fast_accumulation_pullback_reclaim" {
+		t.Fatalf("strategy = %#v, want fast_accumulation_pullback_reclaim", got)
+	}
+
+	cfg := report["fast_accumulation"].(map[string]any)["config"].(map[string]any)
+	if got := cfg["entry_variant"]; got != "pullback_reclaim" {
+		t.Fatalf("entry_variant = %#v, want pullback_reclaim", got)
+	}
+}
+
+func TestBacktestLosingResearchRunStillPasses(t *testing.T) {
+	filePath := writeBacktestFixture(t, `[
+		{"open_time_ms":1704067200000,"open":100.0,"high":100.7,"low":99.9,"close":100.5,"volume":1,"close_time_ms":1704067499999,"interval":"5m"},
+		{"open_time_ms":1704067500000,"open":100.5,"high":101.2,"low":100.4,"close":101.0,"volume":1,"close_time_ms":1704067799999,"interval":"5m"},
+		{"open_time_ms":1704067800000,"open":101.0,"high":101.8,"low":100.9,"close":101.6,"volume":1,"close_time_ms":1704068099999,"interval":"5m"},
+		{"open_time_ms":1704068100000,"open":101.6,"high":101.7,"low":100.0,"close":100.2,"volume":1,"close_time_ms":1704068399999,"interval":"5m"},
+		{"open_time_ms":1704068400000,"open":100.2,"high":100.3,"low":99.2,"close":99.4,"volume":1,"close_time_ms":1704068699999,"interval":"5m"},
+		{"open_time_ms":1704068700000,"open":99.4,"high":99.5,"low":98.7,"close":98.9,"volume":1,"close_time_ms":1704068999999,"interval":"5m"}
+	]`)
+
+	report := runBacktestCommand(t, []string{
+		"backtest",
+		"--source", "local-json",
+		"--path", filePath,
+		"--market", "futures-um",
+		"--symbol", "BTCUSDT",
+		"--interval", "5m",
+		"--from", "2024-01-01",
+		"--to", "2024-01-02",
+		"--strategy", "fast_accumulation_breakeven_guard",
+		"--slippage-bps", "1",
+		"--taker-fee-bps", "5",
+		"--format", "json",
+	})
+
+	if got := report["status"]; got != "PASS" {
+		t.Fatalf("status = %#v, want PASS", got)
+	}
+	if report["promotion_candidate"] != false {
+		t.Fatalf("promotion_candidate = %#v, want false", report["promotion_candidate"])
 	}
 }

@@ -1,55 +1,36 @@
-# Findings - Fast Accumulation Phase 7
+# Findings
 
-## Requirements
-- Implement Phase 7 only in `ak-engine`.
-- Confirm Phase 6 remains green before continuing.
-- No `ak-trader` changes, no live trading, no testnet runtime, no walk-forward, no promotion artifacts.
-- Every completed 15m window must emit deterministic `WindowDecision`.
-- Add trade diagnostics (MAE, MFE, hold windows, entry window start MS, R-multiple, etc.)
-- Add decision summary buckets (trades/PnL/fees/slippage by action, trades/PnL/winrate/avg PnL by score bucket, hard blocks by reason, losses by reason code)
-- Add sweep subcommand with sorting (net PnL desc, drawdown asc, consecutive losses asc) and pre-loading optimization.
+## Observations
+- Phase 10.2 directive: formally reject `RegimeAwareCompressionBreakout_LONG` after OOS failure and begin cleaner multi-symbol alpha rediscovery.
+- Prior candidate rejection facts supplied by user: LINK H2 PF after 5 bps `0.7720`, LINK H2 expectancy after 5 bps negative, LINK H2 positive months after cost `0`, LINK FY2023 PF after 5 bps `0.9644`, and multi-symbol OOS did not rescue the candidate.
+- Phase 8.6 directive read from `../prompt.md`.
+- Work scope is limited to `ak-engine`; do not modify `ak-trader`, promotion artifacts, shadow integration, or any runtime/order-placement path.
+- Phase 8.5 strict improved out-of-sample loss but remains non-promotable, with remaining drag concentrated in long trades from the 70-84 score bucket.
 
-## Repo Findings
-- Worktree already dirty in `Makefile`, `internal/app/backtest.go`, new `internal/app/backtest_test.go`, new `internal/app/makefile_test.go`, new `internal/backtest/*`, new `internal/strategy/*`.
-- Existing uncommitted work appears to be Phase 6 baseline backtest implementation. Must preserve and extend carefully.
-- `go test ./...`, `go vet ./...`, `make ci`, and `make proof-backtest-local` were green before Phase 7 changes.
-- Fast Accumulation uses internal 15m aggregation on top of current 1m/5m candle loading. No loader changes needed.
-- Current engine still supports one position at a time. Add-to-winner behavior is modeled as `HOLD`, not pyramiding.
-- Host emits benign D-Bus warnings during some `go vet`/`make` commands in this environment, but command exit codes remain `0`.
-- Optional local parquet smoke data exists at `../ak-historian/.ak-historian/work`.
-- Grid sweep over 432 combinations evaluates instantly (less than 1s) on small local fixtures, and runs in about 8s on full 44640 candles monthly dataset.
+## Key Constraints
+- Phase 10.2 is research-only.
+- Do not move toward promotion, shadow mode, or testnet.
+- Do not modify "ak-trader".
+- Do not add runtime configs, order placement, live execution behavior, exchange integration, testnet flow, shadow mode, or promotion logic.
+- Work only in `ak-engine/`, with `ak-historian/` only if strictly needed.
+- Keep sweep grid bounded.
 
-## Research Findings
-- On the `LINKUSDT` `1m` monthly dataset (January 2023, 44640 candles):
-  - Baseline Strategy: 428 trades, net PnL `-2108.50`, ending cash `7891.50`, status `PASS`.
-  - Decision diagnostics confirm loss concentration in score buckets `55-69` and `70-84`, with `15M_CHOP` and `EXPECTED_MOVE_BELOW_COST` as dominant hard blocks.
-  - Baseline action buckets are all negative:
-    - `FULL_LONG`: `-562.88`
-    - `FULL_SHORT`: `-534.67`
-    - `PROBE_LONG`: `-475.25`
-    - `PROBE_SHORT`: `-519.67`
-    - `REVERSE`: `-16.03`
-  - Grid sweep evaluated `432` combinations.
-  - Verified top configurations on current code are profitable on this month:
-    - Best verified family: `full_trade_min_score=90`, `normal_trade_min_score=80`, `probe_min_score=55/60/65`, `cost_multiple_required=3/4`, `max_hold_windows=4`, `time_stop_windows=2`, `allow_probe_trade=false`
-    - Best result: `24` trades, `9` wins, `15` losses, `net_pnl=86.20685951268678`, `profit_factor=1.1582641812886265`, `max_drawdown=242.94210568323797`, `ending_cash=10086.206859512686`
-  - Earlier note claiming best sweep stayed negative was stale versus current verified code/output.
+## Phase 8.5 Results
+- Strict local-json fixture backtest still loses, but its hard-block mix now surfaces chop explicitly (`15M_CHOP`) and disables probe behavior by config.
+- Strict local-json fixture walk-forward remains a valid PASS with `promotion_candidate=false`; compared with prior fallback it reduces loss magnitude from `-720.8210441712104` test net PnL to `-255.53590483845485` on the 4-split sample, but still fails profitability.
+- Strict local-parquet Jan 2023 backtest is materially negative (`net_pnl=-1515.1292370567169`, `profit_factor=0.3890146164478057`) despite stricter filters.
+- Strict local-parquet Jan-Jun 2023 walk-forward is over-constrained on the current dataset (`selected_candidate_count=0` across `81216` tested candidates), so diagnostics now show filter failure clearly instead of producing a superficially robust result.
 
-## Technical Decisions
-| Decision | Rationale |
-|----------|-----------|
-| Use repo-local planning files in `ak-engine` | Task target is `ak-engine`, root plan is unrelated |
-| Keep `Strategy.OnCandle` interface and extend `Signal`/`State` | Preserve baseline behavior while adding decisions, risk fractions, exits, and reversals |
-| Aggregate decisions in strategy and summarize in backtest report | Keep package boundaries clean and avoid global state |
-| Use deterministic score ladder plus hard blocks | Required for research/backtest-only behavior and testability |
-| Pre-load candles once for the parameter sweep | Reduces I/O cost from 432x disk reads to 1x, making the sweep complete in seconds |
-| Reset global package variables inside test run helpers | Prevents state leakage when flags are parsed sequentially across tests in the same process |
+## Phase 8.6 Focus
+- Add side-specific thresholds for entry score, trend, chop, expected move, and cost multiple.
+- Add long/short-specific 70-84 bucket disables plus entry frequency guards.
+- Add research-only calibration presets and a bounded calibration sweep profile.
+- Keep valid losing runs as `PASS`; a losing strategy is not a simulator failure.
 
-## Issues Encountered
-| Issue | Resolution |
-|-------|------------|
-| Strategy test compared structs with slice fields | Switched to `reflect.DeepEqual` |
-| Global command variables leaking state between tests | Reset variables inside test run helpers using a dedicated `resetGlobals` utility |
-
-## Resources
-- `../directive.md`
+## Phase 10.2 Research Surface
+- Existing `internal/app/evaluate_alpha_baselines.go` generates the required baseline families from features/regimes but only as a single-symbol report with 15m proxy metrics.
+- Existing `internal/app/evaluate_compression_breakout.go` computes 60m cost haircuts, entry delay, monthly buckets, MFE/MAE, leakage, and acceptance gates for CompressionBreakout LONG.
+- Existing generated 2023 context artifacts are present under `runs/features/*-2023-FY-context.json` and `runs/regimes/*-2023-FY-context.json` for the requested nine symbols.
+- Feature/regime JSON files are large; avoid broad `rg`/`jq` over `runs/features` and `runs/regimes`. Use bounded file lists or command-level parsing.
+- Phase 10.1 multi-symbol CompressionBreakout report already shows ETHUSDT PF after 5 bps `1.1156` and DOGEUSDT `1.0591`, but both failed concentration/gate robustness.
+- For period split metrics, Phase 10.2 aggregation should only include events whose forward horizon remains inside the reported split to avoid borrowing return data from the next period.

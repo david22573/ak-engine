@@ -1,19 +1,21 @@
 package strategy
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
 )
 
 type ScoreInput struct {
-	Window               AggregatedWindow
-	Previous             []AggregatedWindow
-	RecentCandles        []protocol.Candle
-	HourContext          *AggregatedWindow
-	EstimatedCostBPS     float64
-	CostMultipleRequired float64
-	MaxChopScore         float64
+	Window                AggregatedWindow
+	Previous              []AggregatedWindow
+	RecentCandles         []protocol.Candle
+	HourContext           *AggregatedWindow
+	EstimatedCostBPS      float64
+	CostMultipleRequired  float64
+	MaxChopScore          float64
+	DecisionWindowMinutes int
 }
 
 type ScoreResult struct {
@@ -128,7 +130,7 @@ func ScoreWindow(input ScoreInput) ScoreResult {
 	}
 	if result.ChopScore >= input.MaxChopScore {
 		result.HardBlock = true
-		result.ReasonCodes = appendReason(result.ReasonCodes, "15M_CHOP")
+		result.ReasonCodes = appendReason(result.ReasonCodes, fmt.Sprintf("%dM_CHOP", input.DecisionWindowMinutes))
 	}
 	if math.Max(result.LongScore, result.ShortScore) < 40 {
 		result.ReasonCodes = appendReason(result.ReasonCodes, "NO_EDGE")

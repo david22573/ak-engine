@@ -1,0 +1,2738 @@
+{
+  "source": "local-parquet",
+  "market": "futures-um",
+  "symbol": "LINKUSDT",
+  "interval": "1m",
+  "strategy": "fast_accumulation_strict_no_70_84_longs",
+  "from_ms": 1672531200000,
+  "to_ms": 1688169599999,
+  "train_window": "1440h0m0s",
+  "test_window": "720h0m0s",
+  "split_count": 4,
+  "candidate_count": 4,
+  "selected_candidate_count": 4,
+  "aggregate_train": {
+    "total_trades": 198,
+    "wins": 53,
+    "losses": 145,
+    "win_rate": 0.2676767676767677,
+    "net_pnl": -2152.648766911102,
+    "fees_paid": 1213.5611550416897,
+    "slippage_paid": 242.7122240445483,
+    "profit_factor": 0.583995378931838,
+    "max_drawdown": 1093.0207046016912,
+    "max_consecutive_losses": 9,
+    "expectancy": -10.87196346924799,
+    "average_hold_minutes": 19.742424242424242,
+    "profitable_split_count": 0,
+    "losing_split_count": 0,
+    "diagnostics": {
+      "pnl_by_action": {
+        "FULL_LONG": -595.4159554319622,
+        "FULL_SHORT": -1557.23281147914
+      },
+      "pnl_by_score_bucket": {
+        "0-39": 0,
+        "40-54": 0,
+        "55-69": 0,
+        "70-84": -1031.4813361447766,
+        "85-100": -1288.9641433367258
+      },
+      "win_rate_by_score_bucket": {
+        "0-39": 0,
+        "40-54": 0,
+        "55-69": 0,
+        "70-84": 0.2907953614419865,
+        "85-100": 0.2258908371040724
+      },
+      "avg_pnl_by_score_bucket": {
+        "0-39": 0,
+        "40-54": 0,
+        "55-69": 0,
+        "70-84": -4.878009890837616,
+        "85-100": -23.078604897958826
+      },
+      "pnl_by_reason_code": {
+        "END_OF_DATA": -5.82098558660399,
+        "stop_loss": -2594.3254184818147,
+        "strategy_exit": -1926.9853095992335,
+        "take_profit": 2374.4829467565505
+      },
+      "losses_by_reason_code": {
+        "15M_BEARISH": 118,
+        "15M_BULLISH": 27,
+        "5M_PULLBACK_RECLAIM": 27,
+        "5M_PULLBACK_REJECT": 118,
+        "FULL_SIZE": 145,
+        "VOLATILITY_OK": 145,
+        "VOLATILITY_TOO_HIGH": 145
+      },
+      "fees_by_action": {
+        "FULL_LONG": 354.69541456950054,
+        "FULL_SHORT": 858.8657404721893
+      },
+      "slippage_by_action": {
+        "FULL_LONG": 70.93908121607758,
+        "FULL_SHORT": 171.77314282847072
+      },
+      "long_vs_short_metrics": {
+        "long_fees_paid": 354.69541456950054,
+        "long_pnl": -595.4159554319622,
+        "long_slippage_paid": 70.93908121607758,
+        "long_trades": 37,
+        "short_fees_paid": 858.8657404721893,
+        "short_pnl": -1557.23281147914,
+        "short_slippage_paid": 171.77314282847072,
+        "short_trades": 161
+      },
+      "hard_blocks_by_reason": {
+        "15M_CHOP": 11422,
+        "EXPECTED_MOVE_BELOW_COST": 7416,
+        "INSUFFICIENT_DATA": 4
+      }
+    }
+  },
+  "aggregate_test": {
+    "total_trades": 87,
+    "wins": 26,
+    "losses": 61,
+    "win_rate": 0.2988505747126437,
+    "net_pnl": -432.6198390839879,
+    "fees_paid": 544.2480923692242,
+    "slippage_paid": 108.84962067861048,
+    "profit_factor": 0.76248101486656,
+    "max_drawdown": 581.8434582198752,
+    "max_consecutive_losses": 8,
+    "expectancy": -4.972641828551585,
+    "average_hold_minutes": 19.79310344827586,
+    "profitable_split_count": 1,
+    "losing_split_count": 3,
+    "diagnostics": {
+      "pnl_by_action": {
+        "FULL_LONG": -60.787680917830954,
+        "FULL_SHORT": -371.83215816615706
+      },
+      "pnl_by_score_bucket": {
+        "0-39": 0,
+        "40-54": 0,
+        "55-69": 0,
+        "70-84": -249.2613774054527,
+        "85-100": -273.77764927156136
+      },
+      "win_rate_by_score_bucket": {
+        "0-39": 0,
+        "40-54": 0,
+        "55-69": 0,
+        "70-84": 0.28095238095238095,
+        "85-100": 0.4662698412698413
+      },
+      "avg_pnl_by_score_bucket": {
+        "0-39": 0,
+        "40-54": 0,
+        "55-69": 0,
+        "70-84": -3.9850833043843257,
+        "85-100": 4.1585739947583935
+      },
+      "pnl_by_reason_code": {
+        "END_OF_DATA": -6.037197305402031,
+        "stop_loss": -823.9117771354368,
+        "strategy_exit": -623.1823134384279,
+        "take_profit": 1020.5114487952787
+      },
+      "losses_by_reason_code": {
+        "15M_BEARISH": 52,
+        "15M_BULLISH": 9,
+        "5M_PULLBACK_RECLAIM": 9,
+        "5M_PULLBACK_REJECT": 52,
+        "FULL_SIZE": 61,
+        "VOLATILITY_OK": 61,
+        "VOLATILITY_TOO_HIGH": 61
+      },
+      "fees_by_action": {
+        "FULL_LONG": 147.45644261247855,
+        "FULL_SHORT": 396.7916497567457
+      },
+      "slippage_by_action": {
+        "FULL_LONG": 29.49128968409193,
+        "FULL_SHORT": 79.35833099451852
+      },
+      "long_vs_short_metrics": {
+        "long_fees_paid": 147.45644261247855,
+        "long_pnl": -60.787680917830954,
+        "long_slippage_paid": 29.49128968409193,
+        "long_trades": 15,
+        "short_fees_paid": 396.7916497567457,
+        "short_pnl": -371.83215816615706,
+        "short_slippage_paid": 79.35833099451852,
+        "short_trades": 72
+      },
+      "hard_blocks_by_reason": {
+        "15M_CHOP": 5572,
+        "EXPECTED_MOVE_BELOW_COST": 4584,
+        "INSUFFICIENT_DATA": 4
+      }
+    }
+  },
+  "splits": [
+    {
+      "split_index": 1,
+      "train_start_ms": 1672531200000,
+      "train_end_ms": 1677715200000,
+      "test_start_ms": 1677715200000,
+      "test_end_ms": 1680307200000,
+      "train_candidate_count": 1,
+      "selected_candidates": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 55,
+          "wins": 12,
+          "losses": 43,
+          "win_rate": 0.21818181818181817,
+          "net_pnl": -890.6865151379927,
+          "fees_paid": 327.61973246561394,
+          "slippage_paid": 65.52394151768473,
+          "profit_factor": 0.47907887570026636,
+          "max_drawdown": 910.8926206836422,
+          "max_consecutive_losses": 9,
+          "expectancy": -16.19430027523623,
+          "average_hold_minutes": 18.436363636363637,
+          "ending_cash": 9109.313484862007,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": -319.7463282671029,
+              "FULL_SHORT": -570.9401868708899
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -597.7098536365421,
+              "85-100": -261.75007238041843
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.21951219512195122,
+              "85-100": 0.23076923076923078
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -14.578289113086393,
+              "85-100": -20.13462095233988
+            },
+            "pnl_by_reason_code": {
+              "stop_loss": -1054.7685823083607,
+              "strategy_exit": -585.3191270131659,
+              "take_profit": 749.4011941835339
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 35,
+              "15M_BULLISH": 8,
+              "5M_PULLBACK_RECLAIM": 8,
+              "5M_PULLBACK_REJECT": 35,
+              "FULL_SIZE": 43,
+              "VOLATILITY_OK": 43,
+              "VOLATILITY_TOO_HIGH": 43
+            },
+            "fees_by_action": {
+              "FULL_LONG": 96.05946859802137,
+              "FULL_SHORT": 231.56026386759265
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 19.211891674854474,
+              "FULL_SHORT": 46.312049842830255
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 96.05946859802137,
+              "long_pnl": -319.7463282671029,
+              "long_slippage_paid": 19.211891674854474,
+              "long_trades": 10,
+              "short_fees_paid": 231.56026386759265,
+              "short_pnl": -570.9401868708899,
+              "short_slippage_paid": 46.312049842830255,
+              "short_trades": 45
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 2946,
+              "EXPECTED_MOVE_BELOW_COST": 1475,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "test_results": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 31,
+          "wins": 10,
+          "losses": 21,
+          "win_rate": 0.3225806451612903,
+          "net_pnl": -358.1326033597934,
+          "fees_paid": 195.32983862423725,
+          "slippage_paid": 39.06596648747288,
+          "profit_factor": 0.5707880744428597,
+          "max_drawdown": 581.8434582198752,
+          "max_consecutive_losses": 5,
+          "expectancy": -11.552664624509465,
+          "average_hold_minutes": 20.06451612903226,
+          "ending_cash": 9641.867396640204,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": -51.50137715299598,
+              "FULL_SHORT": -306.63122620679746
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -124.02518705660248,
+              "85-100": -353.51465543986103
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.3333333333333333,
+              "85-100": 0.2222222222222222
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -5.9059612884096415,
+              "85-100": -39.27940615998456
+            },
+            "pnl_by_reason_code": {
+              "stop_loss": -486.65224664526363,
+              "strategy_exit": -127.4843632836276,
+              "take_profit": 256.0040065690979
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 18,
+              "15M_BULLISH": 3,
+              "5M_PULLBACK_RECLAIM": 3,
+              "5M_PULLBACK_REJECT": 18,
+              "FULL_SIZE": 21,
+              "VOLATILITY_OK": 21,
+              "VOLATILITY_TOO_HIGH": 21
+            },
+            "fees_by_action": {
+              "FULL_LONG": 47.97847966848239,
+              "FULL_SHORT": 147.35135895575488
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 9.595695994421956,
+              "FULL_SHORT": 29.47027049305092
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 47.97847966848239,
+              "long_pnl": -51.50137715299598,
+              "long_slippage_paid": 9.595695994421956,
+              "long_trades": 5,
+              "short_fees_paid": 147.35135895575488,
+              "short_pnl": -306.63122620679746,
+              "short_slippage_paid": 29.47027049305092,
+              "short_trades": 26
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 1445,
+              "EXPECTED_MOVE_BELOW_COST": 671,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "best_train_candidate": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 55,
+        "wins": 12,
+        "losses": 43,
+        "win_rate": 0.21818181818181817,
+        "net_pnl": -890.6865151379927,
+        "fees_paid": 327.61973246561394,
+        "slippage_paid": 65.52394151768473,
+        "profit_factor": 0.47907887570026636,
+        "max_drawdown": 910.8926206836422,
+        "max_consecutive_losses": 9,
+        "expectancy": -16.19430027523623,
+        "average_hold_minutes": 18.436363636363637,
+        "ending_cash": 9109.313484862007,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -319.7463282671029,
+            "FULL_SHORT": -570.9401868708899
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -597.7098536365421,
+            "85-100": -261.75007238041843
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.21951219512195122,
+            "85-100": 0.23076923076923078
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -14.578289113086393,
+            "85-100": -20.13462095233988
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -1054.7685823083607,
+            "strategy_exit": -585.3191270131659,
+            "take_profit": 749.4011941835339
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 35,
+            "15M_BULLISH": 8,
+            "5M_PULLBACK_RECLAIM": 8,
+            "5M_PULLBACK_REJECT": 35,
+            "FULL_SIZE": 43,
+            "VOLATILITY_OK": 43,
+            "VOLATILITY_TOO_HIGH": 43
+          },
+          "fees_by_action": {
+            "FULL_LONG": 96.05946859802137,
+            "FULL_SHORT": 231.56026386759265
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 19.211891674854474,
+            "FULL_SHORT": 46.312049842830255
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 96.05946859802137,
+            "long_pnl": -319.7463282671029,
+            "long_slippage_paid": 19.211891674854474,
+            "long_trades": 10,
+            "short_fees_paid": 231.56026386759265,
+            "short_pnl": -570.9401868708899,
+            "short_slippage_paid": 46.312049842830255,
+            "short_trades": 45
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 2946,
+            "EXPECTED_MOVE_BELOW_COST": 1475,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "corresponding_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 31,
+        "wins": 10,
+        "losses": 21,
+        "win_rate": 0.3225806451612903,
+        "net_pnl": -358.1326033597934,
+        "fees_paid": 195.32983862423725,
+        "slippage_paid": 39.06596648747288,
+        "profit_factor": 0.5707880744428597,
+        "max_drawdown": 581.8434582198752,
+        "max_consecutive_losses": 5,
+        "expectancy": -11.552664624509465,
+        "average_hold_minutes": 20.06451612903226,
+        "ending_cash": 9641.867396640204,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -51.50137715299598,
+            "FULL_SHORT": -306.63122620679746
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -124.02518705660248,
+            "85-100": -353.51465543986103
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.3333333333333333,
+            "85-100": 0.2222222222222222
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -5.9059612884096415,
+            "85-100": -39.27940615998456
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -486.65224664526363,
+            "strategy_exit": -127.4843632836276,
+            "take_profit": 256.0040065690979
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 18,
+            "15M_BULLISH": 3,
+            "5M_PULLBACK_RECLAIM": 3,
+            "5M_PULLBACK_REJECT": 18,
+            "FULL_SIZE": 21,
+            "VOLATILITY_OK": 21,
+            "VOLATILITY_TOO_HIGH": 21
+          },
+          "fees_by_action": {
+            "FULL_LONG": 47.97847966848239,
+            "FULL_SHORT": 147.35135895575488
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 9.595695994421956,
+            "FULL_SHORT": 29.47027049305092
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 47.97847966848239,
+            "long_pnl": -51.50137715299598,
+            "long_slippage_paid": 9.595695994421956,
+            "long_trades": 5,
+            "short_fees_paid": 147.35135895575488,
+            "short_pnl": -306.63122620679746,
+            "short_slippage_paid": 29.47027049305092,
+            "short_trades": 26
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1445,
+            "EXPECTED_MOVE_BELOW_COST": 671,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "best_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 31,
+        "wins": 10,
+        "losses": 21,
+        "win_rate": 0.3225806451612903,
+        "net_pnl": -358.1326033597934,
+        "fees_paid": 195.32983862423725,
+        "slippage_paid": 39.06596648747288,
+        "profit_factor": 0.5707880744428597,
+        "max_drawdown": 581.8434582198752,
+        "max_consecutive_losses": 5,
+        "expectancy": -11.552664624509465,
+        "average_hold_minutes": 20.06451612903226,
+        "ending_cash": 9641.867396640204,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -51.50137715299598,
+            "FULL_SHORT": -306.63122620679746
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -124.02518705660248,
+            "85-100": -353.51465543986103
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.3333333333333333,
+            "85-100": 0.2222222222222222
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -5.9059612884096415,
+            "85-100": -39.27940615998456
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -486.65224664526363,
+            "strategy_exit": -127.4843632836276,
+            "take_profit": 256.0040065690979
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 18,
+            "15M_BULLISH": 3,
+            "5M_PULLBACK_RECLAIM": 3,
+            "5M_PULLBACK_REJECT": 18,
+            "FULL_SIZE": 21,
+            "VOLATILITY_OK": 21,
+            "VOLATILITY_TOO_HIGH": 21
+          },
+          "fees_by_action": {
+            "FULL_LONG": 47.97847966848239,
+            "FULL_SHORT": 147.35135895575488
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 9.595695994421956,
+            "FULL_SHORT": 29.47027049305092
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 47.97847966848239,
+            "long_pnl": -51.50137715299598,
+            "long_slippage_paid": 9.595695994421956,
+            "long_trades": 5,
+            "short_fees_paid": 147.35135895575488,
+            "short_pnl": -306.63122620679746,
+            "short_slippage_paid": 29.47027049305092,
+            "short_trades": 26
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1445,
+            "EXPECTED_MOVE_BELOW_COST": 671,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "train_to_test_pnl_delta": 532.5539117781993,
+      "train_to_test_profit_factor_delta": 0.09170919874259337,
+      "train_to_test_expectancy_delta": 4.641635650726766,
+      "status": "PASS"
+    },
+    {
+      "split_index": 2,
+      "train_start_ms": 1675123200000,
+      "train_end_ms": 1680307200000,
+      "test_start_ms": 1680307200000,
+      "test_end_ms": 1682899200000,
+      "train_candidate_count": 1,
+      "selected_candidates": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 62,
+          "wins": 15,
+          "losses": 47,
+          "win_rate": 0.24193548387096775,
+          "net_pnl": -982.3675198523808,
+          "fees_paid": 372.47540972792774,
+          "slippage_paid": 74.4950765916025,
+          "profit_factor": 0.4551569953172312,
+          "max_drawdown": 1093.0207046016912,
+          "max_consecutive_losses": 9,
+          "expectancy": -15.844637416973885,
+          "average_hold_minutes": 20.032258064516128,
+          "ending_cash": 9017.63248014762,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": -181.673646412904,
+              "FULL_SHORT": -800.6938734394768
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -722.4248654724387,
+              "85-100": -339.5587169347043
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.23255813953488372,
+              "85-100": 0.23529411764705882
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -16.8005782668009,
+              "85-100": -19.974042172629666
+            },
+            "pnl_by_reason_code": {
+              "stop_loss": -1005.0267727418873,
+              "strategy_exit": -584.504306611035,
+              "take_profit": 607.1635595005415
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 39,
+              "15M_BULLISH": 8,
+              "5M_PULLBACK_RECLAIM": 8,
+              "5M_PULLBACK_REJECT": 39,
+              "FULL_SIZE": 47,
+              "VOLATILITY_OK": 47,
+              "VOLATILITY_TOO_HIGH": 47
+            },
+            "fees_by_action": {
+              "FULL_LONG": 103.07124970887841,
+              "FULL_SHORT": 269.40416001904936
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 20.614249361890806,
+              "FULL_SHORT": 53.8808272297117
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 103.07124970887841,
+              "long_pnl": -181.673646412904,
+              "long_slippage_paid": 20.614249361890806,
+              "long_trades": 11,
+              "short_fees_paid": 269.40416001904936,
+              "short_pnl": -800.6938734394768,
+              "short_slippage_paid": 53.8808272297117,
+              "short_trades": 51
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 2897,
+              "EXPECTED_MOVE_BELOW_COST": 1404,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "test_results": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 22,
+          "wins": 7,
+          "losses": 15,
+          "win_rate": 0.3181818181818182,
+          "net_pnl": 54.95211214673459,
+          "fees_paid": 144.1073176998309,
+          "slippage_paid": 28.82146581877208,
+          "profit_factor": 1.161168424593486,
+          "max_drawdown": 261.8445424566071,
+          "max_consecutive_losses": 8,
+          "expectancy": 2.4978232793970268,
+          "average_hold_minutes": 20,
+          "ending_cash": 10054.952112146737,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": -44.94949947211258,
+              "FULL_SHORT": 99.90161161884716
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 248.3834688136827,
+              "85-100": -193.4313566669481
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.4,
+              "85-100": 0.14285714285714285
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 16.55889792091218,
+              "85-100": -27.633050952421154
+            },
+            "pnl_by_reason_code": {
+              "END_OF_DATA": -6.037197305402031,
+              "stop_loss": -24.375389477730057,
+              "strategy_exit": -260.576464902938,
+              "take_profit": 345.9411638328047
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 11,
+              "15M_BULLISH": 4,
+              "5M_PULLBACK_RECLAIM": 4,
+              "5M_PULLBACK_REJECT": 11,
+              "FULL_SIZE": 15,
+              "VOLATILITY_OK": 15,
+              "VOLATILITY_TOO_HIGH": 15
+            },
+            "fees_by_action": {
+              "FULL_LONG": 49.67885910413899,
+              "FULL_SHORT": 94.42845859569192
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 9.935771967477816,
+              "FULL_SHORT": 18.885693851294267
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 49.67885910413899,
+              "long_pnl": -44.94949947211258,
+              "long_slippage_paid": 9.935771967477816,
+              "long_trades": 5,
+              "short_fees_paid": 94.42845859569192,
+              "short_pnl": 99.90161161884716,
+              "short_slippage_paid": 18.885693851294267,
+              "short_trades": 17
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 1356,
+              "EXPECTED_MOVE_BELOW_COST": 1086,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "best_train_candidate": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 62,
+        "wins": 15,
+        "losses": 47,
+        "win_rate": 0.24193548387096775,
+        "net_pnl": -982.3675198523808,
+        "fees_paid": 372.47540972792774,
+        "slippage_paid": 74.4950765916025,
+        "profit_factor": 0.4551569953172312,
+        "max_drawdown": 1093.0207046016912,
+        "max_consecutive_losses": 9,
+        "expectancy": -15.844637416973885,
+        "average_hold_minutes": 20.032258064516128,
+        "ending_cash": 9017.63248014762,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -181.673646412904,
+            "FULL_SHORT": -800.6938734394768
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -722.4248654724387,
+            "85-100": -339.5587169347043
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.23255813953488372,
+            "85-100": 0.23529411764705882
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -16.8005782668009,
+            "85-100": -19.974042172629666
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -1005.0267727418873,
+            "strategy_exit": -584.504306611035,
+            "take_profit": 607.1635595005415
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 39,
+            "15M_BULLISH": 8,
+            "5M_PULLBACK_RECLAIM": 8,
+            "5M_PULLBACK_REJECT": 39,
+            "FULL_SIZE": 47,
+            "VOLATILITY_OK": 47,
+            "VOLATILITY_TOO_HIGH": 47
+          },
+          "fees_by_action": {
+            "FULL_LONG": 103.07124970887841,
+            "FULL_SHORT": 269.40416001904936
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 20.614249361890806,
+            "FULL_SHORT": 53.8808272297117
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 103.07124970887841,
+            "long_pnl": -181.673646412904,
+            "long_slippage_paid": 20.614249361890806,
+            "long_trades": 11,
+            "short_fees_paid": 269.40416001904936,
+            "short_pnl": -800.6938734394768,
+            "short_slippage_paid": 53.8808272297117,
+            "short_trades": 51
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 2897,
+            "EXPECTED_MOVE_BELOW_COST": 1404,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "corresponding_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 22,
+        "wins": 7,
+        "losses": 15,
+        "win_rate": 0.3181818181818182,
+        "net_pnl": 54.95211214673459,
+        "fees_paid": 144.1073176998309,
+        "slippage_paid": 28.82146581877208,
+        "profit_factor": 1.161168424593486,
+        "max_drawdown": 261.8445424566071,
+        "max_consecutive_losses": 8,
+        "expectancy": 2.4978232793970268,
+        "average_hold_minutes": 20,
+        "ending_cash": 10054.952112146737,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -44.94949947211258,
+            "FULL_SHORT": 99.90161161884716
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 248.3834688136827,
+            "85-100": -193.4313566669481
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.4,
+            "85-100": 0.14285714285714285
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 16.55889792091218,
+            "85-100": -27.633050952421154
+          },
+          "pnl_by_reason_code": {
+            "END_OF_DATA": -6.037197305402031,
+            "stop_loss": -24.375389477730057,
+            "strategy_exit": -260.576464902938,
+            "take_profit": 345.9411638328047
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 11,
+            "15M_BULLISH": 4,
+            "5M_PULLBACK_RECLAIM": 4,
+            "5M_PULLBACK_REJECT": 11,
+            "FULL_SIZE": 15,
+            "VOLATILITY_OK": 15,
+            "VOLATILITY_TOO_HIGH": 15
+          },
+          "fees_by_action": {
+            "FULL_LONG": 49.67885910413899,
+            "FULL_SHORT": 94.42845859569192
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 9.935771967477816,
+            "FULL_SHORT": 18.885693851294267
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 49.67885910413899,
+            "long_pnl": -44.94949947211258,
+            "long_slippage_paid": 9.935771967477816,
+            "long_trades": 5,
+            "short_fees_paid": 94.42845859569192,
+            "short_pnl": 99.90161161884716,
+            "short_slippage_paid": 18.885693851294267,
+            "short_trades": 17
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1356,
+            "EXPECTED_MOVE_BELOW_COST": 1086,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "best_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 22,
+        "wins": 7,
+        "losses": 15,
+        "win_rate": 0.3181818181818182,
+        "net_pnl": 54.95211214673459,
+        "fees_paid": 144.1073176998309,
+        "slippage_paid": 28.82146581877208,
+        "profit_factor": 1.161168424593486,
+        "max_drawdown": 261.8445424566071,
+        "max_consecutive_losses": 8,
+        "expectancy": 2.4978232793970268,
+        "average_hold_minutes": 20,
+        "ending_cash": 10054.952112146737,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -44.94949947211258,
+            "FULL_SHORT": 99.90161161884716
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 248.3834688136827,
+            "85-100": -193.4313566669481
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.4,
+            "85-100": 0.14285714285714285
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 16.55889792091218,
+            "85-100": -27.633050952421154
+          },
+          "pnl_by_reason_code": {
+            "END_OF_DATA": -6.037197305402031,
+            "stop_loss": -24.375389477730057,
+            "strategy_exit": -260.576464902938,
+            "take_profit": 345.9411638328047
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 11,
+            "15M_BULLISH": 4,
+            "5M_PULLBACK_RECLAIM": 4,
+            "5M_PULLBACK_REJECT": 11,
+            "FULL_SIZE": 15,
+            "VOLATILITY_OK": 15,
+            "VOLATILITY_TOO_HIGH": 15
+          },
+          "fees_by_action": {
+            "FULL_LONG": 49.67885910413899,
+            "FULL_SHORT": 94.42845859569192
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 9.935771967477816,
+            "FULL_SHORT": 18.885693851294267
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 49.67885910413899,
+            "long_pnl": -44.94949947211258,
+            "long_slippage_paid": 9.935771967477816,
+            "long_trades": 5,
+            "short_fees_paid": 94.42845859569192,
+            "short_pnl": 99.90161161884716,
+            "short_slippage_paid": 18.885693851294267,
+            "short_trades": 17
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1356,
+            "EXPECTED_MOVE_BELOW_COST": 1086,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "train_to_test_pnl_delta": 1037.3196319991155,
+      "train_to_test_profit_factor_delta": 0.7060114292762547,
+      "train_to_test_expectancy_delta": 18.342460696370914,
+      "status": "PASS"
+    },
+    {
+      "split_index": 3,
+      "train_start_ms": 1677715200000,
+      "train_end_ms": 1682899200000,
+      "test_start_ms": 1682899200000,
+      "test_end_ms": 1685491200000,
+      "train_candidate_count": 1,
+      "selected_candidates": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 53,
+          "wins": 17,
+          "losses": 36,
+          "win_rate": 0.32075471698113206,
+          "net_pnl": -305.14850551138187,
+          "fees_paid": 334.2762034389644,
+          "slippage_paid": 66.85524164761273,
+          "profit_factor": 0.7376523597026806,
+          "max_drawdown": 662.649520773517,
+          "max_consecutive_losses": 8,
+          "expectancy": -5.757518971912866,
+          "average_hold_minutes": 20.037735849056602,
+          "ending_cash": 9694.851494488614,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": -94.84108849854178,
+              "FULL_SHORT": -210.30741701284006
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 115.46285992530204,
+              "85-100": -540.018604573354
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.3611111111111111,
+              "85-100": 0.1875
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 3.207301664591723,
+              "85-100": -33.75116278583462
+            },
+            "pnl_by_reason_code": {
+              "END_OF_DATA": -5.82098558660399,
+              "stop_loss": -510.15467395383683,
+              "strategy_exit": -378.72873541156736,
+              "take_profit": 589.5558894406265
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 29,
+              "15M_BULLISH": 7,
+              "5M_PULLBACK_RECLAIM": 7,
+              "5M_PULLBACK_REJECT": 29,
+              "FULL_SIZE": 36,
+              "VOLATILITY_OK": 36,
+              "VOLATILITY_TOO_HIGH": 36
+            },
+            "fees_by_action": {
+              "FULL_LONG": 95.87817685833039,
+              "FULL_SHORT": 238.39802658063394
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 19.17563557378956,
+              "FULL_SHORT": 47.67960607382317
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 95.87817685833039,
+              "long_pnl": -94.84108849854178,
+              "long_slippage_paid": 19.17563557378956,
+              "long_trades": 10,
+              "short_fees_paid": 238.39802658063394,
+              "short_pnl": -210.30741701284006,
+              "short_slippage_paid": 47.67960607382317,
+              "short_trades": 43
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 2801,
+              "EXPECTED_MOVE_BELOW_COST": 1757,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "test_results": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 6,
+          "wins": 2,
+          "losses": 4,
+          "win_rate": 0.3333333333333333,
+          "net_pnl": -12.139758759917314,
+          "fees_paid": 34.94202072330223,
+          "slippage_paid": 6.988404442566546,
+          "profit_factor": 0.9132089827998126,
+          "max_drawdown": 77.28338975330917,
+          "max_consecutive_losses": 2,
+          "expectancy": -2.0232931266528857,
+          "average_hold_minutes": 22.666666666666668,
+          "ending_cash": 9987.860241240083,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": 45.6224311426776,
+              "FULL_SHORT": -57.76218990259491
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -57.76218990259491,
+              "85-100": 45.6224311426776
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.2,
+              "85-100": 1
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -11.552437980518983,
+              "85-100": 45.6224311426776
+            },
+            "pnl_by_reason_code": {
+              "strategy_exit": -94.25101603580619,
+              "take_profit": 82.11125727588889
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 4,
+              "5M_PULLBACK_REJECT": 4,
+              "FULL_SIZE": 4,
+              "VOLATILITY_OK": 4,
+              "VOLATILITY_TOO_HIGH": 4
+            },
+            "fees_by_action": {
+              "FULL_LONG": 9.970034042690088,
+              "FULL_SHORT": 24.97198668061214
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 1.9940073844033834,
+              "FULL_SHORT": 4.9943970581631625
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 9.970034042690088,
+              "long_pnl": 45.6224311426776,
+              "long_slippage_paid": 1.9940073844033834,
+              "long_trades": 1,
+              "short_fees_paid": 24.97198668061214,
+              "short_pnl": -57.76218990259491,
+              "short_slippage_paid": 4.9943970581631625,
+              "short_trades": 5
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 1421,
+              "EXPECTED_MOVE_BELOW_COST": 1694,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "best_train_candidate": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 53,
+        "wins": 17,
+        "losses": 36,
+        "win_rate": 0.32075471698113206,
+        "net_pnl": -305.14850551138187,
+        "fees_paid": 334.2762034389644,
+        "slippage_paid": 66.85524164761273,
+        "profit_factor": 0.7376523597026806,
+        "max_drawdown": 662.649520773517,
+        "max_consecutive_losses": 8,
+        "expectancy": -5.757518971912866,
+        "average_hold_minutes": 20.037735849056602,
+        "ending_cash": 9694.851494488614,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -94.84108849854178,
+            "FULL_SHORT": -210.30741701284006
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 115.46285992530204,
+            "85-100": -540.018604573354
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.3611111111111111,
+            "85-100": 0.1875
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 3.207301664591723,
+            "85-100": -33.75116278583462
+          },
+          "pnl_by_reason_code": {
+            "END_OF_DATA": -5.82098558660399,
+            "stop_loss": -510.15467395383683,
+            "strategy_exit": -378.72873541156736,
+            "take_profit": 589.5558894406265
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 29,
+            "15M_BULLISH": 7,
+            "5M_PULLBACK_RECLAIM": 7,
+            "5M_PULLBACK_REJECT": 29,
+            "FULL_SIZE": 36,
+            "VOLATILITY_OK": 36,
+            "VOLATILITY_TOO_HIGH": 36
+          },
+          "fees_by_action": {
+            "FULL_LONG": 95.87817685833039,
+            "FULL_SHORT": 238.39802658063394
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 19.17563557378956,
+            "FULL_SHORT": 47.67960607382317
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 95.87817685833039,
+            "long_pnl": -94.84108849854178,
+            "long_slippage_paid": 19.17563557378956,
+            "long_trades": 10,
+            "short_fees_paid": 238.39802658063394,
+            "short_pnl": -210.30741701284006,
+            "short_slippage_paid": 47.67960607382317,
+            "short_trades": 43
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 2801,
+            "EXPECTED_MOVE_BELOW_COST": 1757,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "corresponding_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "win_rate": 0.3333333333333333,
+        "net_pnl": -12.139758759917314,
+        "fees_paid": 34.94202072330223,
+        "slippage_paid": 6.988404442566546,
+        "profit_factor": 0.9132089827998126,
+        "max_drawdown": 77.28338975330917,
+        "max_consecutive_losses": 2,
+        "expectancy": -2.0232931266528857,
+        "average_hold_minutes": 22.666666666666668,
+        "ending_cash": 9987.860241240083,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": 45.6224311426776,
+            "FULL_SHORT": -57.76218990259491
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -57.76218990259491,
+            "85-100": 45.6224311426776
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.2,
+            "85-100": 1
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -11.552437980518983,
+            "85-100": 45.6224311426776
+          },
+          "pnl_by_reason_code": {
+            "strategy_exit": -94.25101603580619,
+            "take_profit": 82.11125727588889
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 4,
+            "5M_PULLBACK_REJECT": 4,
+            "FULL_SIZE": 4,
+            "VOLATILITY_OK": 4,
+            "VOLATILITY_TOO_HIGH": 4
+          },
+          "fees_by_action": {
+            "FULL_LONG": 9.970034042690088,
+            "FULL_SHORT": 24.97198668061214
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 1.9940073844033834,
+            "FULL_SHORT": 4.9943970581631625
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 9.970034042690088,
+            "long_pnl": 45.6224311426776,
+            "long_slippage_paid": 1.9940073844033834,
+            "long_trades": 1,
+            "short_fees_paid": 24.97198668061214,
+            "short_pnl": -57.76218990259491,
+            "short_slippage_paid": 4.9943970581631625,
+            "short_trades": 5
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1421,
+            "EXPECTED_MOVE_BELOW_COST": 1694,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "best_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 6,
+        "wins": 2,
+        "losses": 4,
+        "win_rate": 0.3333333333333333,
+        "net_pnl": -12.139758759917314,
+        "fees_paid": 34.94202072330223,
+        "slippage_paid": 6.988404442566546,
+        "profit_factor": 0.9132089827998126,
+        "max_drawdown": 77.28338975330917,
+        "max_consecutive_losses": 2,
+        "expectancy": -2.0232931266528857,
+        "average_hold_minutes": 22.666666666666668,
+        "ending_cash": 9987.860241240083,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": 45.6224311426776,
+            "FULL_SHORT": -57.76218990259491
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -57.76218990259491,
+            "85-100": 45.6224311426776
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.2,
+            "85-100": 1
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -11.552437980518983,
+            "85-100": 45.6224311426776
+          },
+          "pnl_by_reason_code": {
+            "strategy_exit": -94.25101603580619,
+            "take_profit": 82.11125727588889
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 4,
+            "5M_PULLBACK_REJECT": 4,
+            "FULL_SIZE": 4,
+            "VOLATILITY_OK": 4,
+            "VOLATILITY_TOO_HIGH": 4
+          },
+          "fees_by_action": {
+            "FULL_LONG": 9.970034042690088,
+            "FULL_SHORT": 24.97198668061214
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 1.9940073844033834,
+            "FULL_SHORT": 4.9943970581631625
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 9.970034042690088,
+            "long_pnl": 45.6224311426776,
+            "long_slippage_paid": 1.9940073844033834,
+            "long_trades": 1,
+            "short_fees_paid": 24.97198668061214,
+            "short_pnl": -57.76218990259491,
+            "short_slippage_paid": 4.9943970581631625,
+            "short_trades": 5
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1421,
+            "EXPECTED_MOVE_BELOW_COST": 1694,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "train_to_test_pnl_delta": 293.00874675146457,
+      "train_to_test_profit_factor_delta": 0.17555662309713194,
+      "train_to_test_expectancy_delta": 3.73422584525998,
+      "status": "PASS"
+    },
+    {
+      "split_index": 4,
+      "train_start_ms": 1680307200000,
+      "train_end_ms": 1685491200000,
+      "test_start_ms": 1685491200000,
+      "test_end_ms": 1688083200000,
+      "train_candidate_count": 1,
+      "selected_candidates": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 28,
+          "wins": 9,
+          "losses": 19,
+          "win_rate": 0.32142857142857145,
+          "net_pnl": 25.553773590653197,
+          "fees_paid": 179.1898094091837,
+          "slippage_paid": 35.837964287648326,
+          "profit_factor": 1.0512536335711584,
+          "max_drawdown": 261.8445424566071,
+          "max_consecutive_losses": 8,
+          "expectancy": 0.912634771094757,
+          "average_hold_minutes": 21.107142857142858,
+          "ending_cash": 10025.553773590655,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": 0.8451077465865495,
+              "FULL_SHORT": 24.708665844066623
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 173.1905230389022,
+              "85-100": -147.63674944824896
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.35,
+              "85-100": 0.25
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 8.65952615194511,
+              "85-100": -18.45459368103112
+            },
+            "pnl_by_reason_code": {
+              "stop_loss": -24.375389477730057,
+              "strategy_exit": -378.43314056346526,
+              "take_profit": 428.3623036318486
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 15,
+              "15M_BULLISH": 4,
+              "5M_PULLBACK_RECLAIM": 4,
+              "5M_PULLBACK_REJECT": 15,
+              "FULL_SIZE": 19,
+              "VOLATILITY_OK": 19,
+              "VOLATILITY_TOO_HIGH": 19
+            },
+            "fees_by_action": {
+              "FULL_LONG": 59.68651940427036,
+              "FULL_SHORT": 119.50329000491335
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 11.937304605542733,
+              "FULL_SHORT": 23.900659682105594
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 59.68651940427036,
+              "long_pnl": 0.8451077465865495,
+              "long_slippage_paid": 11.937304605542733,
+              "long_trades": 6,
+              "short_fees_paid": 119.50329000491335,
+              "short_pnl": 24.708665844066623,
+              "short_slippage_paid": 23.900659682105594,
+              "short_trades": 22
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 2778,
+              "EXPECTED_MOVE_BELOW_COST": 2780,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "test_results": [
+        {
+          "params": {
+            "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+            "entry_variant": "score",
+            "exit_model": "fixed_tp_sl",
+            "full_trade_min_score": 85,
+            "normal_trade_min_score": 70,
+            "probe_min_score": 55,
+            "cost_multiple_required": 4,
+            "max_hold_windows": 4,
+            "time_stop_windows": 2,
+            "allow_probe_trade": false,
+            "disable_probe_trades": true,
+            "max_chop_score": 50,
+            "min_trend_score": 60,
+            "disable_score_bucket_55_69": true,
+            "require_score_bucket_70_plus": true,
+            "require_expected_move_gt_cost_multiple": true,
+            "long_enabled": true,
+            "short_enabled": true,
+            "long_min_entry_score": 85,
+            "short_min_entry_score": 75,
+            "long_min_trend_score": 0,
+            "short_min_trend_score": 0,
+            "long_max_chop_score": 0,
+            "short_max_chop_score": 0,
+            "long_min_expected_move_bps": 0,
+            "short_min_expected_move_bps": 0,
+            "long_cost_multiple_required": 0,
+            "short_cost_multiple_required": 0,
+            "disable_long_score_bucket_70_84": true,
+            "disable_short_score_bucket_70_84": false,
+            "max_trades_per_day": 0,
+            "min_minutes_between_entries": 0,
+            "min_expected_r_after_cost": 0,
+            "min_target_bps_after_cost": 0,
+            "min_reward_to_risk": 0,
+            "partial_take_profit_r": 1,
+            "partial_take_profit_fraction": 0.5,
+            "breakeven_trigger_r": 1,
+            "trail_after_mfe_r": 1.2,
+            "trail_distance_r": 0.5,
+            "cut_no_progress_r": 0.3,
+            "cut_no_progress_windows": 2
+          },
+          "total_trades": 28,
+          "wins": 7,
+          "losses": 21,
+          "win_rate": 0.25,
+          "net_pnl": -117.29958911101178,
+          "fees_paid": 169.86891532185382,
+          "slippage_paid": 33.97378392979896,
+          "profit_factor": 0.7682658191692487,
+          "max_drawdown": 336.8320082165392,
+          "max_consecutive_losses": 6,
+          "expectancy": -4.189271039678992,
+          "average_hold_minutes": 18.714285714285715,
+          "ending_cash": 9882.700410888987,
+          "status": "PASS",
+          "diagnostics": {
+            "pnl_by_action": {
+              "FULL_LONG": -9.959235435400005,
+              "FULL_SHORT": -107.34035367561181
+            },
+            "pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -315.857469259938,
+              "85-100": 227.54593169257015
+            },
+            "win_rate_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": 0.19047619047619047,
+              "85-100": 0.5
+            },
+            "avg_pnl_by_score_bucket": {
+              "0-39": 0,
+              "40-54": 0,
+              "55-69": 0,
+              "70-84": -15.040831869520858,
+              "85-100": 37.924321948761694
+            },
+            "pnl_by_reason_code": {
+              "stop_loss": -312.8841410124431,
+              "strategy_exit": -140.870469216056,
+              "take_profit": 336.4550211174872
+            },
+            "losses_by_reason_code": {
+              "15M_BEARISH": 19,
+              "15M_BULLISH": 2,
+              "5M_PULLBACK_RECLAIM": 2,
+              "5M_PULLBACK_REJECT": 19,
+              "FULL_SIZE": 21,
+              "VOLATILITY_OK": 21,
+              "VOLATILITY_TOO_HIGH": 21
+            },
+            "fees_by_action": {
+              "FULL_LONG": 39.82906979716707,
+              "FULL_SHORT": 130.03984552468677
+            },
+            "slippage_by_action": {
+              "FULL_LONG": 7.96581433778878,
+              "FULL_SHORT": 26.007969592010184
+            },
+            "long_vs_short_metrics": {
+              "long_fees_paid": 39.82906979716707,
+              "long_pnl": -9.959235435400005,
+              "long_slippage_paid": 7.96581433778878,
+              "long_trades": 4,
+              "short_fees_paid": 130.03984552468677,
+              "short_pnl": -107.34035367561181,
+              "short_slippage_paid": 26.007969592010184,
+              "short_trades": 24
+            },
+            "hard_blocks_by_reason": {
+              "15M_CHOP": 1350,
+              "EXPECTED_MOVE_BELOW_COST": 1133,
+              "INSUFFICIENT_DATA": 1
+            }
+          }
+        }
+      ],
+      "best_train_candidate": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 28,
+        "wins": 9,
+        "losses": 19,
+        "win_rate": 0.32142857142857145,
+        "net_pnl": 25.553773590653197,
+        "fees_paid": 179.1898094091837,
+        "slippage_paid": 35.837964287648326,
+        "profit_factor": 1.0512536335711584,
+        "max_drawdown": 261.8445424566071,
+        "max_consecutive_losses": 8,
+        "expectancy": 0.912634771094757,
+        "average_hold_minutes": 21.107142857142858,
+        "ending_cash": 10025.553773590655,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": 0.8451077465865495,
+            "FULL_SHORT": 24.708665844066623
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 173.1905230389022,
+            "85-100": -147.63674944824896
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.35,
+            "85-100": 0.25
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 8.65952615194511,
+            "85-100": -18.45459368103112
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -24.375389477730057,
+            "strategy_exit": -378.43314056346526,
+            "take_profit": 428.3623036318486
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 15,
+            "15M_BULLISH": 4,
+            "5M_PULLBACK_RECLAIM": 4,
+            "5M_PULLBACK_REJECT": 15,
+            "FULL_SIZE": 19,
+            "VOLATILITY_OK": 19,
+            "VOLATILITY_TOO_HIGH": 19
+          },
+          "fees_by_action": {
+            "FULL_LONG": 59.68651940427036,
+            "FULL_SHORT": 119.50329000491335
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 11.937304605542733,
+            "FULL_SHORT": 23.900659682105594
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 59.68651940427036,
+            "long_pnl": 0.8451077465865495,
+            "long_slippage_paid": 11.937304605542733,
+            "long_trades": 6,
+            "short_fees_paid": 119.50329000491335,
+            "short_pnl": 24.708665844066623,
+            "short_slippage_paid": 23.900659682105594,
+            "short_trades": 22
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 2778,
+            "EXPECTED_MOVE_BELOW_COST": 2780,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "corresponding_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 28,
+        "wins": 7,
+        "losses": 21,
+        "win_rate": 0.25,
+        "net_pnl": -117.29958911101178,
+        "fees_paid": 169.86891532185382,
+        "slippage_paid": 33.97378392979896,
+        "profit_factor": 0.7682658191692487,
+        "max_drawdown": 336.8320082165392,
+        "max_consecutive_losses": 6,
+        "expectancy": -4.189271039678992,
+        "average_hold_minutes": 18.714285714285715,
+        "ending_cash": 9882.700410888987,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -9.959235435400005,
+            "FULL_SHORT": -107.34035367561181
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -315.857469259938,
+            "85-100": 227.54593169257015
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.19047619047619047,
+            "85-100": 0.5
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -15.040831869520858,
+            "85-100": 37.924321948761694
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -312.8841410124431,
+            "strategy_exit": -140.870469216056,
+            "take_profit": 336.4550211174872
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 19,
+            "15M_BULLISH": 2,
+            "5M_PULLBACK_RECLAIM": 2,
+            "5M_PULLBACK_REJECT": 19,
+            "FULL_SIZE": 21,
+            "VOLATILITY_OK": 21,
+            "VOLATILITY_TOO_HIGH": 21
+          },
+          "fees_by_action": {
+            "FULL_LONG": 39.82906979716707,
+            "FULL_SHORT": 130.03984552468677
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 7.96581433778878,
+            "FULL_SHORT": 26.007969592010184
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 39.82906979716707,
+            "long_pnl": -9.959235435400005,
+            "long_slippage_paid": 7.96581433778878,
+            "long_trades": 4,
+            "short_fees_paid": 130.03984552468677,
+            "short_pnl": -107.34035367561181,
+            "short_slippage_paid": 26.007969592010184,
+            "short_trades": 24
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1350,
+            "EXPECTED_MOVE_BELOW_COST": 1133,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "best_test_result": {
+        "params": {
+          "strategy_name": "fast_accumulation_strict_no_70_84_longs",
+          "entry_variant": "score",
+          "exit_model": "fixed_tp_sl",
+          "full_trade_min_score": 85,
+          "normal_trade_min_score": 70,
+          "probe_min_score": 55,
+          "cost_multiple_required": 4,
+          "max_hold_windows": 4,
+          "time_stop_windows": 2,
+          "allow_probe_trade": false,
+          "disable_probe_trades": true,
+          "max_chop_score": 50,
+          "min_trend_score": 60,
+          "disable_score_bucket_55_69": true,
+          "require_score_bucket_70_plus": true,
+          "require_expected_move_gt_cost_multiple": true,
+          "long_enabled": true,
+          "short_enabled": true,
+          "long_min_entry_score": 85,
+          "short_min_entry_score": 75,
+          "long_min_trend_score": 0,
+          "short_min_trend_score": 0,
+          "long_max_chop_score": 0,
+          "short_max_chop_score": 0,
+          "long_min_expected_move_bps": 0,
+          "short_min_expected_move_bps": 0,
+          "long_cost_multiple_required": 0,
+          "short_cost_multiple_required": 0,
+          "disable_long_score_bucket_70_84": true,
+          "disable_short_score_bucket_70_84": false,
+          "max_trades_per_day": 0,
+          "min_minutes_between_entries": 0,
+          "min_expected_r_after_cost": 0,
+          "min_target_bps_after_cost": 0,
+          "min_reward_to_risk": 0,
+          "partial_take_profit_r": 1,
+          "partial_take_profit_fraction": 0.5,
+          "breakeven_trigger_r": 1,
+          "trail_after_mfe_r": 1.2,
+          "trail_distance_r": 0.5,
+          "cut_no_progress_r": 0.3,
+          "cut_no_progress_windows": 2
+        },
+        "total_trades": 28,
+        "wins": 7,
+        "losses": 21,
+        "win_rate": 0.25,
+        "net_pnl": -117.29958911101178,
+        "fees_paid": 169.86891532185382,
+        "slippage_paid": 33.97378392979896,
+        "profit_factor": 0.7682658191692487,
+        "max_drawdown": 336.8320082165392,
+        "max_consecutive_losses": 6,
+        "expectancy": -4.189271039678992,
+        "average_hold_minutes": 18.714285714285715,
+        "ending_cash": 9882.700410888987,
+        "status": "PASS",
+        "diagnostics": {
+          "pnl_by_action": {
+            "FULL_LONG": -9.959235435400005,
+            "FULL_SHORT": -107.34035367561181
+          },
+          "pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -315.857469259938,
+            "85-100": 227.54593169257015
+          },
+          "win_rate_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": 0.19047619047619047,
+            "85-100": 0.5
+          },
+          "avg_pnl_by_score_bucket": {
+            "0-39": 0,
+            "40-54": 0,
+            "55-69": 0,
+            "70-84": -15.040831869520858,
+            "85-100": 37.924321948761694
+          },
+          "pnl_by_reason_code": {
+            "stop_loss": -312.8841410124431,
+            "strategy_exit": -140.870469216056,
+            "take_profit": 336.4550211174872
+          },
+          "losses_by_reason_code": {
+            "15M_BEARISH": 19,
+            "15M_BULLISH": 2,
+            "5M_PULLBACK_RECLAIM": 2,
+            "5M_PULLBACK_REJECT": 19,
+            "FULL_SIZE": 21,
+            "VOLATILITY_OK": 21,
+            "VOLATILITY_TOO_HIGH": 21
+          },
+          "fees_by_action": {
+            "FULL_LONG": 39.82906979716707,
+            "FULL_SHORT": 130.03984552468677
+          },
+          "slippage_by_action": {
+            "FULL_LONG": 7.96581433778878,
+            "FULL_SHORT": 26.007969592010184
+          },
+          "long_vs_short_metrics": {
+            "long_fees_paid": 39.82906979716707,
+            "long_pnl": -9.959235435400005,
+            "long_slippage_paid": 7.96581433778878,
+            "long_trades": 4,
+            "short_fees_paid": 130.03984552468677,
+            "short_pnl": -107.34035367561181,
+            "short_slippage_paid": 26.007969592010184,
+            "short_trades": 24
+          },
+          "hard_blocks_by_reason": {
+            "15M_CHOP": 1350,
+            "EXPECTED_MOVE_BELOW_COST": 1133,
+            "INSUFFICIENT_DATA": 1
+          }
+        }
+      },
+      "train_to_test_pnl_delta": -142.853362701665,
+      "train_to_test_profit_factor_delta": -0.2829878144019097,
+      "train_to_test_expectancy_delta": -5.101905810773749,
+      "status": "PASS"
+    }
+  ],
+  "candidate_stability": [
+    {
+      "candidate_signature": "SN:fast_accumulation_strict_no_70_84_longs_EV:score_XM:fixed_tp_sl_FS:85.0_NS:70.0_PS:55.0_CM:4.0_MH:4_TS:2_AP:false_DP:true_MCS:50.0_MES:0.0_MTS:60.0_D55:true_R70:true_RCM:true_L:true_S:true_LMES:85.0_SMES:75.0_LMTS:0.0_SMTS:0.0_LMCS:0.0_SMCS:0.0_LMM:0.0_SMM:0.0_LCM:0.0_SCM:0.0_DL7084:true_DS7084:false_MTD:0_MMBE:0_MER:0.00_MTB:0.0_MRR:0.00_PTR:1.00_PTF:0.50_BER:1.00_TMR:1.20_TDR:0.50_CNR:0.30_CNW:2",
+      "selection_count": 4,
+      "train_net_pnl_total": -2152.648766911102,
+      "test_net_pnl_total": -432.6198390839879,
+      "train_profit_factor_avg": 0.6807854660728341,
+      "test_profit_factor_avg": 0.8533578252513517,
+      "test_profitable_count": 1,
+      "test_losing_count": 3,
+      "max_test_drawdown": 581.8434582198752,
+      "max_test_loss_streak": 8
+    }
+  ],
+  "status": "PASS",
+  "promotion_candidate": false,
+  "rejection_reasons": [
+    "aggregate_test.net_pnl \u003c= 0",
+    "profitable_split_count \u003c= losing_split_count"
+  ]
+}
