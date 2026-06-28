@@ -97,7 +97,14 @@ func ComputeTrailingThresholds(rows []features.Row, idx int, opts ThresholdOptio
 		volRatios = append(volRatios, r.VolumeRatio20)
 	}
 
-	if len(atrPcts) < minRows {
+	requiredSamples := minRows
+	if step > 1 {
+		requiredSamples = minRows / step
+		if requiredSamples < 200 {
+			requiredSamples = 200
+		}
+	}
+	if len(atrPcts) < requiredSamples {
 		return Thresholds{}, false
 	}
 

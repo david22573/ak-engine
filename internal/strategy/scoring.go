@@ -125,11 +125,9 @@ func ScoreWindow(input ScoreInput) ScoreResult {
 		result.ReasonCodes = appendReason(result.ReasonCodes, "INVALID_COST")
 	}
 	if result.ExpectedMoveBPS < input.EstimatedCostBPS*input.CostMultipleRequired {
-		result.HardBlock = true
 		result.ReasonCodes = appendReason(result.ReasonCodes, "EXPECTED_MOVE_BELOW_COST")
 	}
 	if result.ChopScore >= input.MaxChopScore {
-		result.HardBlock = true
 		result.ReasonCodes = appendReason(result.ReasonCodes, fmt.Sprintf("%dM_CHOP", input.DecisionWindowMinutes))
 	}
 	if math.Max(result.LongScore, result.ShortScore) < 40 {

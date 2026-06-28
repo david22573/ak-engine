@@ -360,7 +360,7 @@ func phase103BInferCandlePath(explicit, market, interval string) string {
 		return explicit
 	}
 	candidates := []string{
-		filepath.Join("..", "ak-historian", ".ak-historian", "work"),
+		defaultHistorianWorkdir,
 		filepath.Join(".ak-engine", "cache", "r2"),
 	}
 	for _, p := range candidates {

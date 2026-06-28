@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+
 for sym in BTCUSDT ETHUSDT SOLUSDT ADAUSDT DOGEUSDT BNBUSDT XRPUSDT AVAXUSDT; do
   echo "Running $sym"
   CTX="BTCUSDT,ETHUSDT"
@@ -12,7 +14,7 @@ for sym in BTCUSDT ETHUSDT SOLUSDT ADAUSDT DOGEUSDT BNBUSDT XRPUSDT AVAXUSDT; do
 
   go run ./cmd/ak-engine build-features \
     --source local-parquet \
-    --path ../ak-historian/.ak-historian/work \
+    --path "$HISTORIAN_WORKDIR" \
     --market futures-um \
     --symbol $sym \
     --interval 1m \

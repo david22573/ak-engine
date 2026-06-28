@@ -199,8 +199,7 @@ func TestExpectancyJSONFieldNamesIncludeUnits(t *testing.T) {
 }
 
 func TestPhase104BranchClosureReportIncludesRejectedFragileCandidates(t *testing.T) {
-	path := filepath.Join("..", "..", "runs", "reports", "phase10_4_price_regime_branch_closure.json")
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(filepath.Join("testdata", "phase10_4_price_regime_branch_closure.json"))
 	if err != nil {
 		t.Fatalf("read closure report: %v", err)
 	}
@@ -243,8 +242,7 @@ func TestPhase104BranchClosureReportIncludesRejectedFragileCandidates(t *testing
 }
 
 func TestPhase104GuardrailChecklistIncludesConcentrationAndOOSGates(t *testing.T) {
-	path := filepath.Join("..", "..", "runs", "reports", "phase10_4_research_guardrails.md")
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(filepath.Join("testdata", "phase10_4_research_guardrails.md"))
 	if err != nil {
 		t.Fatalf("read guardrail report: %v", err)
 	}

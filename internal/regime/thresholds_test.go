@@ -46,3 +46,19 @@ func TestComputeTrailingThresholds_ExcludesCurrentAndFuture(t *testing.T) {
 		t.Error("leakage detected: current or future row affected the trailing thresholds")
 	}
 }
+
+func TestComputeTrailingThresholds_DefaultMonthlySampledWindowComputes(t *testing.T) {
+	rows := make([]features.Row, 12000)
+	for i := range rows {
+		rows[i] = features.Row{
+			Interval:      "1m",
+			Warmup:        false,
+			ATRPct14:      0.001 + float64(i%100)*0.00001,
+			BBWidth20:     0.002 + float64(i%100)*0.00001,
+			VolumeRatio20: 0.5 + float64(i%100)*0.01,
+		}
+	}
+	if _, ok := ComputeTrailingThresholds(rows, 11000, ThresholdOptions{}); !ok {
+		t.Fatal("default monthly sampled threshold window should compute after enough history")
+	}
+}

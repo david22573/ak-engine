@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+
 mkdir -p runs/features runs/regimes
 
 for SYMBOL in LINKUSDT SOLUSDT AVAXUSDT; do
@@ -12,7 +14,7 @@ for SYMBOL in LINKUSDT SOLUSDT AVAXUSDT; do
     echo "Building features for $SYMBOL $NAME..."
     go run ./cmd/ak-engine build-features \
       --source local-parquet \
-      --path ../ak-historian/.ak-historian/work \
+      --path "$HISTORIAN_WORKDIR" \
       --market futures-um \
       --symbol $SYMBOL \
       --interval 1m \

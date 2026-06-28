@@ -74,6 +74,68 @@ func TestEngineLongTakeProfit(t *testing.T) {
 	}
 }
 
+func TestEngineTakeProfitDoesNotApplyExitSlippageForLong(t *testing.T) {
+	t.Parallel()
+
+	engine := newTestEngineWithConfig(t, []protocol.Candle{
+		testCandle(0, 100, 100, 100, 100),
+		testCandle(1, 100, 100, 100, 100),
+		testCandle(2, 100, 102, 100, 101),
+	}, stubStrategy{
+		name: "tp-long-slip",
+		signals: map[int]strategy.Signal{
+			1: {Side: strategy.SideLong, StopLossBPS: 100, TakeProfitBPS: 100, MaxHoldCandles: 5},
+		},
+	}, Config{StartingCash: 1000, MaxPositionSize: 1, SlippageBPS: 10, Fees: FeeConfig{}})
+
+	report, err := engine.Run(context.Background(), data.CandleRequest{Source: "stub", Market: "futures-um", Symbol: "BTCUSDT", Interval: "5m"})
+	if err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	trade := report.Trades[0]
+	if trade.ExitReason != ExitReasonTakeProfit {
+		t.Fatalf("ExitReason = %q, want %q", trade.ExitReason, ExitReasonTakeProfit)
+	}
+	if math.Abs(trade.ExitPrice-101.101) > 0.0001 {
+		t.Fatalf("ExitPrice = %f, want 101.101 without exit slippage", trade.ExitPrice)
+	}
+	if math.Abs(trade.SlippagePaid-1) > 0.01 {
+		t.Fatalf("SlippagePaid = %f, want about 1 from entry-only slippage", trade.SlippagePaid)
+	}
+}
+
+func TestEngineTakeProfitDoesNotApplyExitSlippageForShort(t *testing.T) {
+	t.Parallel()
+
+	engine := newTestEngineWithConfig(t, []protocol.Candle{
+		testCandle(0, 100, 100, 100, 100),
+		testCandle(1, 100, 100, 100, 100),
+		testCandle(2, 100, 100, 98, 99),
+	}, stubStrategy{
+		name: "tp-short-slip",
+		signals: map[int]strategy.Signal{
+			1: {Side: strategy.SideShort, StopLossBPS: 100, TakeProfitBPS: 100, MaxHoldCandles: 5},
+		},
+	}, Config{StartingCash: 1000, MaxPositionSize: 1, SlippageBPS: 10, Fees: FeeConfig{}})
+
+	report, err := engine.Run(context.Background(), data.CandleRequest{Source: "stub", Market: "futures-um", Symbol: "BTCUSDT", Interval: "5m"})
+	if err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	trade := report.Trades[0]
+	if trade.ExitReason != ExitReasonTakeProfit {
+		t.Fatalf("ExitReason = %q, want %q", trade.ExitReason, ExitReasonTakeProfit)
+	}
+	if math.Abs(trade.ExitPrice-98.901) > 0.0001 {
+		t.Fatalf("ExitPrice = %f, want 98.901 without exit slippage", trade.ExitPrice)
+	}
+	if math.Abs(trade.SlippagePaid-1) > 0.01 {
+		t.Fatalf("SlippagePaid = %f, want about 1 from entry-only slippage", trade.SlippagePaid)
+	}
+}
+
 func TestEngineConservativeSameCandleExitForShort(t *testing.T) {
 	t.Parallel()
 
@@ -139,6 +201,68 @@ func TestEngineTimeStop(t *testing.T) {
 	}
 	if report.Trades[0].ExitReason != ExitReasonTimeStop {
 		t.Fatalf("ExitReason = %q, want %q", report.Trades[0].ExitReason, ExitReasonTimeStop)
+	}
+}
+
+func TestEngineStopLossStillAppliesExitSlippageForLong(t *testing.T) {
+	t.Parallel()
+
+	engine := newTestEngineWithConfig(t, []protocol.Candle{
+		testCandle(0, 100, 100, 100, 100),
+		testCandle(1, 100, 100, 100, 100),
+		testCandle(2, 100, 100, 98, 99),
+	}, stubStrategy{
+		name: "sl-long-slip",
+		signals: map[int]strategy.Signal{
+			1: {Side: strategy.SideLong, StopLossBPS: 100, TakeProfitBPS: 500, MaxHoldCandles: 5},
+		},
+	}, Config{StartingCash: 1000, MaxPositionSize: 1, SlippageBPS: 10, Fees: FeeConfig{}})
+
+	report, err := engine.Run(context.Background(), data.CandleRequest{Source: "stub", Market: "futures-um", Symbol: "BTCUSDT", Interval: "5m"})
+	if err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	trade := report.Trades[0]
+	if trade.ExitReason != ExitReasonStopLoss {
+		t.Fatalf("ExitReason = %q, want %q", trade.ExitReason, ExitReasonStopLoss)
+	}
+	if math.Abs(trade.ExitPrice-98.999901) > 0.0001 {
+		t.Fatalf("ExitPrice = %f, want stop loss with adverse exit slippage", trade.ExitPrice)
+	}
+	if trade.SlippagePaid <= 1 {
+		t.Fatalf("SlippagePaid = %f, want entry plus exit slippage", trade.SlippagePaid)
+	}
+}
+
+func TestEngineStopLossStillAppliesExitSlippageForShort(t *testing.T) {
+	t.Parallel()
+
+	engine := newTestEngineWithConfig(t, []protocol.Candle{
+		testCandle(0, 100, 100, 100, 100),
+		testCandle(1, 100, 100, 100, 100),
+		testCandle(2, 100, 102, 100, 101),
+	}, stubStrategy{
+		name: "sl-short-slip",
+		signals: map[int]strategy.Signal{
+			1: {Side: strategy.SideShort, StopLossBPS: 100, TakeProfitBPS: 500, MaxHoldCandles: 5},
+		},
+	}, Config{StartingCash: 1000, MaxPositionSize: 1, SlippageBPS: 10, Fees: FeeConfig{}})
+
+	report, err := engine.Run(context.Background(), data.CandleRequest{Source: "stub", Market: "futures-um", Symbol: "BTCUSDT", Interval: "5m"})
+	if err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	trade := report.Trades[0]
+	if trade.ExitReason != ExitReasonStopLoss {
+		t.Fatalf("ExitReason = %q, want %q", trade.ExitReason, ExitReasonStopLoss)
+	}
+	if math.Abs(trade.ExitPrice-100.999899) > 0.0001 {
+		t.Fatalf("ExitPrice = %f, want stop loss with adverse exit slippage", trade.ExitPrice)
+	}
+	if trade.SlippagePaid <= 1 {
+		t.Fatalf("SlippagePaid = %f, want entry plus exit slippage", trade.SlippagePaid)
 	}
 }
 
@@ -260,6 +384,81 @@ func TestEngineForceCloseAppliesFeeAndSlippage(t *testing.T) {
 	}
 }
 
+func TestEngineStrategyTimeAndEndOfDataExitsStillApplySlippage(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name       string
+		signals    map[int]strategy.Signal
+		candles    []protocol.Candle
+		exitReason ExitReason
+	}{
+		{
+			name: "strategy",
+			candles: []protocol.Candle{
+				testCandle(0, 100, 100, 100, 100),
+				testCandle(1, 100, 100, 100, 100),
+				testCandle(2, 100, 100.5, 99.5, 100),
+			},
+			signals: map[int]strategy.Signal{
+				1: {Side: strategy.SideLong, StopLossBPS: 500, TakeProfitBPS: 500, MaxHoldCandles: 10},
+				2: {ClosePosition: true},
+			},
+			exitReason: ExitReasonStrategy,
+		},
+		{
+			name: "time_stop",
+			candles: []protocol.Candle{
+				testCandle(0, 100, 100, 100, 100),
+				testCandle(1, 100, 100, 100, 100),
+				testCandle(2, 100, 100.5, 99.5, 100),
+			},
+			signals: map[int]strategy.Signal{
+				1: {Side: strategy.SideLong, StopLossBPS: 500, TakeProfitBPS: 500, MaxHoldCandles: 1},
+			},
+			exitReason: ExitReasonTimeStop,
+		},
+		{
+			name: "end_of_data",
+			candles: []protocol.Candle{
+				testCandle(0, 100, 100, 100, 100),
+				testCandle(1, 100, 100, 100, 100),
+			},
+			signals: map[int]strategy.Signal{
+				1: {Side: strategy.SideLong, StopLossBPS: 500, TakeProfitBPS: 500, MaxHoldCandles: 10},
+			},
+			exitReason: ExitReasonEndOfData,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			engine := newTestEngineWithConfig(t, tc.candles, stubStrategy{name: tc.name, signals: tc.signals}, Config{
+				StartingCash:    1000,
+				MaxPositionSize: 1,
+				SlippageBPS:     10,
+				Fees:            FeeConfig{},
+			})
+
+			report, err := engine.Run(context.Background(), data.CandleRequest{Source: "stub", Market: "futures-um", Symbol: "BTCUSDT", Interval: "5m"})
+			if err != nil {
+				t.Fatalf("Run() error = %v", err)
+			}
+
+			trade := report.Trades[0]
+			if trade.ExitReason != tc.exitReason {
+				t.Fatalf("ExitReason = %q, want %q", trade.ExitReason, tc.exitReason)
+			}
+			if trade.SlippagePaid <= 1 {
+				t.Fatalf("SlippagePaid = %f, want entry plus exit slippage", trade.SlippagePaid)
+			}
+		})
+	}
+}
+
 func TestEngineLongMFEAndMAEDiagnostics(t *testing.T) {
 	t.Parallel()
 
@@ -347,6 +546,54 @@ func TestEngineRMultipleCalculatedCorrectly(t *testing.T) {
 	}
 	if math.Abs(trade.MaxPossibleRMultiple-2) > 0.001 {
 		t.Fatalf("MaxPossibleRMultiple = %f, want 2", trade.MaxPossibleRMultiple)
+	}
+	if math.Abs(trade.StructuralRMultiple-2) > 0.001 {
+		t.Fatalf("StructuralRMultiple = %f, want 2", trade.StructuralRMultiple)
+	}
+	if math.Abs(trade.FillRMultiple-2) > 0.001 {
+		t.Fatalf("FillRMultiple = %f, want 2", trade.FillRMultiple)
+	}
+	if math.Abs(trade.NetRMultiple-trade.RealizedRMultiple) > 0.001 {
+		t.Fatalf("NetRMultiple = %f, want match RealizedRMultiple %f", trade.NetRMultiple, trade.RealizedRMultiple)
+	}
+}
+
+func TestEngineRMultiplesSeparateStructuralFillAndNetCosts(t *testing.T) {
+	t.Parallel()
+
+	engine := newTestEngineWithConfig(t, []protocol.Candle{
+		testCandle(0, 100, 100, 100, 100),
+		testCandle(1, 100, 100, 100, 100),
+		testCandle(2, 100, 100.2, 99.8, 100),
+	}, stubStrategy{
+		name: "diag-r-costs",
+		signals: map[int]strategy.Signal{
+			1: {Side: strategy.SideLong, StopLossBPS: 100, TakeProfitBPS: 500, MaxHoldCandles: 1},
+		},
+	}, Config{
+		StartingCash:    1000,
+		MaxPositionSize: 1,
+		SlippageBPS:     10,
+		Fees:            FeeConfig{TakerFeeBPS: 10},
+	})
+
+	report, err := engine.Run(context.Background(), data.CandleRequest{Source: "stub", Market: "futures-um", Symbol: "BTCUSDT", Interval: "5m"})
+	if err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	trade := report.Trades[0]
+	if math.Abs(trade.StructuralRMultiple) > 0.001 {
+		t.Fatalf("StructuralRMultiple = %f, want near 0 for breakeven structural move", trade.StructuralRMultiple)
+	}
+	if trade.FillRMultiple >= 0 {
+		t.Fatalf("FillRMultiple = %f, want < 0 from slippage-only loss", trade.FillRMultiple)
+	}
+	if trade.NetRMultiple >= trade.FillRMultiple {
+		t.Fatalf("NetRMultiple = %f, want below FillRMultiple %f after fees", trade.NetRMultiple, trade.FillRMultiple)
+	}
+	if math.Abs(trade.NetRMultiple-trade.RealizedRMultiple) > 0.001 {
+		t.Fatalf("NetRMultiple = %f, want match RealizedRMultiple %f", trade.NetRMultiple, trade.RealizedRMultiple)
 	}
 }
 

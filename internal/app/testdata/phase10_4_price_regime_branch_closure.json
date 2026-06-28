@@ -1,0 +1,35 @@
+{
+  "final_branch_status": "closed_no_validated_leads",
+  "candidates": [
+    {
+      "name": "Fast Accumulation",
+      "status": "rejected",
+      "failure_modes": ["h2_oos_failed"]
+    },
+    {
+      "name": "ShockFade_LONG",
+      "status": "rejected",
+      "failure_modes": ["concentration_failed"]
+    },
+    {
+      "name": "CompressionBreakout_LONG",
+      "status": "fragile",
+      "failure_modes": ["bracket_failure"]
+    },
+    {
+      "name": "CompressionBreakout_SHORT",
+      "status": "fragile",
+      "failure_modes": ["top_month_concentration"]
+    },
+    {
+      "name": "SOL ShockFade_LONG",
+      "status": "rejected",
+      "failure_modes": ["oos_pf_failed"]
+    },
+    {
+      "name": "AVAX ShockFade_LONG",
+      "status": "rejected",
+      "failure_modes": ["low_event_count"]
+    }
+  ]
+}

@@ -153,8 +153,11 @@ func TestScoreWindowExpectedMoveBelowCostHardBlocks(t *testing.T) {
 		CostMultipleRequired: 3,
 		MaxChopScore:         95,
 	})
-	if !result.HardBlock {
-		t.Fatal("HardBlock = false, want true")
+	if result.HardBlock {
+		t.Fatal("HardBlock = true, want side-specific gating to happen in selectDecision")
+	}
+	if !containsReason(result.ReasonCodes, "EXPECTED_MOVE_BELOW_COST") {
+		t.Fatalf("ReasonCodes = %v, want EXPECTED_MOVE_BELOW_COST", result.ReasonCodes)
 	}
 }
 
@@ -420,6 +423,160 @@ func TestFastAccumulationDisableLong70To84DoesNotBlockHighConfidenceShorts(t *te
 	}
 }
 
+func TestFastAccumulationUsesStrictShortCostThresholdWithoutTighteningLongs(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.EstimatedCostBPS = 4
+	cfg.LongCostMultipleRequired = 2
+	cfg.ShortCostMultipleRequired = 20
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	longDecision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        82,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  12,
+		EstimatedCostBPS: 4,
+	})
+	if longDecision.Action != ActionFullLong {
+		t.Fatalf("long Action = %q, want %q", longDecision.Action, ActionFullLong)
+	}
+
+	shortDecision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        20,
+		ShortScore:       82,
+		TrendScore:       80,
+		ExpectedMoveBPS:  12,
+		EstimatedCostBPS: 4,
+	})
+	if shortDecision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("short Action = %q, want %q", shortDecision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(shortDecision.ReasonCodes, "EXPECTED_MOVE_BELOW_COST") {
+		t.Fatalf("ReasonCodes = %v, want EXPECTED_MOVE_BELOW_COST", shortDecision.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationUsesStrictLongCostThresholdWithoutTighteningShorts(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.EstimatedCostBPS = 4
+	cfg.LongCostMultipleRequired = 20
+	cfg.ShortCostMultipleRequired = 2
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	longDecision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        82,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  12,
+		EstimatedCostBPS: 4,
+	})
+	if longDecision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("long Action = %q, want %q", longDecision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(longDecision.ReasonCodes, "EXPECTED_MOVE_BELOW_COST") {
+		t.Fatalf("ReasonCodes = %v, want EXPECTED_MOVE_BELOW_COST", longDecision.ReasonCodes)
+	}
+
+	shortDecision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        20,
+		ShortScore:       82,
+		TrendScore:       80,
+		ExpectedMoveBPS:  12,
+		EstimatedCostBPS: 4,
+	})
+	if shortDecision.Action != ActionFullShort {
+		t.Fatalf("short Action = %q, want %q", shortDecision.Action, ActionFullShort)
+	}
+}
+
+func TestFastAccumulationUsesStrictLongChopThresholdWithoutBlockingShorts(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.LongMaxChopScore = 35
+	cfg.ShortMaxChopScore = 80
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	longDecision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        82,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+		ChopScore:        40,
+	})
+	if longDecision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("long Action = %q, want %q", longDecision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(longDecision.ReasonCodes, "15M_CHOP") {
+		t.Fatalf("ReasonCodes = %v, want 15M_CHOP", longDecision.ReasonCodes)
+	}
+
+	shortDecision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        20,
+		ShortScore:       82,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+		ChopScore:        40,
+	})
+	if shortDecision.Action != ActionFullShort {
+		t.Fatalf("short Action = %q, want %q", shortDecision.Action, ActionFullShort)
+	}
+}
+
+func TestFastAccumulationUsesStrictShortChopThresholdWithoutBlockingLongs(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.LongMaxChopScore = 80
+	cfg.ShortMaxChopScore = 35
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	longDecision := strat.selectDecision(State{}, bullishWindow(100, 101, 99, 100.5, 0), ScoreResult{
+		LongScore:        82,
+		ShortScore:       20,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+		ChopScore:        40,
+	})
+	if longDecision.Action != ActionFullLong {
+		t.Fatalf("long Action = %q, want %q", longDecision.Action, ActionFullLong)
+	}
+
+	shortDecision := strat.selectDecision(State{}, bearishWindow(100, 101, 99, 99.2, 0), ScoreResult{
+		LongScore:        20,
+		ShortScore:       82,
+		TrendScore:       80,
+		ExpectedMoveBPS:  50,
+		EstimatedCostBPS: 4,
+		ChopScore:        40,
+	})
+	if shortDecision.Action != ActionNoTradeHardBlock {
+		t.Fatalf("short Action = %q, want %q", shortDecision.Action, ActionNoTradeHardBlock)
+	}
+	if !containsReason(shortDecision.ReasonCodes, "15M_CHOP") {
+		t.Fatalf("ReasonCodes = %v, want 15M_CHOP", shortDecision.ReasonCodes)
+	}
+}
+
 func TestFastAccumulationRateLimitsEntries(t *testing.T) {
 	t.Parallel()
 
@@ -503,14 +660,71 @@ func TestScoreWindowHighChopHardBlocksEntry(t *testing.T) {
 	t.Parallel()
 
 	result := ScoreWindow(ScoreInput{
-		Window:               bullishWindow(100.0, 100.8, 99.9, 100.1, 15*time.Minute),
-		Previous:             []AggregatedWindow{bullishWindow(100.0, 100.7, 99.8, 100.05, 0)},
-		EstimatedCostBPS:     1,
-		CostMultipleRequired: 1,
-		MaxChopScore:         50,
+		Window:                bullishWindow(100.0, 100.8, 99.9, 100.1, 15*time.Minute),
+		Previous:              []AggregatedWindow{bullishWindow(100.0, 100.7, 99.8, 100.05, 0)},
+		EstimatedCostBPS:      1,
+		CostMultipleRequired:  1,
+		MaxChopScore:          50,
+		DecisionWindowMinutes: 15,
 	})
-	if !result.HardBlock {
-		t.Fatal("HardBlock = false, want true for high chop window")
+	if result.HardBlock {
+		t.Fatal("HardBlock = true, want side-specific gating to happen in selectDecision")
+	}
+	if !containsReason(result.ReasonCodes, "15M_CHOP") {
+		t.Fatalf("ReasonCodes = %v, want 15M_CHOP", result.ReasonCodes)
+	}
+}
+
+func TestFastAccumulationRetainsOnlyRequiredCompletedWindows(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.EstimatedCostBPS = 1
+	cfg.CostMultipleRequired = 1
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	collectDecisions(t, strat, append(sample5mTrendCandles(), sampleFutureShockCandles()...), State{})
+	if got := len(strat.completedWindows); got != 4 {
+		t.Fatalf("len(completedWindows) = %d, want 4", got)
+	}
+}
+
+func TestFastAccumulationEntryCountOnDayRollsAcrossDayBoundaries(t *testing.T) {
+	t.Parallel()
+
+	strat := &FastAccumulation{}
+	firstDayEnd := time.Date(2026, 6, 27, 0, 14, 59, 999000000, time.UTC).UnixMilli()
+	secondDayEnd := time.Date(2026, 6, 28, 0, 14, 59, 999000000, time.UTC).UnixMilli()
+	strat.recordDecision(WindowDecision{Action: ActionFullLong, WindowEndMS: firstDayEnd})
+	strat.recordDecision(WindowDecision{Action: ActionProbeShort, WindowEndMS: firstDayEnd + int64(15*time.Minute/time.Millisecond)})
+	strat.recordDecision(WindowDecision{Action: ActionFullLong, WindowEndMS: secondDayEnd})
+
+	if got := strat.entryCountOnDay(firstDayEnd); got != 2 {
+		t.Fatalf("entryCountOnDay(first) = %d, want 2", got)
+	}
+	if got := strat.entryCountOnDay(secondDayEnd); got != 1 {
+		t.Fatalf("entryCountOnDay(second) = %d, want 1", got)
+	}
+}
+
+func TestFastAccumulationDecisionsSnapshotUnaffectedByStateTrim(t *testing.T) {
+	t.Parallel()
+
+	cfg := DefaultFastAccumulationConfig()
+	cfg.EstimatedCostBPS = 1
+	cfg.CostMultipleRequired = 1
+	strat, err := NewFastAccumulation(cfg)
+	if err != nil {
+		t.Fatalf("NewFastAccumulation() error = %v", err)
+	}
+
+	decisions := collectDecisions(t, strat, append(sample5mTrendCandles(), sampleFutureShockCandles()...), State{})
+	snapshot := strat.DecisionsSnapshot()
+	if !reflect.DeepEqual(snapshot, decisions) {
+		t.Fatalf("DecisionsSnapshot() mismatch: got %#v want %#v", snapshot, decisions)
 	}
 }
 
@@ -655,6 +869,49 @@ func TestFastAccumulationBreakoutRetestWaitsForRetest(t *testing.T) {
 
 	if got := strat.entryQualityBlockReason(strat.completedWindows[1], scored, SideLong); got != "ENTRY_REQUIRES_BREAKOUT_RETEST" {
 		t.Fatalf("entryQualityBlockReason() = %q, want ENTRY_REQUIRES_BREAKOUT_RETEST", got)
+	}
+}
+
+func TestFastAccumulationTrimmedWindowsStillBuildHourlyContext(t *testing.T) {
+	t.Parallel()
+
+	windows := []AggregatedWindow{
+		bullishWindow(100, 101, 99, 100.5, 0),
+		bullishWindow(100.5, 102, 100.4, 101.8, 15*time.Minute),
+		bullishWindow(101.8, 103, 101.6, 102.7, 30*time.Minute),
+		bullishWindow(102.7, 104, 102.6, 103.8, 45*time.Minute),
+	}
+
+	hourly, ok := BuildHourlyContext(windows)
+	if !ok {
+		t.Fatal("BuildHourlyContext() = false, want true with trimmed 4-window state")
+	}
+	if hourly.Open != windows[0].Open || hourly.Close != windows[len(windows)-1].Close {
+		t.Fatalf("hourly context mismatch: got open=%f close=%f", hourly.Open, hourly.Close)
+	}
+}
+
+func TestFastAccumulationBreakoutRetestWorksAfterWindowTrim(t *testing.T) {
+	t.Parallel()
+
+	strat := &FastAccumulation{
+		cfg: EntryVariantBreakoutRetestConfig(),
+		completedWindows: []AggregatedWindow{
+			bullishWindow(100, 101, 99, 100.5, 0),
+			bullishWindow(100.5, 102, 100.4, 101.8, 15*time.Minute),
+			bullishWindow(101.8, 103, 101.6, 102.9, 30*time.Minute),
+			bullishWindow(102.9, 103.6, 102.7, 103.4, 45*time.Minute),
+		},
+		recentCandles: []protocol.Candle{
+			test5mCandle(9, 102.9, 103.4, 102.8, 103.2),
+			test5mCandle(10, 103.2, 103.3, 102.9, 103.05),
+			test5mCandle(11, 103.05, 103.5, 103.0, 103.3),
+		},
+	}
+	scored := ScoreResult{BreakoutScore: 60}
+
+	if got := strat.entryQualityBlockReason(strat.completedWindows[3], scored, SideLong); got != "" {
+		t.Fatalf("entryQualityBlockReason() = %q, want breakout retest to remain tradeable after trim", got)
 	}
 }
 

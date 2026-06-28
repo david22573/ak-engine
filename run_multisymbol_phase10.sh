@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+
 mkdir -p runs/features runs/regimes runs/reports
 
 for SYM in BTCUSDT ETHUSDT SOLUSDT ADAUSDT DOGEUSDT BNBUSDT XRPUSDT AVAXUSDT; do
@@ -17,7 +19,7 @@ for SYM in BTCUSDT ETHUSDT SOLUSDT ADAUSDT DOGEUSDT BNBUSDT XRPUSDT AVAXUSDT; do
     echo "Building features for $SYM with context $CTX"
     go run ./cmd/ak-engine build-features \
       --source local-parquet \
-      --path ../ak-historian/.ak-historian/work \
+      --path "$HISTORIAN_WORKDIR" \
       --market futures-um \
       --symbol $SYM \
       --interval 1m \

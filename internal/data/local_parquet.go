@@ -64,14 +64,24 @@ func (s *LocalParquetSource) LoadCandles(ctx context.Context, req CandleRequest)
 		return nil, fmt.Errorf("empty path")
 	}
 
-	pattern := filepath.Join(req.Path, "candles", req.Market, req.Interval, "symbol="+req.Symbol, "year=*", "month=*", "*.parquet")
-	matches, err := filepath.Glob(pattern)
-	if err != nil {
-		return nil, fmt.Errorf("glob pattern failed: %w", err)
+	pattern1 := filepath.Join(req.Path, "candles", req.Market, req.Interval, "symbol="+req.Symbol, "year=*", "month=*", "*.parquet")
+	pattern2 := filepath.Join(req.Path, req.Market, req.Interval, req.Symbol, "monthly", "*", "*.parquet")
+	matches1, _ := filepath.Glob(pattern1)
+	matches2, _ := filepath.Glob(pattern2)
+	
+	uniqueMatches := make(map[string]bool)
+	var matches []string
+	
+	for _, m := range append(matches1, matches2...) {
+		base := filepath.Base(m)
+		if !uniqueMatches[base] {
+			uniqueMatches[base] = true
+			matches = append(matches, m)
+		}
 	}
 
 	if len(matches) == 0 {
-		return nil, fmt.Errorf("no matching files found under path: %s", req.Path)
+		return nil, fmt.Errorf("no matching files found under path: %s (tried %s and %s)", req.Path, pattern1, pattern2)
 	}
 
 	// Filter files by date range

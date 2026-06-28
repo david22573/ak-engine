@@ -66,11 +66,14 @@ type FastAccumulationConfig struct {
 }
 
 type FastAccumulation struct {
-	cfg           FastAccumulationConfig
-	aggWindow        *WindowAggregator
-	completedWindows  []AggregatedWindow
-	recentCandles []protocol.Candle
-	decisions     []WindowDecision
+	cfg                FastAccumulationConfig
+	aggWindow          *WindowAggregator
+	completedWindows   []AggregatedWindow
+	recentCandles      []protocol.Candle
+	decisions          []WindowDecision
+	entryCountByDay    map[string]int
+	lastEntryWindowEnd int64
+	hasLastEntryWindow bool
 }
 
 func DefaultFastAccumulationConfig() FastAccumulationConfig {
@@ -228,7 +231,7 @@ func NewFastAccumulation(cfg FastAccumulationConfig) (*FastAccumulation, error) 
 		return nil, err
 	}
 	return &FastAccumulation{
-		cfg:    cfg,
+		cfg:       cfg,
 		aggWindow: aggWindow,
 	}, nil
 }
@@ -262,6 +265,7 @@ func (s *FastAccumulation) OnCandle(_ context.Context, state State, candle proto
 	}
 
 	s.completedWindows = append(s.completedWindows, *window)
+	s.trimCompletedWindows()
 	hourly, _ := BuildHourlyContext(s.completedWindows)
 	scored := ScoreWindow(ScoreInput{
 		Window:               *window,
@@ -274,7 +278,7 @@ func (s *FastAccumulation) OnCandle(_ context.Context, state State, candle proto
 	})
 
 	decision := s.selectDecision(state, *window, scored)
-	s.decisions = append(s.decisions, decision)
+	s.recordDecision(decision)
 	signal := s.signalFromDecision(state, decision)
 	signal.Decision = &decision
 	return signal, nil
@@ -319,6 +323,11 @@ func (s *FastAccumulation) selectDecision(state State, window AggregatedWindow, 
 	}
 
 	if state.HasPosition {
+		if blockedReason := s.sideSpecificHardBlockReason(state.PositionSide, scored); blockedReason != "" {
+			decision.Action = ActionExit
+			decision.ReasonCodes = appendReason(decision.ReasonCodes, blockedReason)
+			return decision
+		}
 		return s.positionDecision(state, decision, biasSide, edgeScore)
 	}
 
@@ -332,9 +341,9 @@ func (s *FastAccumulation) selectDecision(state State, window AggregatedWindow, 
 		decision.ReasonCodes = appendReason(decision.ReasonCodes, "SHORT_DISABLED")
 		return decision
 	}
-	if maxChopScore := s.maxChopScoreForSide(biasSide); maxChopScore > 0 && scored.ChopScore > maxChopScore {
+	if blockedReason := s.sideSpecificHardBlockReason(biasSide, scored); blockedReason != "" {
 		decision.Action = ActionNoTradeHardBlock
-		decision.ReasonCodes = appendReason(decision.ReasonCodes, fmt.Sprintf("%dM_CHOP", s.cfg.DecisionWindowMinutes))
+		decision.ReasonCodes = appendReason(decision.ReasonCodes, blockedReason)
 		return decision
 	}
 	if minTrendScore := s.minTrendScoreForSide(biasSide); minTrendScore > 0 && scored.TrendScore < minTrendScore {
@@ -745,25 +754,11 @@ func hasMomentumContinuation(candles []protocol.Candle, side Side) bool {
 }
 
 func (s *FastAccumulation) scoringCostMultipleRequired() float64 {
-	costMultiple := s.cfg.CostMultipleRequired
-	if s.cfg.LongCostMultipleRequired > 0 && (costMultiple == 0 || s.cfg.LongCostMultipleRequired < costMultiple) {
-		costMultiple = s.cfg.LongCostMultipleRequired
-	}
-	if s.cfg.ShortCostMultipleRequired > 0 && (costMultiple == 0 || s.cfg.ShortCostMultipleRequired < costMultiple) {
-		costMultiple = s.cfg.ShortCostMultipleRequired
-	}
-	return costMultiple
+	return s.cfg.CostMultipleRequired
 }
 
 func (s *FastAccumulation) scoringMaxChopScore() float64 {
-	maxChopScore := s.cfg.MaxChopScore
-	if s.cfg.LongMaxChopScore > maxChopScore {
-		maxChopScore = s.cfg.LongMaxChopScore
-	}
-	if s.cfg.ShortMaxChopScore > maxChopScore {
-		maxChopScore = s.cfg.ShortMaxChopScore
-	}
-	return maxChopScore
+	return s.cfg.MaxChopScore
 }
 
 func (s *FastAccumulation) entryRateLimitReason(windowEndMS int64) string {
@@ -783,20 +778,23 @@ func (s *FastAccumulation) entryRateLimitReason(windowEndMS int64) string {
 }
 
 func (s *FastAccumulation) entryCountOnDay(windowEndMS int64) int {
-	count := 0
 	targetDay := time.UnixMilli(windowEndMS).UTC().Format("2006-01-02")
-	for _, decision := range s.decisions {
-		if !isEntryAction(decision.Action) {
-			continue
-		}
-		if time.UnixMilli(decision.WindowEndMS).UTC().Format("2006-01-02") == targetDay {
-			count++
+	if s.entryCountByDay == nil {
+		s.entryCountByDay = make(map[string]int)
+		for _, decision := range s.decisions {
+			if isEntryAction(decision.Action) {
+				day := time.UnixMilli(decision.WindowEndMS).UTC().Format("2006-01-02")
+				s.entryCountByDay[day]++
+			}
 		}
 	}
-	return count
+	return s.entryCountByDay[targetDay]
 }
 
 func (s *FastAccumulation) lastEntryWindowEndMS() (int64, bool) {
+	if s.hasLastEntryWindow {
+		return s.lastEntryWindowEnd, true
+	}
 	for i := len(s.decisions) - 1; i >= 0; i-- {
 		if isEntryAction(s.decisions[i].Action) {
 			return s.decisions[i].WindowEndMS, true
@@ -819,4 +817,39 @@ func validateScoreBound(name string, value float64) error {
 		return fmt.Errorf("%s must be between 0 and 100", name)
 	}
 	return nil
+}
+
+func (s *FastAccumulation) trimCompletedWindows() {
+	const requiredWindows = 4
+	if len(s.completedWindows) <= requiredWindows {
+		return
+	}
+	s.completedWindows = append([]AggregatedWindow(nil), s.completedWindows[len(s.completedWindows)-requiredWindows:]...)
+}
+
+func (s *FastAccumulation) recordDecision(decision WindowDecision) {
+	s.decisions = append(s.decisions, decision)
+	if !isEntryAction(decision.Action) {
+		return
+	}
+	if s.entryCountByDay == nil {
+		s.entryCountByDay = make(map[string]int)
+	}
+	day := time.UnixMilli(decision.WindowEndMS).UTC().Format("2006-01-02")
+	s.entryCountByDay[day]++
+	s.lastEntryWindowEnd = decision.WindowEndMS
+	s.hasLastEntryWindow = true
+}
+
+func (s *FastAccumulation) sideSpecificHardBlockReason(side Side, scored ScoreResult) string {
+	if scored.EstimatedCostBPS <= 0 {
+		return "INVALID_COST"
+	}
+	if scored.ExpectedMoveBPS < scored.EstimatedCostBPS*s.costMultipleRequiredForSide(side) {
+		return "EXPECTED_MOVE_BELOW_COST"
+	}
+	if maxChopScore := s.maxChopScoreForSide(side); maxChopScore > 0 && scored.ChopScore >= maxChopScore {
+		return fmt.Sprintf("%dM_CHOP", s.cfg.DecisionWindowMinutes)
+	}
+	return ""
 }

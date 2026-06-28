@@ -674,7 +674,7 @@ func inferDeepCandlePath(explicit, market, interval, symbol string) (string, err
 		candidates = append(candidates, explicit)
 	}
 	candidates = append(candidates,
-		filepath.Join("..", "ak-historian", ".ak-historian", "work"),
+		defaultHistorianWorkdir,
 		filepath.Join(".ak-engine", "cache", "r2"),
 	)
 	for _, p := range candidates {

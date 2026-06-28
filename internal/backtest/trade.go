@@ -47,6 +47,9 @@ type Trade struct {
 	EstimatedCostBPS     float64       `json:"estimated_cost_bps"`
 	ExpectedMoveBPS      float64       `json:"expected_move_bps"`
 	RMultiple            float64       `json:"r_multiple"`
+	StructuralRMultiple  float64       `json:"structural_r_multiple"`
+	FillRMultiple        float64       `json:"fill_r_multiple"`
+	NetRMultiple         float64       `json:"net_r_multiple"`
 	InitialRiskBPS       float64       `json:"initial_risk_bps"`
 	RealizedRMultiple    float64       `json:"realized_r_multiple"`
 	MaxPossibleRMultiple float64       `json:"max_possible_r_multiple"`

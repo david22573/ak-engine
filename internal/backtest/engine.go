@@ -540,9 +540,13 @@ func summarizeDecisions(decisions []strategy.WindowDecision) FastAccumulationSum
 
 func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle protocol.Candle, idx int, baseExitPrice float64, reason ExitReason, equity float64) (Trade, float64, error) {
 	_ = candles
-	exitPrice, err := ApplySlippage(baseExitPrice, pos.Side, FillActionExit, e.cfg.SlippageBPS)
-	if err != nil {
-		return Trade{}, 0, err
+	exitPrice := baseExitPrice
+	if shouldApplyExitSlippage(reason) {
+		var err error
+		exitPrice, err = ApplySlippage(baseExitPrice, pos.Side, FillActionExit, e.cfg.SlippageBPS)
+		if err != nil {
+			return Trade{}, 0, err
+		}
 	}
 	exitNotional := exitPrice * pos.Quantity
 	exitFee, err := CalculateFee(exitNotional, e.cfg.Fees)
@@ -554,7 +558,12 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 	if pos.Side == strategy.SideShort {
 		finalGrossPnL = (pos.EntryPrice - exitPrice) * pos.Quantity
 	}
+	finalStructuralPnL := (baseExitPrice - pos.BaseEntryPrice) * pos.Quantity
+	if pos.Side == strategy.SideShort {
+		finalStructuralPnL = (pos.BaseEntryPrice - baseExitPrice) * pos.Quantity
+	}
 	slippagePaid := pos.RealizedSlippage + calculateSlippagePaid(pos.Side, pos.Quantity, pos.BaseEntryPrice, pos.EntryPrice, baseExitPrice, exitPrice)
+	structuralPnL := pos.RealizedStructuralPnL + finalStructuralPnL
 	grossPnL := pos.RealizedGrossPnL + finalGrossPnL
 	totalFees := pos.EntryFee + pos.RealizedFees + exitFee
 	netPnL := grossPnL - totalFees
@@ -595,7 +604,9 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 		initialRiskBPS = (plannedRisk / pos.EntryPrice) * 10000
 	}
 	riskDollars := pos.OriginalNotional * initialRiskBPS / 10000
-	rMultiple := 0.0
+	structuralRMultiple := 0.0
+	fillRMultiple := 0.0
+	netRMultiple := 0.0
 	realizedRMultiple := 0.0
 	maxPossibleRMultiple := 0.0
 	adverseRMultiple := 0.0
@@ -603,12 +614,17 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 	mfeR := 0.0
 	if plannedRisk > 0 {
 		if pos.Side == strategy.SideLong {
-			rMultiple = (exitPrice - pos.EntryPrice) / plannedRisk
+			structuralRMultiple = (baseExitPrice - pos.BaseEntryPrice) / plannedRisk
+			fillRMultiple = (exitPrice - pos.EntryPrice) / plannedRisk
 		} else if pos.Side == strategy.SideShort {
-			rMultiple = (pos.EntryPrice - exitPrice) / plannedRisk
+			structuralRMultiple = (pos.BaseEntryPrice - baseExitPrice) / plannedRisk
+			fillRMultiple = (pos.EntryPrice - exitPrice) / plannedRisk
 		}
 	}
 	if riskDollars > 0 {
+		structuralRMultiple = structuralPnL / riskDollars
+		fillRMultiple = grossPnL / riskDollars
+		netRMultiple = netPnL / riskDollars
 		realizedRMultiple = netPnL / riskDollars
 		maxPossibleRMultiple = mfeBPS / initialRiskBPS
 		adverseRMultiple = maeBPS / initialRiskBPS
@@ -648,7 +664,10 @@ func (e *Engine) closePosition(candles []protocol.Candle, pos Position, candle p
 		RiskFraction:         pos.RiskFraction,
 		EstimatedCostBPS:     pos.EstimatedCostBPS,
 		ExpectedMoveBPS:      pos.ExpectedMoveBPS,
-		RMultiple:            rMultiple,
+		RMultiple:            fillRMultiple,
+		StructuralRMultiple:  structuralRMultiple,
+		FillRMultiple:        fillRMultiple,
+		NetRMultiple:         netRMultiple,
 		InitialRiskBPS:       initialRiskBPS,
 		RealizedRMultiple:    realizedRMultiple,
 		MaxPossibleRMultiple: maxPossibleRMultiple,
@@ -757,10 +776,7 @@ func (e *Engine) applyPartialTakeProfit(pos *Position, candle protocol.Candle, r
 	if partialQty <= 0 || partialQty >= pos.Quantity {
 		return nil
 	}
-	exitPrice, err := ApplySlippage(targetPrice, pos.Side, FillActionExit, e.cfg.SlippageBPS)
-	if err != nil {
-		return err
-	}
+	exitPrice := targetPrice
 	exitNotional := exitPrice * partialQty
 	exitFee, err := CalculateFee(exitNotional, e.cfg.Fees)
 	if err != nil {
@@ -770,6 +786,11 @@ func (e *Engine) applyPartialTakeProfit(pos *Position, candle protocol.Candle, r
 	if pos.Side == strategy.SideShort {
 		grossPnL = (pos.EntryPrice - exitPrice) * partialQty
 	}
+	structuralPnL := (targetPrice - pos.BaseEntryPrice) * partialQty
+	if pos.Side == strategy.SideShort {
+		structuralPnL = (pos.BaseEntryPrice - targetPrice) * partialQty
+	}
+	pos.RealizedStructuralPnL += structuralPnL
 	pos.RealizedGrossPnL += grossPnL
 	pos.RealizedFees += exitFee
 	pos.RealizedSlippage += calculateSlippagePaid(pos.Side, partialQty, pos.BaseEntryPrice, pos.EntryPrice, targetPrice, exitPrice)
@@ -860,6 +881,10 @@ func calculateSlippagePaid(side strategy.Side, qty, baseEntryPrice, entryPrice, 
 		exitPaid = (exitPrice - baseExitPrice) * qty
 	}
 	return entryPaid + exitPaid
+}
+
+func shouldApplyExitSlippage(reason ExitReason) bool {
+	return reason != ExitReasonTakeProfit
 }
 
 func boolToInt(v bool) int {
