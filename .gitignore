@@ -26,6 +26,7 @@ go.work.sum
 
 # env file
 .env
+termux_worker.env
 
 # Editor/IDE
 # .idea/

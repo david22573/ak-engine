@@ -267,6 +267,76 @@ func TestCompactCoverageOutputWritingAndInventoryCounts(t *testing.T) {
 	}
 }
 
+func TestWriteCompactCoverageAndInventoryOutputsCoverageOnlyWithoutTargetCandidate(t *testing.T) {
+	chunksDir := t.TempDir()
+	reportsDir := t.TempDir()
+	writeRetainedTestChunk(t, chunksDir, "XRPUSDT", "2024-01", []FundingAlphaSummaryRow{
+		{
+			Symbol:  "XRPUSDT",
+			Year:    "2024",
+			Quarter: "2024-Q1",
+			Month:   "2024-01",
+			Family:  "FundingFlipShort",
+			Side:    "short",
+			Horizon: "120m",
+			Stats: FundingMetrics{
+				EventCount:                 100,
+				RawEventCount:              100,
+				DeClusteredEventCount:      10,
+				ClusterCount:               10,
+				PFCombined_5bps:            1.2,
+				ExpectancyCombined_5bpsBps: 1.5,
+				CostStress: []FundingCostStressMetric{
+					{CostBps: 5, EventCount: 100, DeClusteredEventCount: 10, ExpectancyBps: 1.5, PF: 1.2},
+				},
+				DelayStress: []FundingDelayStressMetric{
+					{DelayCandles: 0, Label: "baseline", Available: true, EventCount: 100, DeClusteredEventCount: 10, ExpectancyBps: 1.5, PF: 1.2},
+				},
+			},
+		},
+	}, FundingChunkSummary{Status: "PASS", EventCount: 100})
+
+	prevSymbols, prevFrom, prevTo := acompSymbols, acompFrom, acompTo
+	prevInvFamily, prevInvSide, prevInvHorizon := ainvFamily, ainvSide, ainvHorizon
+	t.Cleanup(func() {
+		acompSymbols, acompFrom, acompTo = prevSymbols, prevFrom, prevTo
+		ainvFamily, ainvSide, ainvHorizon = prevInvFamily, prevInvSide, prevInvHorizon
+	})
+	acompSymbols = "ADAUSDT,XRPUSDT"
+	acompFrom = "2024-01"
+	acompTo = "2024-01"
+	ainvFamily, ainvSide, ainvHorizon = "", "", ""
+
+	inventoryCfg, err := writeCompactCoverageAndInventoryOutputs(compactSummaryAnalyzerConfig{
+		ChunksDir:  chunksDir,
+		ReportsDir: reportsDir,
+	}, "COVERAGE_ONLY")
+	if err != nil {
+		t.Fatalf("writeCompactCoverageAndInventoryOutputs error: %v", err)
+	}
+	if inventoryCfg.Family != "" || inventoryCfg.Side != "" || inventoryCfg.Horizon != "" {
+		t.Fatalf("inventory cfg=%+v want unscoped inventory", inventoryCfg)
+	}
+
+	data, err := os.ReadFile(filepath.Join(reportsDir, "phase10_8c_retained_coverage.json"))
+	if err != nil {
+		t.Fatalf("read coverage json error: %v", err)
+	}
+	var coverage retainedCoverageReport
+	if err := json.Unmarshal(data, &coverage); err != nil {
+		t.Fatalf("unmarshal coverage error: %v", err)
+	}
+	if coverage.FinalLabel != "COVERAGE_ONLY" {
+		t.Fatalf("final label=%q", coverage.FinalLabel)
+	}
+	if got := strings.Join(coverage.FoundSymbols, ","); got != "XRPUSDT" {
+		t.Fatalf("found symbols=%q", got)
+	}
+	if got := strings.Join(coverage.MissingSymbols, ","); got != "ADAUSDT" {
+		t.Fatalf("missing symbols=%q", got)
+	}
+}
+
 func TestRankedInventoryOutputPathsScoped(t *testing.T) {
 	reportsDir := t.TempDir()
 	jsonPath, mdPath := rankedInventoryOutputPaths(reportsDir, compactSummaryAnalyzerConfig{

@@ -6,6 +6,24 @@
 - Do not change research math, scoring, event definitions, or cost assumptions.
 - Preserve CLI commands and report schemas unless adding backward-compatible aliases.
 - Keep low-resource constraints: monthly chunks, max rows, reports-only retention, resumable manifests, summary-only operation.
+- Respect low-storage execution constraints from pasted setup guidance:
+  - Treat the Chromebook as planner/reviewer plus final artifact holder, not the raw-regeneration worker.
+  - Treat the Termux phone as the heavy batch worker for monthly chunk generation, temporary raw event files, caches, and long tmux jobs.
+  - Run symbol-by-symbol and month-by-month; do not run all symbols and months in one raw job.
+  - Retain only compact `*-alpha-summary.json` files and final phase reports; delete heavy raw `*.jsonl`, `*.jsonl.gz`, and `*events*.json` files after summaries are produced.
+  - Keep final outputs under `runs/reports` or `runs/reports/chunks`, never only in `/tmp`.
+- Use repo-local Go caches when running on storage-constrained or sandboxed environments:
+  - `GOCACHE=$PWD/.cache/go-build`
+  - `GOMODCACHE=$PWD/.cache/go-mod`
+  - `GOWORK=off`
+  - `GOTOOLCHAIN=local`
+- Shared agent context for the Termux phone worker:
+  - SSH target: `davidmiguel22573@192.168.1.79` on port `8022`
+  - Key-based SSH is installed; password should not be needed for routine access now
+  - Standard remote repo base: `$HOME/Github`
+  - Standard remote repos present: `ak-engine`, `ak-historian`, `ak-scout`, `ak-trader`
+  - Standard remote `ak-engine` path: `$HOME/Github/ak-engine`
+  - Standard remote tmux session for long runs: `ak-engine-109c`
 - Stop and report exact verification failure before patching around it.
 
 ## Baseline Context
@@ -35,7 +53,19 @@
 - `completedWindows` can be trimmed to 4 without losing required context for `BuildHourlyContext`, breakout-retest entry checks, or `DecisionsSnapshot`.
 - Rolling day entry counting now uses UTC day keys and matches prior `entryCountOnDay` behavior across day boundaries while avoiding rescans on every check.
 - Deterministic local smoke report using `testdata/candles/btc_5m_fast_accumulation_sample.json` under `fast_accumulation_strict` produced one stop-loss trade, so it does not exercise the TP-no-slip path; that smoke is valid for regeneration proof but not for before/after TP metric deltas.
+- `analyze-compact-robustness` needed an explicit `--coverage-only` mode for Phase 10.9C because the retained-coverage recovery workflow must still emit reports even when no target `NegativeFundingLong/long` candidate exists.
+- The first live phone-worker helper run exposed a wrapper bug: `run-symbol` incorrectly passed `--max-months 1`, which caused a full-range symbol run to stop after rebuilding a single month and then fail aggregate with `pipeline_blocked_missing_ephemeral_chunks`.
+- The next live phone-worker blocker was external: Termux had the monthly funding-rate parquet files for all seven missing symbols, but did not have `duckdb` installed, so `join-research-features` could not read parquet derivatives.
+- After installing Termux `duckdb`, the live `LINKUSDT` worker run began progressing correctly month-by-month while retaining `*-alpha-summary.json`, `*-funding-summary.json`, `*-funding-diagnostics.json`, and `*-context-audit.json`, and deleting the three heavy per-month JSON intermediates.
+- Empirical live worker cleanup evidence for `LINKUSDT`:
+  - `2024-01`: `summary_status=PASS`, `event_rows=78278`, `bytes_freed=141255143`
+  - `2024-02`: `summary_status=PASS`, `event_rows=56388`, `bytes_freed=132447708`
+  - `2024-03`: `summary_status=PASS`, `event_rows=30158`, `bytes_freed=142844460`
 
 ## Remaining Risks
 - Many research and app files were already modified or untracked before this task; preserve them unless directly needed.
 - The local smoke target does not include a take-profit exit, so historical metric impact for the TP-no-slip fix is bounded by code-path analysis and unit tests rather than by a paired TP before/after artifact in this workspace.
+- Heavy multi-symbol raw regeneration is a poor fit for the Chromebook storage budget; future phase 10.8C/10.9C style work should prefer SSH/tmux execution on the Termux phone worker and copy back only summaries/reports.
+- Local sandboxed SSH behavior can differ from unsandboxed execution because of host SSH config and missing local `rsync`; the sync helper now supports `tar` over SSH fallback, and out-of-sandbox execution may still be needed for some live remote operations.
+- The exact low-storage pipeline contract is subtle: per-chunk event JSONL cannot be disabled up front because pipeline verification reads it before cleanup; the correct storage-safe path is to retain event detail during the run and use `--summary-only-after-aggregate` to delete raw event files after aggregate reports are written.
+- The active `LINKUSDT` worker run is still in flight; full-universe readiness cannot be decided until the phone-side run completes, raw event files are removed after aggregate, compact outputs are pulled back, and Chromebook retained coverage is rerun.

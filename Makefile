@@ -1,4 +1,4 @@
-.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 help
+.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 termux-worker-remote-mkdir termux-worker-push termux-worker-pull-summaries termux-worker-pull-reports phase10-9c-coverage phase10-9c-run-symbol phase10-9c-raw-files help
  
 # Default target
 all: build
@@ -188,6 +188,35 @@ proof-r2: ci
 		exit 1; \
 	fi
 	go run ./cmd/ak-engine inspect-dataset --source r2 --market futures-um --symbol LINKUSDT --interval 1m --from 2023-01-01 --to 2023-01-31 --format json
+
+## termux-worker-remote-mkdir: Create the remote repo directory using termux_worker.env or PHONE_HOST
+termux-worker-remote-mkdir:
+	./scripts/termux_worker_sync.sh remote-mkdir
+
+## termux-worker-push: Push the repo to the Termux phone worker
+termux-worker-push:
+	./scripts/termux_worker_sync.sh push
+
+## termux-worker-pull-summaries: Pull compact summaries from the Termux phone worker
+termux-worker-pull-summaries:
+	./scripts/termux_worker_sync.sh pull-summaries
+
+## termux-worker-pull-reports: Pull phase reports and chunk outputs from the Termux phone worker
+termux-worker-pull-reports:
+	./scripts/termux_worker_sync.sh pull-reports
+
+## phase10-9c-coverage: Scan retained compact-summary coverage and ranked inventory
+phase10-9c-coverage:
+	./scripts/phase10_9c_phone_worker.sh coverage
+
+## phase10-9c-run-symbol: Run one-symbol 10.9C funding regeneration with post-aggregate raw cleanup
+phase10-9c-run-symbol:
+	@if [ -z "$(SYMBOL)" ]; then echo "SYMBOL is required"; exit 1; fi
+	./scripts/phase10_9c_phone_worker.sh run-symbol "$(SYMBOL)" "$(if $(FROM),$(FROM),2024-01)" "$(if $(TO),$(TO),2025-12)"
+
+## phase10-9c-raw-files: Show remaining heavy raw files under runs/
+phase10-9c-raw-files:
+	./scripts/phase10_9c_phone_worker.sh raw-files "$(SYMBOL)"
 
 ## help: Show help
 help:

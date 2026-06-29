@@ -263,6 +263,7 @@ var (
 	acompFamily  string
 	acompSide    string
 	acompHorizon string
+	acompCoverageOnly bool
 	ainvFamily   string
 	ainvSide     string
 	ainvHorizon  string
@@ -281,33 +282,25 @@ var analyzeCompactRobustnessCmd = &cobra.Command{
 			Side:       strings.ToLower(strings.TrimSpace(acompSide)),
 			Horizon:    strings.TrimSpace(acompHorizon),
 		}
-		report, gate, err := runCompactRobustnessAnalysis(cfg)
+		finalLabel := "COVERAGE_ONLY"
+		if !acompCoverageOnly {
+			report, gate, err := runCompactRobustnessAnalysis(cfg)
+			if err != nil {
+				return err
+			}
+			if err := writeCompactRobustnessOutputs(cfg.ReportsDir, report, gate); err != nil {
+				return err
+			}
+			finalLabel = report.FinalLabel
+		}
+		inventoryCfg, err := writeCompactCoverageAndInventoryOutputs(cfg, finalLabel)
 		if err != nil {
 			return err
 		}
-		if err := writeCompactRobustnessOutputs(cfg.ReportsDir, report, gate); err != nil {
-			return err
+		if !acompCoverageOnly {
+			fmt.Printf("Phase 10.8 compact robustness written to %s\n", filepath.Join(cfg.ReportsDir, "phase10_8_compact_robustness.md"))
+			fmt.Printf("Phase 10.8 promotion gate written to %s\n", filepath.Join(cfg.ReportsDir, "phase10_8_promotion_gate.md"))
 		}
-		scan, err := scanRetainedAlphaSummaries(cfg.ChunksDir)
-		if err != nil {
-			return err
-		}
-		coverage := buildRetainedCoverageReport(retainedCoverageInputs{
-			ExpectedSymbols: expectedCompactCoverageSymbols(acompSymbols),
-			ExpectedMonths:  expectedCompactCoverageMonths(acompFrom, acompTo),
-		}, scan, report.FinalLabel)
-		inventoryCfg := compactSummaryAnalyzerConfig{
-			Family:  strings.TrimSpace(ainvFamily),
-			Side:    strings.ToLower(strings.TrimSpace(ainvSide)),
-			Horizon: strings.TrimSpace(ainvHorizon),
-		}
-		inventoryCandidates := buildRankedInventoryCandidates(scan, inventoryCfg, defaultCompactThresholds())
-		inventory := buildRankedInventoryReport(inventoryCandidates, coverage, report.FinalLabel, inventoryCfg)
-		if err := writeCompactCoverageOutputs(cfg.ReportsDir, coverage, inventory, inventoryCfg); err != nil {
-			return err
-		}
-		fmt.Printf("Phase 10.8 compact robustness written to %s\n", filepath.Join(cfg.ReportsDir, "phase10_8_compact_robustness.md"))
-		fmt.Printf("Phase 10.8 promotion gate written to %s\n", filepath.Join(cfg.ReportsDir, "phase10_8_promotion_gate.md"))
 		fmt.Printf("Phase 10.8C retained coverage written to %s\n", filepath.Join(cfg.ReportsDir, "phase10_8c_retained_coverage.md"))
 		_, inventoryMDPath := rankedInventoryOutputPaths(cfg.ReportsDir, inventoryCfg)
 		fmt.Printf("Phase 10.8 ranked inventory written to %s\n", inventoryMDPath)
@@ -324,10 +317,33 @@ func init() {
 	analyzeCompactRobustnessCmd.Flags().StringVar(&acompFamily, "family", "NegativeFundingLong", "candidate family")
 	analyzeCompactRobustnessCmd.Flags().StringVar(&acompSide, "side", "long", "candidate side")
 	analyzeCompactRobustnessCmd.Flags().StringVar(&acompHorizon, "horizon", "", "candidate horizon")
+	analyzeCompactRobustnessCmd.Flags().BoolVar(&acompCoverageOnly, "coverage-only", false, "write retained coverage and ranked inventory without requiring a target candidate")
 	analyzeCompactRobustnessCmd.Flags().StringVar(&ainvFamily, "inventory-family", "", "ranked inventory family filter (empty scans all retained candidates)")
 	analyzeCompactRobustnessCmd.Flags().StringVar(&ainvSide, "inventory-side", "", "ranked inventory side filter (empty scans all retained candidates)")
 	analyzeCompactRobustnessCmd.Flags().StringVar(&ainvHorizon, "inventory-horizon", "", "ranked inventory horizon filter (empty scans all retained candidates)")
 	rootCmd.AddCommand(analyzeCompactRobustnessCmd)
+}
+
+func writeCompactCoverageAndInventoryOutputs(cfg compactSummaryAnalyzerConfig, finalLabel string) (compactSummaryAnalyzerConfig, error) {
+	scan, err := scanRetainedAlphaSummaries(cfg.ChunksDir)
+	if err != nil {
+		return compactSummaryAnalyzerConfig{}, err
+	}
+	coverage := buildRetainedCoverageReport(retainedCoverageInputs{
+		ExpectedSymbols: expectedCompactCoverageSymbols(acompSymbols),
+		ExpectedMonths:  expectedCompactCoverageMonths(acompFrom, acompTo),
+	}, scan, finalLabel)
+	inventoryCfg := compactSummaryAnalyzerConfig{
+		Family:  strings.TrimSpace(ainvFamily),
+		Side:    strings.ToLower(strings.TrimSpace(ainvSide)),
+		Horizon: strings.TrimSpace(ainvHorizon),
+	}
+	inventoryCandidates := buildRankedInventoryCandidates(scan, inventoryCfg, defaultCompactThresholds())
+	inventory := buildRankedInventoryReport(inventoryCandidates, coverage, finalLabel, inventoryCfg)
+	if err := writeCompactCoverageOutputs(cfg.ReportsDir, coverage, inventory, inventoryCfg); err != nil {
+		return compactSummaryAnalyzerConfig{}, err
+	}
+	return inventoryCfg, nil
 }
 
 func runCompactRobustnessAnalysis(cfg compactSummaryAnalyzerConfig) (compactRobustnessReport, compactPromotionGateReport, error) {
