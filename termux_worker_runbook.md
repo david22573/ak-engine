@@ -72,10 +72,18 @@ make termux-worker-pull-summaries
 make termux-worker-pull-reports
 ```
 
+If the local machine has a broken system SSH config snippet and direct helper calls fail with a message like `Bad owner or permissions on /etc/ssh/ssh_config.d/...`, set:
+
+```bash
+SSH_CONFIG_FILE=/dev/null
+```
+
+in `termux_worker.env` so the helper ignores system SSH config includes.
+
 Inline override still works:
 
 ```bash
-PHONE_HOST=<user@host-or-ssh-alias> PHONE_REPO='$HOME/Github/ak-engine' SSH_ARGS='-p 8022' scripts/termux_worker_sync.sh push
+PHONE_HOST=<user@host-or-ssh-alias> PHONE_REPO='$HOME/Github/ak-engine' SSH_CONFIG_FILE=/dev/null SSH_ARGS='-p 8022' scripts/termux_worker_sync.sh push
 ```
 
 ## Execution rules

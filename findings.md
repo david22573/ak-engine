@@ -61,11 +61,46 @@
   - `2024-01`: `summary_status=PASS`, `event_rows=78278`, `bytes_freed=141255143`
   - `2024-02`: `summary_status=PASS`, `event_rows=56388`, `bytes_freed=132447708`
   - `2024-03`: `summary_status=PASS`, `event_rows=30158`, `bytes_freed=142844460`
+- Local helper-backed pulls can fail on this Chromebook because the system SSH config contains a permissions problem at `/etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf`; direct `ssh -F /dev/null -p 8022 ... | tar ...` works and was required to pull `LINKUSDT` summaries/reports back successfully.
+- `scripts/termux_worker_sync.sh` now has a repo-level fix for that Chromebook SSH-config issue: optional `SSH_CONFIG_FILE` prepends `-F <path>` to raw SSH and rsync transport calls, so helper-backed pull/push commands can use `SSH_CONFIG_FILE=/dev/null` instead of manual one-off SSH pipelines.
+- `LINKUSDT` is now fully retained locally on the Chromebook alongside `XRPUSDT`; the retained coverage state advanced to `partial_universe_only`, not full universe.
+- `SOLUSDT` reproduced a second real data-path issue distinct from funding-rate availability:
+  - funding-rate parquet existed for all required months under `datasets/derivatives/.../symbol=SOLUSDT/...`
+  - partitioned candle parquet also existed under `work/candles/futures-um/1m/symbol=SOLUSDT/...`
+  - but `build-features --source local-parquet` still failed because the direct candle layout consumed by the pipeline lacked the required `2024-01..2025-12` files under `work/futures-um/1m/SOLUSDT/monthly/...`
+- Phone-native `ak-historian fetch --market futures-um --symbols SOLUSDT --interval 1m --period monthly --start 2024-01 --end 2025-12 --force --workdir "$HOME/Github/ak-historian/.ak-historian/work" --keep` repaired the missing direct candle months:
+  - summary: `planned=24`, `uploaded=24`, `failed=0`
+  - manual verification afterward: `build-features` for `SOLUSDT 2024-01` passed with `44640` rows
+- The relaunched `SOLUSDT` worker is active in remote tmux session `ak-engine-109c-sol`, and fresh feature/regime chunk files now exist for `SOLUSDT/2024-01`; however, the pipeline markdown report and manifest entry are still stale from the earlier failed attempt, so live progress currently has to be inferred from process state and new artifact writes rather than those summary files.
+- More detailed live `SOLUSDT` behavior after the relaunch:
+  - remote chunk outputs now include completed report artifacts for at least `2024-01` and `2024-02`
+  - direct phone-side alpha-summary listing currently shows completed months `2024-01` and `2024-02`
+  - both `2024-01` and `2024-02` alpha summaries have already been pulled back locally with the patched helper
+  - local retained coverage now recognizes `SOLUSDT` as present, but only for months `2024-01` and `2024-02`
+  - the live `ak-engine phase10-funding-event-pipeline` child is still consuming CPU, and phone-side scratch files have already advanced into `2024-03`
+  - this confirms the run is advancing, but the manifest/report files are lagging behind actual chunk completion
+- Current stronger `SOLUSDT` conclusion:
+  - serial summary pulls and clean rescans have advanced the local retained mirror through `SOLUSDT 2025-07`
+  - phone-side and Chromebook-side completed `SOLUSDT` alpha-summary month sets matched at the last poll through `2025-07`
+  - the live pipeline process has already crossed into 2025 work and continues producing completed months without stalling at the year boundary
+  - `SOLUSDT` remains incomplete for the retained-universe gate because `2025-08 .. 2025-12` are still missing locally
+- A previous `malformed summary` warning was not underlying data corruption:
+  - root cause was running `pull-summaries` concurrently with the local retained-coverage scan
+  - once the workflow was made serial, `jq` validation passed and the coverage report returned to `malformed summaries: 0`
+  - future pull/scan cycles for this phase should never overlap
+- Refresh checkpoint on `2026-06-28`:
+  - the latest authoritative local retained-coverage report still shows `partial_universe_only`
+  - local retained symbols are `LINKUSDT`, `SOLUSDT`, and `XRPUSDT`
+  - local `SOLUSDT` coverage still stops at `2025-07`; months `2025-08 .. 2025-12` remain missing locally
+  - a fresh phone status check failed with `ssh: connect to host 192.168.1.79 port 8022: Connection refused`, so the current remote frontier could not be re-verified during this refresh turn
 
 ## Remaining Risks
 - Many research and app files were already modified or untracked before this task; preserve them unless directly needed.
 - The local smoke target does not include a take-profit exit, so historical metric impact for the TP-no-slip fix is bounded by code-path analysis and unit tests rather than by a paired TP before/after artifact in this workspace.
 - Heavy multi-symbol raw regeneration is a poor fit for the Chromebook storage budget; future phase 10.8C/10.9C style work should prefer SSH/tmux execution on the Termux phone worker and copy back only summaries/reports.
 - Local sandboxed SSH behavior can differ from unsandboxed execution because of host SSH config and missing local `rsync`; the sync helper now supports `tar` over SSH fallback, and out-of-sandbox execution may still be needed for some live remote operations.
+- The sync helper still needs hardening for the Chromebook SSH-config edge case so `make termux-worker-pull-summaries` and `make termux-worker-pull-reports` can use a clean SSH config path instead of failing on `/etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf`.
+- The previous sync-helper hardening risk is now reduced: `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` has been verified locally against the live phone target.
 - The exact low-storage pipeline contract is subtle: per-chunk event JSONL cannot be disabled up front because pipeline verification reads it before cleanup; the correct storage-safe path is to retain event detail during the run and use `--summary-only-after-aggregate` to delete raw event files after aggregate reports are written.
-- The active `LINKUSDT` worker run is still in flight; full-universe readiness cannot be decided until the phone-side run completes, raw event files are removed after aggregate, compact outputs are pulled back, and Chromebook retained coverage is rerun.
+- The active `SOLUSDT` worker run is still in flight; full-universe readiness cannot be decided until the phone-side run completes, raw event files are removed after aggregate, compact outputs are pulled back, and Chromebook retained coverage is rerun again.
+- The phone is temporarily unreachable from the Chromebook refresh environment (`connection refused` on `192.168.1.79:8022`), so immediate phone sync verification is blocked on the Termux SSH service or device network coming back.

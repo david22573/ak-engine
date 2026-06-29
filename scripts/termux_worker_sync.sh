@@ -10,6 +10,7 @@ PHONE_REPO=${PHONE_REPO:-\$HOME/Github/ak-engine}
 ENV_FILE=${ENV_FILE:-${DEFAULT_ENV_FILE}}
 SSH_BIN=${SSH_BIN:-ssh}
 SSH_ARGS=${SSH_ARGS:-}
+SSH_CONFIG_FILE=${SSH_CONFIG_FILE:-}
 
 load_env_file() {
   if [[ -f "${ENV_FILE}" ]]; then
@@ -21,15 +22,18 @@ load_env_file() {
 ssh_args_array=()
 
 init_ssh_args() {
+  if [[ -n "${SSH_CONFIG_FILE}" ]]; then
+    ssh_args_array=(-F "${SSH_CONFIG_FILE}")
+  else
+    ssh_args_array=()
+  fi
   local source_args=${SSH_ARGS:-}
   if [[ -z "${source_args}" && -n "${RSYNC_RSH:-}" ]]; then
     source_args=${RSYNC_RSH#ssh}
   fi
   if [[ -n "${source_args}" ]]; then
     # shellcheck disable=SC2206
-    ssh_args_array=(${source_args})
-  else
-    ssh_args_array=()
+    ssh_args_array+=(${source_args})
   fi
 }
 
@@ -46,6 +50,9 @@ Environment:
   PHONE_REPO   Remote repo path. Defaults to $HOME/Github/ak-engine
   ENV_FILE     Optional env file. Defaults to ./termux_worker.env
   SSH_BIN      SSH binary. Defaults to ssh
+  SSH_CONFIG_FILE
+               Optional ssh config file path, for example '/dev/null' to ignore
+               broken system ssh config snippets on constrained hosts.
   SSH_ARGS     Optional SSH arguments, for example '-p 8022'
   RSYNC_RSH    Backward-compatible fallback; if set, SSH args are derived from it
 
@@ -94,8 +101,15 @@ push_repo_tar() {
 
 push_repo() {
   require_host
+  local rsync_ssh_cmd="${SSH_BIN}"
+  if [[ -n "${SSH_CONFIG_FILE}" ]]; then
+    rsync_ssh_cmd+=" -F ${SSH_CONFIG_FILE}"
+  fi
+  if [[ -n "${SSH_ARGS}" ]]; then
+    rsync_ssh_cmd+=" ${SSH_ARGS}"
+  fi
   if has_rsync; then
-    rsync -av --delete -e "${SSH_BIN} ${SSH_ARGS}" \
+    rsync -av --delete -e "${rsync_ssh_cmd}" \
       --exclude '.git' \
       --exclude '.cache' \
       --exclude 'runs/' \
@@ -120,8 +134,15 @@ pull_summaries_tar() {
 pull_summaries() {
   require_host
   mkdir -p "${LOCAL_REPO}/runs/reports/chunks"
+  local rsync_ssh_cmd="${SSH_BIN}"
+  if [[ -n "${SSH_CONFIG_FILE}" ]]; then
+    rsync_ssh_cmd+=" -F ${SSH_CONFIG_FILE}"
+  fi
+  if [[ -n "${SSH_ARGS}" ]]; then
+    rsync_ssh_cmd+=" ${SSH_ARGS}"
+  fi
   if has_rsync; then
-    rsync -av -e "${SSH_BIN} ${SSH_ARGS}" \
+    rsync -av -e "${rsync_ssh_cmd}" \
       --include '*/' \
       --include '*-alpha-summary.json' \
       --exclude '*' \
@@ -143,15 +164,22 @@ pull_reports_tar() {
 pull_reports() {
   require_host
   mkdir -p "${LOCAL_REPO}/runs/reports" "${LOCAL_REPO}/runs/reports/chunks"
+  local rsync_ssh_cmd="${SSH_BIN}"
+  if [[ -n "${SSH_CONFIG_FILE}" ]]; then
+    rsync_ssh_cmd+=" -F ${SSH_CONFIG_FILE}"
+  fi
+  if [[ -n "${SSH_ARGS}" ]]; then
+    rsync_ssh_cmd+=" ${SSH_ARGS}"
+  fi
   if has_rsync; then
-    rsync -av -e "${SSH_BIN} ${SSH_ARGS}" \
+    rsync -av -e "${rsync_ssh_cmd}" \
       --include 'phase10_*.json' \
       --include 'phase10_*.md' \
       --exclude 'chunks/' \
       --exclude '*' \
       "${PHONE_HOST}:${PHONE_REPO}/runs/reports/" \
       "${LOCAL_REPO}/runs/reports/"
-    rsync -av -e "${SSH_BIN} ${SSH_ARGS}" \
+    rsync -av -e "${rsync_ssh_cmd}" \
       --exclude '*.jsonl' \
       --exclude '*.jsonl.gz' \
       --exclude '*events*.json' \
