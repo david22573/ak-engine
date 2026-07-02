@@ -168,6 +168,18 @@ func TestFundingDeclusteringUsesEventTimestamps(t *testing.T) {
 	}
 }
 
+func TestFundingDeclusteringKeepsCompositeKeysSeparate(t *testing.T) {
+	events := []FundingEventRow{
+		fundingTestEvent("AAAUSDT", "NegativeFundingLong", "long", fundingTestBaseMS, 10),
+		fundingTestEvent("BBBUSDT", "NegativeFundingLong", "long", fundingTestBaseMS, 10),
+		fundingTestEvent("AAAUSDT", "PositiveFundingShort", "short", fundingTestBaseMS+30*60*1000, 10),
+	}
+	clusters := deClusterFundingEvents(events)
+	if len(clusters) != 3 {
+		t.Fatalf("clusters=%d, want 3", len(clusters))
+	}
+}
+
 func TestFundingIdenticalPerSymbolDummyMetricsTriggerIntegrityFailure(t *testing.T) {
 	loaded := []fundingLoadedEventFile{
 		{Symbol: "AAAUSDT", Month: "2025-01", Summary: FundingChunkSummary{EventCount: 10}},

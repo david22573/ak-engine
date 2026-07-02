@@ -1,119 +1,97 @@
-# Task Plan: ak-engine Research Script Debt Refactor
+# Task Plan: Phase 10.8C / 10.9C Retained-Coverage Recovery
 
 ## Goal
-Reduce research-script debt, phase-specific sprawl, and fragile pipeline orchestration without changing research math, output semantics, existing CLI behavior, or report schemas.
+Restore full retained compact-summary coverage for the expected symbol universe on the local Chromebook by using the Termux phone as the low-storage batch worker, then verify whether `full_universe_ready=true`.
 
 ## Constraints
 - Work only in `ak-engine`.
-- Do not change strategy formulas, research math, scoring logic, event definitions, or cost assumptions.
-- Preserve existing CLI commands and report schemas unless adding backward-compatible aliases.
-- Prefer move-only refactors, small helper extraction, and tests.
-- Preserve low-resource behavior: monthly chunks, max rows, reports-only retention, resumable manifests, summary-only operation.
-- Do not touch `ak-trader` or `ak-historian` except documenting expected path contracts.
-- After every step, run the verification commands listed for that step.
-- If a verification command fails, stop and report exact failure.
+- Treat the Chromebook as planner/reviewer plus final artifact holder.
+- Treat the Termux phone as the heavy worker for monthly chunk generation, temporary raw event files, caches, and long tmux jobs.
+- Run one symbol at a time across monthly chunks; do not run full-universe raw regeneration in one job.
+- Preserve compact `*-alpha-summary.json` outputs and final phase reports.
+- Delete heavy raw `*.jsonl`, `*.jsonl.gz`, and `*events*.json` files only after aggregate reports are written.
+- Keep final artifacts under `runs/reports` or `runs/reports/chunks`.
+- Use repo-local Go caches when running locally:
+  - `GOCACHE=$PWD/.cache/go-build`
+  - `GOMODCACHE=$PWD/.cache/go-mod`
+  - `GOWORK=off`
+  - `GOTOOLCHAIN=local`
+- Use serial pull/validate/coverage cycles; never overlap summary pulls with the coverage scan.
+- Verify state from artifacts and reports, not intent or stale manifest timestamps.
 
 ## Current Phase
-Step 5 complete; verification closeout recorded for side-specific scoring, exit slippage, and state-retention fixes
+Step 4 closeout complete for local retained coverage and inventory: the all-8-symbol retained scan refreshed Phase 10.8C coverage, Phase 10.9C recovery coverage copies, and the unfiltered retained ranked inventory with `full_universe_ready=true`, `raw_required=false`, `summary files found=192`, and `malformed summaries=0`. The phone worker is idle, the remote phone `ak-engine` tree is now git-backed, and remote raw gzip cleanup was intentionally not performed; aggregate-report reconciliation remains future work outside this closeout.
+
+## Current Verified State
+- Local retained coverage report date: `2026-06-30`
+- Coverage status: `full_universe_ready`
+- `full_universe_ready=true`
+- Summary files found: `192` (includes XRPUSDT, which is not in the coverage target set of the script)
+- Malformed summaries: `0`
+- Fully retained locally: `ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, `ETHUSDT`, `LINKUSDT`, `SOLUSDT`, `XRPUSDT`
+- Remaining missing symbols: none
+- Remote phone worker state: idle
+- Remote phone repo state: git-backed checkout, not merely a non-git synced copy
+- `AVAXUSDT` is no longer a blocker; it is fully retained locally through `2025-12`
+- `ETHUSDT`, `BNBUSDT`, `ADAUSDT`, and `DOGEUSDT` compact summaries are complete locally, but their phone-side aggregate reports were not visible during the latest remote report check, so do not delete their raw gzip files until the aggregate/report state is reconciled.
 
 ## Phases
 
-### Step 0: Capture Baseline
-- [x] Run compile-only tests.
-- [x] Run core package tests.
-- [x] Run full go test and save `runs/refactor_baseline_go_test.txt`.
-- [x] Build `./ak-engine` and run `./ak-engine version`.
-- [x] Compile specified Python scripts.
-- [x] Check shell scripts with `bash -n`.
+### Step 0: Restore and Verify Planning Context
+- [x] Read the active pasted runbook/context attachment.
+- [x] Read `task_plan.md`, `findings.md`, and `progress.md`.
+- [x] Re-run or re-read the authoritative local retained-coverage report.
 - **Status:** complete
 
-### Step 1: Fix Proof/Golden-Output Harness
-- [x] Refactor app tests reading `../../runs/reports` to use `testdata` or `t.TempDir`.
-- [x] Run required verification commands.
+### Step 1: Harden and Verify the Two-Machine Workflow
+- [x] Add the phone sync helper, runbook, and env template.
+- [x] Verify helper-backed push/pull paths with the real phone target.
+- [x] Add the `coverage-only` retained scan path.
+- [x] Record the SSH config workaround with `SSH_CONFIG_FILE=/dev/null`.
 - **Status:** complete
 
-### Step 2: Add Atomic Artifact Writing
-- [x] Add temp-file plus rename helper for JSON/file writes.
-- [x] Replace direct manifest/report writes in `phase10_low_resource_prep.go`.
-- [x] Replace direct manifest/report writes in `phase10_funding_event_pipeline.go`.
-- [x] Preserve exact JSON schemas.
-- [x] Run required verification commands.
+### Step 2: Recover Known Missing Symbols Already Completed
+- [x] Complete and pull `LINKUSDT`.
+- [x] Complete and pull `SOLUSDT`.
+- [x] Re-run local retained coverage after each clean serial pull.
 - **Status:** complete
 
-### Step 3: Centralize Engine/Historian Path Contracts
-- [x] Add helper resolving historian workdir from flag, env var, default.
-- [x] Replace duplicated derivative path construction.
-- [x] Run required verification commands.
-- **Status:** complete
+### Step 3: Complete the Remaining Missing Symbols
+- [x] Verify current remote worker/session state before starting new work.
+- [x] Run and pull `ETHUSDT`. Current state: local retained summaries exist for all `2024-01 .. 2025-12`; `jq` validation passed for all 24 local `ETHUSDT` alpha summaries; retained coverage now shows `summary files found=96`, `malformed summaries=0`.
+- [x] Run and pull `BNBUSDT`. Current state: all `24` local BNB alpha summaries validate cleanly for `2024-01 .. 2025-12`; retained coverage now shows `summary files found=120`, `malformed summaries=0`.
+- [x] Run and pull `AVAXUSDT`. Current state: fully completed and pulled locally for `2024-01 .. 2025-12` (24 summaries, no malformed).
+- [x] Run and pull `ADAUSDT`. Current state: all 24 local alpha summaries validate and retained coverage includes all expected months.
+- [x] Run and pull `DOGEUSDT`. Current state: all 24 local alpha summaries validate and retained coverage includes all expected months.
+- [x] Re-run local retained coverage after each completed symbol.
+- [ ] Verify raw event cleanup after each aggregate completes.
+- **Status:** complete for retained compact coverage; cleanup verification remains tracked in Step 4
 
-### Step 4: Formalize Leakage/Integrity Checks
-- [x] Replace assumed PASS behavior with PASS/FAIL/UNKNOWN logic.
-- [x] Add tests for PASS, FAIL, UNKNOWN.
-- [x] Run required verification commands.
-- **Status:** complete
-
-### Step 5: Extract Phase10 Funding Pipeline Core
-- [x] Extract config normalization.
-- [x] Extract path building.
-- [x] Extract manifest store.
-- [x] Extract step runner.
-- [x] Extract report rendering.
-- [x] Run required verification commands after each extraction.
-- **Status:** complete
-
-### Verification Closeout: Side-Specific Scoring, Exit Slippage, and State Retention
-- [x] Confirm side-specific scoring no longer cross-applies long and short overrides.
-- [x] Add asymmetric tests for strict-long/lenient-short and strict-short/lenient-long cost and chop gating.
-- [x] Confirm take-profit skips adverse exit slippage while stop-loss and non-TP exits retain conservative slippage.
-- [x] Confirm completed-window trim-to-4 does not break hourly context, breakout-retest logic, decisions snapshot, or UTC day entry counting.
-- [x] Run full package verification.
-- [x] Regenerate one deterministic local backtest smoke report and record impact limits honestly.
-- **Status:** complete
-
-### Step 6: Add Manifest-Driven Research-Run Wrapper
-- [ ] Add `research-run --plan <plan.json> --dry-run`.
-- [ ] Add example funding research plan.
-- [ ] Preserve existing scripts.
-- [ ] Run required verification commands.
-- **Status:** pending
-
-### Step 7: Standardize Report Prefix/Alias Behavior
-- [ ] Add or centralize `--report-prefix` where appropriate.
-- [ ] Preserve old report names.
-- [ ] Add report alias manifest before replacing script-level copy behavior.
-- [ ] Run required verification commands.
-- **Status:** pending
-
-### Step 8: Split Large Analyzers Safely
-- [ ] Extract pure functions from listed analyzers.
-- [ ] Target metrics, gates, renderers, and report schemas.
-- [ ] Preserve formulas.
-- [ ] Run required verification commands.
-- **Status:** pending
-
-### Step 9: Add Raw-Event vs Summary-Only Equivalence Tests
-- [ ] Create tiny synthetic fixtures.
-- [ ] Assert raw JSONL and native summary metrics match.
-- [ ] Run required verification commands.
-- **Status:** pending
-
-### Step 10: Clean Command Stubs and Script Status
-- [ ] Mark unimplemented commands deprecated or return explicit non-success errors.
-- [ ] Add command inventory check if practical.
-- [ ] Run required verification commands.
-- **Status:** pending
+### Step 4: Final Full-Universe Verification
+- [x] Re-run retained coverage with all expected symbols present.
+- [x] Re-run ranked inventory and inspect `full_universe_ready`.
+- [x] Confirm zero malformed summaries.
+- [ ] Reconcile remote aggregate reports before raw-file cleanup. Deferred by request; do not clean remote raw gzip files yet.
+- [ ] Confirm no accidental raw-file retention after cleanup is safe. Deferred by request.
+- [x] Record the final local authoritative state in planning files.
+- **Status:** complete for final local closeout; remote cleanup deferred
 
 ## Decisions Made
 | Decision | Rationale |
 |----------|-----------|
-| Preserve existing dirty worktree changes | User scope is refactor within `ak-engine`; unrelated or pre-existing edits must not be reverted. |
+| Use the phone as the heavy worker and the Chromebook as the final artifact holder | The local machine is storage-constrained and unsuitable for full raw regeneration. |
+| Pull summaries serially, then validate, then scan coverage | Concurrent pull+scan caused transient malformed-summary warnings. |
+| Trust direct artifact inspection over stale pipeline manifests | The live phone pipeline can outpace manifest/report timestamps. |
 
 ## Errors Encountered
 | Step | Error | Resolution |
 |------|-------|------------|
-| Step 0 | `go test ./...` failed in `internal/app` because tests read missing `../../runs/reports/...` files. | Recorded to `runs/refactor_baseline_go_test.txt`; proceed to Step 1 per user expectation. |
-| Step 1 | Initial patch targeted parent workspace paths instead of `ak-engine/...`. | Retried with scoped paths; no source change from failed patch. |
-| Step 1 | Planning update first wrote to workspace root planning files. | Restored root planning files to prior contents and wrote refactor plan to `ak-engine`. |
-| Step 3 | `grep -R "../ak-historian/.ak-historian/work" -n . || true` still reports historical generated artifacts, caches, and old planning data. | Source Go/shell/Python script references were replaced; command exits 0 by design. |
-| Step 4 | First V2 aggregate consistency check treated positive `gross_loss_bps` as failure. | Inspected generated rows; gross loss is stored as positive magnitude, so sign check was removed. |
-| Verification Closeout | Direct `GOWORK=off GOTOOLCHAIN=local go test ./...` hit read-only host Go build cache under `~/.cache/go-build`. | Re-ran equivalent suite with `GOCACHE` and `GOMODCACHE` redirected into workspace-local `.cache/`; full suite passed. |
+| Step 1 | Local helper-backed pulls failed on a broken system SSH config include. | Added `SSH_CONFIG_FILE` support and verified `SSH_CONFIG_FILE=/dev/null` works. |
+| Step 2 | `LINKUSDT` helper run originally stopped after one month because `--max-months 1` leaked into the wrapper. | Removed the unintended limit and re-synced the helper. |
+| Step 2 | First `SOLUSDT` worker attempt failed because direct candle parquet files were missing from the path consumed by `build-features`. | Backfilled `SOLUSDT` monthly candles with phone-side `ak-historian fetch`, verified `build-features`, and relaunched the worker. |
+| Step 3 | Phone SSH on `192.168.1.79:8022` returned `Connection refused` during `ETHUSDT` continuation checks and `termux-worker-pull-summaries`. | Local validation and coverage were rerun successfully; wait for phone SSH to come back before further `ETHUSDT` pull/resume work. |
+| Step 3 | `ETHUSDT` has all compact summaries but no phone-side `phase10_9c_ETHUSDT_pipeline.md`; 24 raw gzip event files remain. | Kept raw files instead of deleting them; aggregate/report state must be reconciled before cleanup. |
+| Step 3 | Phone IP changed from `192.168.1.79` to `192.168.1.81`; first helper pull failed on host-key verification. | Updated `termux_worker.env` to `PHONE_HOST=davidmiguel22573@192.168.1.81` and repo-local known-hosts args; pull succeeded and accepted `[192.168.1.81]:8022`. |
+| Step 3 | Phone IP reverted from `192.168.1.81` to `192.168.1.79`; `.81` became unreachable with `No route to host`. | Updated `termux_worker.env` back to `.79`, recreated `ak-phone-ssh`, verified remote BNB still had 15 summaries and no active worker, then launched `ak-engine-109c-bnb-resume` for `2025-04 .. 2025-12`. |
+| Step 3 | Latest `.81` fallback probe timed out, while `.79` succeeded and showed `remote_bnb_count=24`. | Treat `.79:8022` as the current phone SSH target; pulled BNB summaries/reports, validated local JSON, reran coverage, and left BNB/ETH raw cleanup blocked pending aggregate-report reconciliation. |
+| Step 3 | Phone SSH target `192.168.1.79:8022` returned `Connection refused` when starting the AVAX pull/verify turn. | Had user restart `sshd` inside Termux; reconnected successfully, pulled all 24 completed summaries, and started `ADAUSDT` worker after fetching missing candles. |

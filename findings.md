@@ -93,6 +93,117 @@
   - local retained symbols are `LINKUSDT`, `SOLUSDT`, and `XRPUSDT`
   - local `SOLUSDT` coverage still stops at `2025-07`; months `2025-08 .. 2025-12` remain missing locally
   - a fresh phone status check failed with `ssh: connect to host 192.168.1.79 port 8022: Connection refused`, so the current remote frontier could not be re-verified during this refresh turn
+- Follow-up checkpoint on `2026-06-29`:
+  - a second direct probe to `192.168.1.79:8022` again failed with `connection refused`
+  - no new remote `SOLUSDT` state could be inspected or synced from the Chromebook
+  - the authoritative local frontier is unchanged: `SOLUSDT` retained months remain `2024-01 .. 2025-07`
+- Recovery checkpoint on `2026-06-29` after SSH returned:
+  - the phone became reachable again on `192.168.1.79:8022`
+  - direct phone-side `SOLUSDT` alpha-summary listing showed completion through `2025-12`
+  - helper-backed pulls succeeded again with `SSH_CONFIG_FILE=/dev/null`
+  - local `SOLUSDT` alpha summaries now also run through `2025-12`
+  - local `jq` validation for all `SOLUSDT` alpha summaries passed
+  - rerunning retained coverage advanced `summary files found` from `67` to `72`
+  - `SOLUSDT` is no longer the blocker; the retained universe is still partial only because `ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, and `ETHUSDT` remain missing locally
+- Launch checkpoint on `2026-06-29` after plan reconciliation:
+  - `task_plan.md` was realigned from an older refactor track to the active retained-coverage recovery objective so the persistent plan matches `findings.md` and `progress.md`
+  - a fresh local retained-coverage rerun still confirmed `partial_universe_only`, `summary files found=72`, and `malformed summaries=0`
+  - direct remote inspection showed the phone worker was idle before the next launch: no live `phase10_9c_phone_worker.sh` or `phase10-funding-event-pipeline` processes were running
+  - remote compact summaries still existed only for `LINKUSDT` and `SOLUSDT`, confirming no hidden progress for the five remaining missing symbols
+  - a new remote tmux session `ak-engine-109c-eth` was launched for `ETHUSDT`
+  - the live process chain now includes:
+    - `bash ./scripts/phase10_9c_phone_worker.sh run-symbol ETHUSDT 2024-01 2025-12`
+    - `go run ./cmd/ak-engine phase10-funding-event-pipeline ... --symbols ETHUSDT ...`
+  - a follow-up poll still showed the bash wrapper and `go run` child alive, with no early exit
+  - the worker log existed but had not yet emitted summary lines, and no `ETHUSDT` feature chunks, regime chunks, or alpha summaries existed yet; this is consistent with a very early in-flight launch rather than a failure
+  - a stronger follow-up probe confirmed real first-month progress rather than a silent stall:
+    - the live child process is currently `classify-regimes --features runs/features/chunks/ETHUSDT/2024-01-context.json --out runs/regimes/chunks/ETHUSDT/2024-01-context.json`
+    - `runs/features/chunks/ETHUSDT/2024-01-context.json` now exists at about `39.9 MB`
+    - the corresponding regime chunk, alpha summaries, and top-level pipeline report do not exist yet
+  - this pattern differs from the earlier `SOLUSDT` missing-candle failure: `ETHUSDT` has already passed feature construction for `2024-01` and is now inside regime classification
+  - a later bounded remote probe improved that checkpoint:
+    - `runs/regimes/chunks/ETHUSDT/2024-01-context.json` now exists remotely
+    - `runs/reports/chunks/ETHUSDT/2024-01-alpha-summary.json` still does not exist remotely
+    - `runs/features/chunks/ETHUSDT/2024-01-context.json` still exists remotely
+  - a helper-backed local pull with `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` completed successfully, but the local `runs/reports/chunks/ETHUSDT` directory remained empty
+  - rerunning local retained coverage after that pull attempt confirmed no local state change: `partial_universe_only`, `summary files found=72`, `malformed summaries=0`, and the missing symbol set still includes `ETHUSDT`
+  - a subsequent bounded remote probe timed out while checking whether `ETHUSDT` had advanced into `2024-02`, so the SSH transport remains flaky even when short bounded probes are used
+  - another bounded remote probe later also timed out while checking for the first `ETHUSDT` alpha summary and `2024-02` advancement
+  - a second helper-backed local pull with `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` also completed successfully, but the local `runs/reports/chunks/ETHUSDT` directory still remained empty
+  - even a minimal bounded liveness check for the `ETHUSDT` pipeline process timed out, so current remote transport instability now prevents proving whether the worker is still live or merely slow from SSH alone
+  - rerunning local retained coverage after the second empty pull again confirmed no local state change: `partial_universe_only`, `summary files found=72`, `malformed summaries=0`, and the missing symbol set still includes `ETHUSDT`
+  - a later direct bounded ops inspection finally resolved the worker state cleanly:
+    - remote tmux session `ak-engine-109c-eth` still exists
+    - remote process list confirms the `ETHUSDT` worker is still live; do not restart it
+    - remote `ETHUSDT` artifact count is `27`
+    - remote retained `ETHUSDT` alpha-summary count is `4`
+    - remote retained months currently present are `2024-01`, `2024-02`, `2024-03`, and `2024-04`
+    - heavy raw leftovers still include `ETHUSDT/2024-01..2024-04-funding-events.jsonl.gz` plus many `SOLUSDT` funding-event gzip files, so cleanup is not yet complete
+  - helper-backed summary pull succeeded immediately after that inspection and brought the four `ETHUSDT` retained alpha summaries back to the Chromebook
+  - local `jq` validation passed for all four pulled `ETHUSDT` alpha summaries
+  - rerunning local retained coverage advanced:
+    - found symbols from `LINKUSDT, SOLUSDT, XRPUSDT` to `ETHUSDT, LINKUSDT, SOLUSDT, XRPUSDT`
+    - `summary files found` from `72` to `76`
+    - missing symbols from `ADAUSDT, AVAXUSDT, BNBUSDT, DOGEUSDT, ETHUSDT` to `ADAUSDT, AVAXUSDT, BNBUSDT, DOGEUSDT`
+  - this is now clearly Case C, not a blind-visibility blocker: `ETHUSDT` has partial retained summaries and must be resumed only for missing months rather than restarted from scratch
+- Continuation checkpoint on `2026-06-29 23:22 PDT`:
+  - planning-with-files context was restored and `session-catchup.py` produced no additional context
+  - local `ETHUSDT` retained summaries still consist only of `2024-01`, `2024-02`, `2024-03`, and `2024-04`
+  - all four local `ETHUSDT` alpha summaries validate with `jq`
+  - local retained coverage rerun succeeded and wrote `runs/reports/phase10_8c_retained_coverage.{json,md}` plus ranked inventory artifacts
+  - coverage remains `partial_universe_only`, `full_universe_ready=false`, `summary files found=76`, and `malformed summaries=0`
+  - `ETHUSDT` missing expected months remain `2024-05 .. 2025-12`
+  - the expected-symbol missing set in the report is now `ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, and `DOGEUSDT`; this does not mean `ETHUSDT` is complete, only that it is partially present
+  - direct bounded phone inspection and `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` both failed because `192.168.1.79:8022` returned `Connection refused`
+  - no new `ETHUSDT` summaries were pulled during this continuation
+  - next action is to restore phone SSH reachability before any further remote inspection, pull, or worker intervention
+- Recovery/launch checkpoint on `2026-06-29 23:33 PDT`:
+  - created a persistent local tmux SSH session named `ak-phone-ssh`; active phone IP was later updated to `192.168.1.81` on the same port `8022`
+  - verified marker-wrapped commands execute correctly through the persistent pane, so future remote probes should use `tmux send-keys` and `tmux capture-pane` against `ak-phone-ssh:0.0` instead of repeatedly opening SSH
+  - phone-side `ETHUSDT` compact summaries now exist for all `2024-01 .. 2025-12`
+  - `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` succeeded after phone SSH returned
+  - local `ETHUSDT` now has 24 alpha summaries, all passing `jq`
+  - local retained coverage rerun advanced `summary files found` from `76` to `96`, with `malformed summaries=0`
+  - `ETHUSDT` is now fully retained locally through `2025-12`
+  - phone-side `ETHUSDT` still lacks `runs/reports/phase10_9c_ETHUSDT_pipeline.md`; only an empty `phase10_9c_ETHUSDT_worker.log` was found for ETH
+  - phone-side `ETHUSDT` still has 24 raw event gzip files under `runs/reports/chunks/ETHUSDT`
+  - ETH raw cleanup was intentionally skipped because the rule says delete raw event files only after aggregate reports are written, and the ETH aggregate report is missing
+  - phone free space is currently not tight: about `38G` free, and the `ETHUSDT` chunk directory is about `188M`
+  - launched `BNBUSDT` on the phone in remote tmux session `ak-engine-109c-bnb`
+  - verified live BNB process chain:
+    - `bash ./scripts/phase10_9c_phone_worker.sh run-symbol BNBUSDT 2024-01 2025-12`
+    - `go run ./cmd/ak-engine phase10-funding-event-pipeline ... --symbols BNBUSDT ... --out runs/reports/phase10_9c_BNBUSDT_pipeline.md`
+  - BNB poll at `2026-06-29 23:33 PDT` still had `bnb_summaries=0` and no feature/regime/report artifacts yet
+  - BNB poll at `2026-06-29 23:35 PDT` showed real first-month progress:
+    - compiled `ak-engine phase10-funding-event-pipeline` child is running
+    - child process is now `classify-regimes --features runs/features/chunks/BNBUSDT/2024-01-context.json --out runs/regimes/chunks/BNBUSDT/2024-01-context.json`
+    - `runs/features/chunks/BNBUSDT/2024-01-context.json` exists
+    - `bnb_summaries=0`
+- IP update checkpoint on `2026-06-30 12:13 PDT`:
+  - user reported the Termux phone SSH IP changed to `192.168.1.81` on the same port `8022`
+  - updated local `termux_worker.env` to `PHONE_HOST=davidmiguel22573@192.168.1.81`
+  - first `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` against `.81` reached SSH but failed on host-key verification because no askpass was available
+  - updated `termux_worker.env` `SSH_ARGS` to use repo-local known hosts:
+    - `-p 8022 -o UserKnownHostsFile=.cache/termux_known_hosts -o StrictHostKeyChecking=accept-new`
+  - retry of `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` succeeded and accepted `[192.168.1.81]:8022`
+  - local BNB summaries now exist and validate with `jq` for `2024-01 .. 2025-03` (`15` summaries)
+  - retained coverage rerun succeeded with `summary files found=111`, `malformed summaries=0`, found symbols `BNBUSDT`, `ETHUSDT`, `LINKUSDT`, `SOLUSDT`, `XRPUSDT`, and missing expected symbols `ADAUSDT`, `AVAXUSDT`, `DOGEUSDT`
+  - BNB remains incomplete locally; expected missing BNB months are `2025-04 .. 2025-12`
+- Final handoff checkpoint on `2026-06-30 12:19 PDT`:
+  - user reported the Termux phone IP is back to `192.168.1.79` on port `8022`; `.81` had become unreachable with `No route to host`
+  - updated `termux_worker.env` back to `PHONE_HOST=davidmiguel22573@192.168.1.79`
+  - recreated persistent local tmux SSH session `ak-phone-ssh` against `.79`
+  - remote BNB state before resume:
+    - `remote_bnb_count=15`
+    - latest remote BNB alpha summaries still ended at `2025-03`
+    - no active `phase10_9c_phone_worker` / `phase10-funding-event-pipeline` process was running
+  - launched remote resume tmux session `ak-engine-109c-bnb-resume` with:
+    - `./scripts/phase10_9c_phone_worker.sh run-symbol BNBUSDT 2025-04 2025-12`
+  - verified the resume process chain is live:
+    - `bash ./scripts/phase10_9c_phone_worker.sh run-symbol BNBUSDT 2025-04 2025-12`
+    - `go run ./cmd/ak-engine phase10-funding-event-pipeline ... --symbols BNBUSDT --from 2025-04 --to 2025-12 ...`
+    - compiled `ak-engine phase10-funding-event-pipeline` child running with the same `2025-04 .. 2025-12` range
+  - remote BNB count remained `15` immediately after launch, which is expected at startup; next context should poll for `2025-04-alpha-summary.json` and then resume the serial pull/validate/coverage loop
 
 ## Remaining Risks
 - Many research and app files were already modified or untracked before this task; preserve them unless directly needed.
@@ -102,5 +213,50 @@
 - The sync helper still needs hardening for the Chromebook SSH-config edge case so `make termux-worker-pull-summaries` and `make termux-worker-pull-reports` can use a clean SSH config path instead of failing on `/etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf`.
 - The previous sync-helper hardening risk is now reduced: `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` has been verified locally against the live phone target.
 - The exact low-storage pipeline contract is subtle: per-chunk event JSONL cannot be disabled up front because pipeline verification reads it before cleanup; the correct storage-safe path is to retain event detail during the run and use `--summary-only-after-aggregate` to delete raw event files after aggregate reports are written.
-- The active `SOLUSDT` worker run is still in flight; full-universe readiness cannot be decided until the phone-side run completes, raw event files are removed after aggregate, compact outputs are pulled back, and Chromebook retained coverage is rerun again.
-- The phone is temporarily unreachable from the Chromebook refresh environment (`connection refused` on `192.168.1.79:8022`), so immediate phone sync verification is blocked on the Termux SSH service or device network coming back.
+- `SOLUSDT` and `ETHUSDT` no longer block retained coverage locally, but the full-universe gate still depends on completing and pulling `BNBUSDT`, `AVAXUSDT`, `ADAUSDT`, and `DOGEUSDT`.
+- The older phone-side `~/Github/ak-engine` tree started as a synced working copy, but the current remote phone repo is git-backed; still verify research readiness from artifacts/reports rather than manifest age alone.
+- `BNBUSDT` is now the active remote symbol run; completion still needs summary pullback, local validation, and a fresh retained-coverage rerun before it can be counted as recovered.
+- The current best `BNBUSDT` frontier is local-authoritative partial retention through `2025-03`; missing BNB months are `2025-04 .. 2025-12`.
+- Latest BNB checkpoint on `2026-06-30` supersedes the partial frontier:
+  - `192.168.1.79:8022` is reachable and reported `remote_bnb_count=24`
+  - `192.168.1.81:8022` timed out and should be treated as stale unless the phone IP changes again
+  - `SSH_CONFIG_FILE=/dev/null make termux-worker-pull-summaries` completed successfully
+  - all 24 local `BNBUSDT` alpha summaries validate with `jq`
+  - retained coverage rerun reports `summary files found=120`, `malformed summaries=0`, and remaining missing expected symbols `ADAUSDT`, `AVAXUSDT`, `DOGEUSDT`
+  - no local BNB aggregate markdown was pulled, and remote BNB raw event gzip files were still visible, so do not perform BNB raw cleanup yet
+- `BNBUSDT` is no longer a retained-coverage blocker locally; the next active symbol should be `AVAXUSDT`.
+- The current best `ETHUSDT` frontier is local-authoritative completion: retained summaries exist locally for all `2024-01 .. 2025-12`, and coverage includes all expected ETH months.
+- The persistent local tmux session `ak-phone-ssh` was not present during the latest local tmux check; recreate it against `davidmiguel22573@192.168.1.79:8022` if long remote monitoring is needed.
+- `ETHUSDT` raw cleanup is blocked by a missing phone-side aggregate report even though local compact coverage is complete.
+- AVAXUSDT run successfully completed on the phone worker:
+  - Pulled all 24 AVAX alpha summaries (2024-01 .. 2025-12) locally.
+  - All summaries validated successfully using `jq`.
+  - Coverage scan locally shows 24/24 AVAX summaries present and valid.
+- Missing candles for `ADAUSDT` (2024-01 .. 2025-12) backfilled remotely via `ak-historian fetch` (planned=24, uploaded=24, failed=0).
+- ADAUSDT run started on the phone in remote tmux session `ak-engine-109c-ada` using command `./scripts/phase10_9c_phone_worker.sh run-symbol ADAUSDT 2024-01 2025-12`. Verified compiled `ak-engine` pipeline child process is live and active.
+- Handoff for the next context:
+  - use `192.168.1.79:8022` for new Termux SSH connections
+  - poll `ak-engine-109c-ada` and pull summaries serially as they appear
+  - validate local JSON, rerun retained coverage, and only then move to `DOGEUSDT`
+  - do not delete `ETHUSDT` or `BNBUSDT` raw gzip files until the missing aggregate reports are reconciled
+- Final retained-coverage checkpoint on `2026-06-30 23:01 PDT`:
+  - local summary artifacts now contain `24` alpha summaries each for `ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, `ETHUSDT`, `LINKUSDT`, `SOLUSDT`, and `XRPUSDT`
+  - `jq` validation passed across all local retained alpha summaries
+  - `make phase10-9c-coverage` refreshed `runs/reports/phase10_8c_retained_coverage.md`
+  - refreshed local coverage reports `full_universe_ready=true`, `summary files found=192`, `malformed summaries=0`, and no missing expected symbols
+  - direct SSH to `192.168.1.79:8022` succeeded
+  - phone-side tmux reported no sessions, and no live `phase10_9c_phone_worker` / `phase10-funding-event-pipeline` process was found other than the probe command
+  - remote phone repo is now git-backed, not merely a non-git rsync copy
+  - remote compact summaries also show `24` months for each expected symbol
+  - remote raw gzip event files remain for `ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, and `ETHUSDT`
+  - remote aggregate pipeline markdown reports were visible only for `AVAXUSDT`, `LINKUSDT`, and `SOLUSDT`; defer raw cleanup for symbols without reconciled aggregate reports
+- Phase 10.9C final local closeout on `2026-06-30 23:26 PDT`:
+  - all 8 local retained symbols were included in the final scan: `ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, `ETHUSDT`, `LINKUSDT`, `SOLUSDT`, `XRPUSDT`
+  - refreshed Phase 10.8C coverage, Phase 10.9C recovery coverage copies, and the unfiltered Phase 10.8 ranked inventory
+  - coverage remained `full_universe_ready=true`, with `summary_file_count=192`, `malformed_file_count=0`, `raw_required=false`, and `missing_symbols=[]`
+  - unfiltered retained inventory found `36` candidates across all retained families/sides/horizons
+  - label counts were `SHADOW_CANDIDATE=0`, `RESEARCH_LEAD=0`, `FRAGILE_RESEARCH_LEAD=0`, `REJECTED=36`
+  - top-ranked candidate was `NegativeFundingLong|long|240m`, still `REJECTED`; no candidate became strong enough for research-lead or shadow-candidate status after full coverage
+  - full `go test ./...` passed with repo-local Go caches and `GOWORK=off GOTOOLCHAIN=local`
+  - `ak-trader` was not touched and no promotion was made
+  - remote raw gzip files were intentionally not deleted

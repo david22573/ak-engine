@@ -1,0 +1,4263 @@
+{
+  "ak_trader_touched": false,
+  "candidate_count": 36,
+  "candidate_scope": "all retained candidates",
+  "candidates": [
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -0.541331,
+      "baseline_pf": 0.99115,
+      "candidate_key": "NegativeFundingLong|long|240m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -2.394307,
+        "worst_profit_factor": 0.960745,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -1.801461,
+        "worst_profit_factor": 0.970471,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -1.887336,
+        "worst_profit_factor": 0.969601,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -5.541331,
+        "pass": false,
+        "pf": 0.913077
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.041331,
+        "pass": false,
+        "pf": 0.951298
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -2.627213,
+      "baseline_pf": 0.940714,
+      "candidate_key": "NegativeFundingLong|long|120m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -3.50462,
+        "worst_profit_factor": 0.920256,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -3.272614,
+        "worst_profit_factor": 0.925623,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -3.232992,
+        "worst_profit_factor": 0.927794,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -7.627213,
+        "pass": false,
+        "pf": 0.837614
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -5.127213,
+        "pass": false,
+        "pf": 0.887623
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -3.204769,
+      "baseline_pf": 0.948998,
+      "candidate_key": "RegimeFundingLong|long|240m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.906205,
+        "worst_profit_factor": 0.921421,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.644072,
+        "worst_profit_factor": 0.929138,
+        "worst_removed_key": "2024-Q3"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.49868,
+        "worst_profit_factor": 0.92952,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -8.204769,
+        "pass": false,
+        "pf": 0.874694
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.704769,
+        "pass": false,
+        "pf": 0.911065
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -3.781133,
+      "baseline_pf": 0.883501,
+      "candidate_key": "NegativeFundingLong|long|60m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.203068,
+        "worst_profit_factor": 0.868953,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.110782,
+        "worst_profit_factor": 0.872471,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.065064,
+        "worst_profit_factor": 0.875602,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -8.781133,
+        "pass": false,
+        "pf": 0.750563
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -6.281133,
+        "pass": false,
+        "pf": 0.814207
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.364798,
+      "baseline_pf": 0.81827,
+      "candidate_key": "NegativeFundingLong|long|30m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.580756,
+        "worst_profit_factor": 0.80676,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.525262,
+        "worst_profit_factor": 0.810069,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.500861,
+        "worst_profit_factor": 0.813676,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -9.364798,
+        "pass": false,
+        "pf": 0.651667
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -6.864798,
+        "pass": false,
+        "pf": 0.72994
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.658988,
+      "baseline_pf": 0.740992,
+      "candidate_key": "NegativeFundingLong|long|15m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.773089,
+        "worst_profit_factor": 0.73085,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.733925,
+        "worst_profit_factor": 0.734383,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.727481,
+        "worst_profit_factor": 0.738271,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -9.658988,
+        "pass": false,
+        "pf": 0.540068
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -7.158988,
+        "pass": false,
+        "pf": 0.631968
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.87925,
+      "baseline_pf": 0.584388,
+      "candidate_key": "NegativeFundingLong|long|5m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.919298,
+        "worst_profit_factor": 0.575463,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.903433,
+        "worst_profit_factor": 0.578205,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.902146,
+        "worst_profit_factor": 0.583551,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -9.87925,
+        "pass": false,
+        "pf": 0.345865
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -7.37925,
+        "pass": false,
+        "pf": 0.447593
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.988562,
+      "baseline_pf": 0.715021,
+      "candidate_key": "FundingFlipLong|long|15m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.135057,
+        "worst_profit_factor": 0.708303,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.125103,
+        "worst_profit_factor": 0.710935,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.053137,
+        "worst_profit_factor": 0.72187,
+        "worst_removed_key": "BNBUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -9.988562,
+        "pass": false,
+        "pf": 0.513599
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.488562,
+        "pass": false,
+        "pf": 0.605426
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.993643,
+      "baseline_pf": 0.563539,
+      "candidate_key": "FundingFlipLong|long|5m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.044843,
+        "worst_profit_factor": 0.560841,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.04263,
+        "worst_profit_factor": 0.563688,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.014943,
+        "worst_profit_factor": 0.575789,
+        "worst_removed_key": "BNBUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -9.993643,
+        "pass": false,
+        "pf": 0.32508
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.493643,
+        "pass": false,
+        "pf": 0.426262
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.999753,
+      "baseline_pf": 0.786647,
+      "candidate_key": "FundingFlipLong|long|30m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.273169,
+        "worst_profit_factor": 0.77657,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.23078,
+        "worst_profit_factor": 0.779821,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.146782,
+        "worst_profit_factor": 0.782587,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -9.999753,
+        "pass": false,
+        "pf": 0.620073
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.499753,
+        "pass": false,
+        "pf": 0.698154
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.014937,
+      "baseline_pf": 0.580754,
+      "candidate_key": "RegimeFundingLong|long|5m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.060117,
+        "worst_profit_factor": 0.571105,
+        "worst_removed_key": "2024-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.062351,
+        "worst_profit_factor": 0.57418,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.058714,
+        "worst_profit_factor": 0.580068,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -10.014937,
+        "pass": false,
+        "pf": 0.348624
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -7.514937,
+        "pass": false,
+        "pf": 0.447759
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.10175,
+      "baseline_pf": 0.5483,
+      "candidate_key": "PositiveFundingShort|short|5m",
+      "cluster_count": 65914,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -6.061049,
+        "pass": false,
+        "pf": 0.80771
+      },
+      "event_count": 2560211,
+      "family": "PositiveFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.128588,
+        "worst_profit_factor": 0.546043,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.158387,
+        "worst_profit_factor": 0.54505,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.119042,
+        "worst_profit_factor": 0.551366,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -10.10175,
+        "pass": false,
+        "pf": 0.313362
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -7.60175,
+        "pass": false,
+        "pf": 0.412503
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.105788,
+      "baseline_pf": 0.839886,
+      "candidate_key": "FundingFlipLong|long|60m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.589715,
+        "worst_profit_factor": 0.826278,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.48069,
+        "worst_profit_factor": 0.830967,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.438939,
+        "worst_profit_factor": 0.831596,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -10.105788,
+        "pass": false,
+        "pf": 0.708448
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.605788,
+        "pass": false,
+        "pf": 0.77127
+      },
+      "warnings": [
+        "concentration_bucket",
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.110659,
+      "baseline_pf": 0.570839,
+      "candidate_key": "FundingFlipShort|short|5m",
+      "cluster_count": 54410,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -6.146189,
+        "pass": false,
+        "pf": 0.818903
+      },
+      "event_count": 1840473,
+      "family": "FundingFlipShort",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.146454,
+        "worst_profit_factor": 0.565652,
+        "worst_removed_key": "2024-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.152999,
+        "worst_profit_factor": 0.562232,
+        "worst_removed_key": "2025-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.129821,
+        "worst_profit_factor": 0.583688,
+        "worst_removed_key": "ETHUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -10.110659,
+        "pass": false,
+        "pf": 0.337154
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -7.610659,
+        "pass": false,
+        "pf": 0.437078
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.228962,
+      "baseline_pf": 0.881472,
+      "candidate_key": "FundingFlipLong|long|120m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.946088,
+        "worst_profit_factor": 0.866383,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.731602,
+        "worst_profit_factor": 0.871978,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.963829,
+        "worst_profit_factor": 0.866922,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -10.228962,
+        "pass": false,
+        "pf": 0.781497
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.728962,
+        "pass": false,
+        "pf": 0.829941
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.292278,
+      "baseline_pf": 0.694771,
+      "candidate_key": "PositiveFundingShort|short|15m",
+      "cluster_count": 65914,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -6.061049,
+        "pass": false,
+        "pf": 0.80771
+      },
+      "event_count": 2560211,
+      "family": "PositiveFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.372058,
+        "worst_profit_factor": 0.690554,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.471369,
+        "worst_profit_factor": 0.686204,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.343089,
+        "worst_profit_factor": 0.695761,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -10.292278,
+        "pass": false,
+        "pf": 0.495534
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -7.792278,
+        "pass": false,
+        "pf": 0.586123
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.307997,
+      "baseline_pf": 0.712302,
+      "candidate_key": "FundingFlipShort|short|15m",
+      "cluster_count": 54410,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -6.146189,
+        "pass": false,
+        "pf": 0.818903
+      },
+      "event_count": 1840473,
+      "family": "FundingFlipShort",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.415446,
+        "worst_profit_factor": 0.705137,
+        "worst_removed_key": "2024-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.429909,
+        "worst_profit_factor": 0.702199,
+        "worst_removed_key": "2025-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.360896,
+        "worst_profit_factor": 0.721067,
+        "worst_removed_key": "ETHUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -10.307997,
+        "pass": false,
+        "pf": 0.519793
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -7.807997,
+        "pass": false,
+        "pf": 0.607991
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.338937,
+      "baseline_pf": 0.579276,
+      "candidate_key": "RegimeFundingShort|short|5m",
+      "cluster_count": 44382,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.698316,
+        "pass": false,
+        "pf": 0.773687
+      },
+      "event_count": 586958,
+      "family": "RegimeFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.392746,
+        "worst_profit_factor": 0.575509,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.474748,
+        "worst_profit_factor": 0.566144,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.357406,
+        "worst_profit_factor": 0.571904,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -10.338937,
+        "pass": false,
+        "pf": 0.358691
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.838937,
+        "pass": false,
+        "pf": 0.453613
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.352378,
+      "baseline_pf": 0.711144,
+      "candidate_key": "RegimeFundingLong|long|15m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.464694,
+        "worst_profit_factor": 0.698417,
+        "worst_removed_key": "2024-03"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.550254,
+        "worst_profit_factor": 0.699809,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.482503,
+        "worst_profit_factor": 0.70694,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -10.352378,
+        "pass": false,
+        "pf": 0.521706
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -7.852378,
+        "pass": false,
+        "pf": 0.608286
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.455785,
+      "baseline_pf": 0.838956,
+      "candidate_key": "RegimeFundingLong|long|60m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.853459,
+        "worst_profit_factor": 0.824568,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.044897,
+        "worst_profit_factor": 0.820714,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.936982,
+        "worst_profit_factor": 0.826273,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -10.455785,
+        "pass": false,
+        "pf": 0.715428
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -7.955785,
+        "pass": false,
+        "pf": 0.774544
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.467639,
+      "baseline_pf": 0.780006,
+      "candidate_key": "RegimeFundingLong|long|30m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.659938,
+        "worst_profit_factor": 0.766314,
+        "worst_removed_key": "2024-03"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.931871,
+        "worst_profit_factor": 0.761458,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.694993,
+        "worst_profit_factor": 0.773166,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -10.467639,
+        "pass": false,
+        "pf": 0.623886
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -7.967639,
+        "pass": false,
+        "pf": 0.69718
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.558885,
+      "baseline_pf": 0.8802,
+      "candidate_key": "RegimeFundingLong|long|120m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.172512,
+        "worst_profit_factor": 0.86508,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.529597,
+        "worst_profit_factor": 0.865121,
+        "worst_removed_key": "2024-Q3"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.604965,
+        "worst_profit_factor": 0.859678,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -10.558885,
+        "pass": false,
+        "pf": 0.785202
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -8.058885,
+        "pass": false,
+        "pf": 0.831272
+      },
+      "warnings": [
+        "concentration_bucket",
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.574096,
+      "baseline_pf": 0.760131,
+      "candidate_key": "PositiveFundingShort|short|30m",
+      "cluster_count": 65914,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -6.061049,
+        "pass": false,
+        "pf": 0.80771
+      },
+      "event_count": 2560211,
+      "family": "PositiveFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.730479,
+        "worst_profit_factor": 0.753823,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.944258,
+        "worst_profit_factor": 0.746157,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.676577,
+        "worst_profit_factor": 0.7593,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -10.574096,
+        "pass": false,
+        "pf": 0.595748
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -8.074096,
+        "pass": false,
+        "pf": 0.672654
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.580282,
+      "baseline_pf": 0.775552,
+      "candidate_key": "FundingFlipShort|short|30m",
+      "cluster_count": 54410,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -6.146189,
+        "pass": false,
+        "pf": 0.818903
+      },
+      "event_count": 1840473,
+      "family": "FundingFlipShort",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.773718,
+        "worst_profit_factor": 0.766691,
+        "worst_removed_key": "2024-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.830593,
+        "worst_profit_factor": 0.76333,
+        "worst_removed_key": "2025-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.674106,
+        "worst_profit_factor": 0.781522,
+        "worst_removed_key": "ETHUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -10.580282,
+        "pass": false,
+        "pf": 0.618684
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -8.080282,
+        "pass": false,
+        "pf": 0.692468
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.587157,
+      "baseline_pf": 0.908957,
+      "candidate_key": "FundingFlipLong|long|240m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.62989,
+        "worst_profit_factor": 0.892615,
+        "worst_removed_key": "2025-08"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.764397,
+        "worst_profit_factor": 0.891324,
+        "worst_removed_key": "2025-Q3"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -7.192703,
+        "worst_profit_factor": 0.88481,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -10.587157,
+        "pass": false,
+        "pf": 0.83457
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -8.087157,
+        "pass": false,
+        "pf": 0.870959
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -5.905951,
+      "baseline_pf": 0.696417,
+      "candidate_key": "RegimeFundingShort|short|15m",
+      "cluster_count": 44382,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.698316,
+        "pass": false,
+        "pf": 0.773687
+      },
+      "event_count": 586958,
+      "family": "RegimeFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.087648,
+        "worst_profit_factor": 0.687486,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.360955,
+        "worst_profit_factor": 0.67095,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.95308,
+        "worst_profit_factor": 0.689272,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -10.905951,
+        "pass": false,
+        "pf": 0.516978
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -8.405951,
+        "pass": false,
+        "pf": 0.599262
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -6.062138,
+      "baseline_pf": 0.807682,
+      "candidate_key": "PositiveFundingShort|short|60m",
+      "cluster_count": 65914,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -6.061049,
+        "pass": false,
+        "pf": 0.80771
+      },
+      "event_count": 2560211,
+      "family": "PositiveFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.374266,
+        "worst_profit_factor": 0.798409,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.837826,
+        "worst_profit_factor": 0.785586,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.262867,
+        "worst_profit_factor": 0.804592,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -11.062138,
+        "pass": false,
+        "pf": 0.677794
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -8.562138,
+        "pass": false,
+        "pf": 0.739778
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -6.147577,
+      "baseline_pf": 0.818872,
+      "candidate_key": "FundingFlipShort|short|60m",
+      "cluster_count": 54410,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -6.146189,
+        "pass": false,
+        "pf": 0.818903
+      },
+      "event_count": 1840473,
+      "family": "FundingFlipShort",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.513894,
+        "worst_profit_factor": 0.807108,
+        "worst_removed_key": "2024-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.617206,
+        "worst_profit_factor": 0.803683,
+        "worst_removed_key": "2025-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.278973,
+        "worst_profit_factor": 0.823051,
+        "worst_removed_key": "ETHUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -11.147577,
+        "pass": false,
+        "pf": 0.696533
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -8.647577,
+        "pass": false,
+        "pf": 0.755136
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -6.389365,
+      "baseline_pf": 0.751444,
+      "candidate_key": "RegimeFundingShort|short|30m",
+      "cluster_count": 44382,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.698316,
+        "pass": false,
+        "pf": 0.773687
+      },
+      "event_count": 586958,
+      "family": "RegimeFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.786726,
+        "worst_profit_factor": 0.736533,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -7.257098,
+        "worst_profit_factor": 0.716953,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -6.595482,
+        "worst_profit_factor": 0.740199,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -11.389365,
+        "pass": false,
+        "pf": 0.603302
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -8.889365,
+        "pass": false,
+        "pf": 0.672913
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -6.96434,
+      "baseline_pf": 0.84007,
+      "candidate_key": "PositiveFundingShort|short|120m",
+      "cluster_count": 65914,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -6.061049,
+        "pass": false,
+        "pf": 0.80771
+      },
+      "event_count": 2560211,
+      "family": "PositiveFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -7.512039,
+        "worst_profit_factor": 0.828325,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.391716,
+        "worst_profit_factor": 0.810153,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -7.354446,
+        "worst_profit_factor": 0.83445,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -11.96434,
+        "pass": false,
+        "pf": 0.741468
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -9.46434,
+        "pass": false,
+        "pf": 0.78919
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -7.412705,
+      "baseline_pf": 0.842431,
+      "candidate_key": "FundingFlipShort|short|120m",
+      "cluster_count": 54410,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -6.146189,
+        "pass": false,
+        "pf": 0.818903
+      },
+      "event_count": 1840473,
+      "family": "FundingFlipShort",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.037704,
+        "worst_profit_factor": 0.828469,
+        "worst_removed_key": "2024-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.269363,
+        "worst_profit_factor": 0.823523,
+        "worst_removed_key": "2025-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -7.677586,
+        "worst_profit_factor": 0.84412,
+        "worst_removed_key": "ETHUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -12.412705,
+        "pass": false,
+        "pf": 0.750664
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -9.912705,
+        "pass": false,
+        "pf": 0.795183
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -7.766721,
+      "baseline_pf": 0.772157,
+      "candidate_key": "RegimeFundingShort|short|60m",
+      "cluster_count": 44382,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.698316,
+        "pass": false,
+        "pf": 0.773687
+      },
+      "event_count": 586958,
+      "family": "RegimeFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.505305,
+        "worst_profit_factor": 0.75147,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.967486,
+        "worst_profit_factor": 0.738264,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.089452,
+        "worst_profit_factor": 0.760451,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -12.766721,
+        "pass": false,
+        "pf": 0.654757
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -10.266721,
+        "pass": false,
+        "pf": 0.710883
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -7.989412,
+      "baseline_pf": 0.826832,
+      "candidate_key": "RegimeFundingShort|short|120m",
+      "cluster_count": 44382,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.698316,
+        "pass": false,
+        "pf": 0.773687
+      },
+      "event_count": 586958,
+      "family": "RegimeFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -9.550734,
+        "worst_profit_factor": 0.794593,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -11.019094,
+        "worst_profit_factor": 0.762976,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -8.838858,
+        "worst_profit_factor": 0.80711,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -12.989412,
+        "pass": false,
+        "pf": 0.734661
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -10.489412,
+        "pass": false,
+        "pf": 0.779301
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -8.433078,
+      "baseline_pf": 0.862259,
+      "candidate_key": "PositiveFundingShort|short|240m",
+      "cluster_count": 65914,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -6.061049,
+        "pass": false,
+        "pf": 0.80771
+      },
+      "event_count": 2560211,
+      "family": "PositiveFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -9.443136,
+        "worst_profit_factor": 0.846634,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -11.024039,
+        "worst_profit_factor": 0.82331,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -9.282035,
+        "worst_profit_factor": 0.847046,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -13.433078,
+        "pass": false,
+        "pf": 0.789764
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 65914,
+        "event_count": 2560211,
+        "expectancy_bps": -10.933078,
+        "pass": false,
+        "pf": 0.825204
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -9.574813,
+      "baseline_pf": 0.85564,
+      "candidate_key": "FundingFlipShort|short|240m",
+      "cluster_count": 54410,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -6.146189,
+        "pass": false,
+        "pf": 0.818903
+      },
+      "event_count": 1840473,
+      "family": "FundingFlipShort",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -10.822926,
+        "worst_profit_factor": 0.836524,
+        "worst_removed_key": "2024-12"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -11.352485,
+        "worst_profit_factor": 0.833608,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -10.303859,
+        "worst_profit_factor": 0.843883,
+        "worst_removed_key": "LINKUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -14.574813,
+        "pass": false,
+        "pf": 0.78882
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 54410,
+        "event_count": 1840473,
+        "expectancy_bps": -12.074813,
+        "pass": false,
+        "pf": 0.821537
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -11.085126,
+      "baseline_pf": 0.827336,
+      "candidate_key": "RegimeFundingShort|short|240m",
+      "cluster_count": 44382,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -7.698316,
+        "pass": false,
+        "pf": 0.773687
+      },
+      "event_count": 586958,
+      "family": "RegimeFundingShort",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -13.501731,
+        "worst_profit_factor": 0.792169,
+        "worst_removed_key": "2025-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -16.729493,
+        "worst_profit_factor": 0.744943,
+        "worst_removed_key": "2025-Q4"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -12.848225,
+        "worst_profit_factor": 0.799651,
+        "worst_removed_key": "ADAUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "short",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -16.085126,
+        "pass": false,
+        "pf": 0.759839
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 44382,
+        "event_count": 586958,
+        "expectancy_bps": -13.585126,
+        "pass": false,
+        "pf": 0.792835
+      },
+      "warnings": [
+        "concentration_quarter",
+        "cost_10_fragile"
+      ]
+    }
+  ],
+  "coverage_validation": {
+    "expected_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ],
+    "found_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ],
+    "malformed_summaries_count": 0,
+    "missing_symbols": null,
+    "months_by_symbol": {
+      "ADAUSDT": 24,
+      "AVAXUSDT": 24,
+      "BNBUSDT": 24,
+      "DOGEUSDT": 24,
+      "ETHUSDT": 24,
+      "LINKUSDT": 24,
+      "SOLUSDT": 24,
+      "XRPUSDT": 24
+    },
+    "phase10_8c_malformed_summaries_count": 0,
+    "phase10_8c_summary_files_found_count": 192,
+    "summary_files_found_count": 192
+  },
+  "coverage_wording_note": "Earlier Phase 10.8C state was XRPUSDT-only, but final 10.9C state is full coverage. The final retained coverage reports list all 8 symbols because they reflect the recovered end state, not the original partial before-state.",
+  "final_label": "all_candidates_rejected",
+  "full_universe_ready": true,
+  "heavy_files_found": [
+    "runs/reports/chunks/DOGEUSDT/2024-01-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-02-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-03-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-04-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-05-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-06-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-07-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-08-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-09-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-10-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-11-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2024-12-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-01-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-02-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-03-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-04-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-05-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-06-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-07-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-08-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-09-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-10-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-11-funding-events.jsonl.gz",
+    "runs/reports/chunks/DOGEUSDT/2025-12-funding-events.jsonl.gz"
+  ],
+  "label_counts": {
+    "FRAGILE_RESEARCH_LEAD": 0,
+    "REJECTED": 36,
+    "RESEARCH_LEAD": 0,
+    "SHADOW_CANDIDATE": 0
+  },
+  "live_trading_or_order_code_added": false,
+  "phase": "10.10",
+  "promotion_to_ak_trader": false,
+  "raw_failure_counts": {
+    "baseline_expectancy_non_positive": 36,
+    "baseline_pf_non_positive": 36,
+    "concentration_month": 14,
+    "concentration_symbol": 6,
+    "cost_7_5_fail": 36,
+    "delay_1_expectancy_non_positive": 36,
+    "leave_one_month_out_fail": 36,
+    "leave_one_quarter_out_fail": 36,
+    "leave_one_symbol_out_fail": 36
+  },
+  "raw_required": false,
+  "rejection_reason_groups": {
+    "baseline expectancy failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    },
+    "concentration failure": {
+      "candidate_count": 19,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|30m",
+        "FundingFlipLong|long|120m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "FundingFlipLong|long|240m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "FundingFlipShort|short|240m"
+      ]
+    },
+    "cost stress failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    },
+    "delay sensitivity failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    },
+    "insufficient sample or cluster count": {
+      "candidate_count": 0,
+      "candidates": []
+    },
+    "leave-one-month-out failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    },
+    "leave-one-quarter-out failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    },
+    "leave-one-symbol-out failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    },
+    "missing metrics": {
+      "candidate_count": 0,
+      "candidates": []
+    },
+    "profit factor failure": {
+      "candidate_count": 36,
+      "candidates": [
+        "NegativeFundingLong|long|240m",
+        "NegativeFundingLong|long|120m",
+        "RegimeFundingLong|long|240m",
+        "NegativeFundingLong|long|60m",
+        "NegativeFundingLong|long|30m",
+        "NegativeFundingLong|long|15m",
+        "NegativeFundingLong|long|5m",
+        "FundingFlipLong|long|15m",
+        "FundingFlipLong|long|5m",
+        "FundingFlipLong|long|30m",
+        "RegimeFundingLong|long|5m",
+        "PositiveFundingShort|short|5m",
+        "FundingFlipLong|long|60m",
+        "FundingFlipShort|short|5m",
+        "FundingFlipLong|long|120m",
+        "PositiveFundingShort|short|15m",
+        "FundingFlipShort|short|15m",
+        "RegimeFundingShort|short|5m",
+        "RegimeFundingLong|long|15m",
+        "RegimeFundingLong|long|60m",
+        "RegimeFundingLong|long|30m",
+        "RegimeFundingLong|long|120m",
+        "PositiveFundingShort|short|30m",
+        "FundingFlipShort|short|30m",
+        "FundingFlipLong|long|240m",
+        "RegimeFundingShort|short|15m",
+        "PositiveFundingShort|short|60m",
+        "FundingFlipShort|short|60m",
+        "RegimeFundingShort|short|30m",
+        "PositiveFundingShort|short|120m",
+        "FundingFlipShort|short|120m",
+        "RegimeFundingShort|short|60m",
+        "RegimeFundingShort|short|120m",
+        "PositiveFundingShort|short|240m",
+        "FundingFlipShort|short|240m",
+        "RegimeFundingShort|short|240m"
+      ]
+    }
+  },
+  "remote_raw_gzip_cleanup_performed": false,
+  "strongest_candidate": {
+    "ak_trader_ready": false,
+    "baseline_expectancy_bps": -0.541331,
+    "baseline_pf": 0.99115,
+    "candidate_key": "NegativeFundingLong|long|240m",
+    "cluster_count": 56518,
+    "delay_1": {
+      "available": true,
+      "de_clustered_event_count": 56518,
+      "event_count": 2145593,
+      "expectancy_bps": -3.782922,
+      "pass": false,
+      "pf": 0.883446
+    },
+    "event_count": 2145593,
+    "family": "NegativeFundingLong",
+    "final_label": "REJECTED",
+    "horizon": "240m",
+    "leave_one_month_out": {
+      "pass": false,
+      "supported": true,
+      "worst_expectancy_bps": -2.394307,
+      "worst_profit_factor": 0.960745,
+      "worst_removed_key": "2024-11"
+    },
+    "leave_one_quarter_out": {
+      "pass": false,
+      "supported": true,
+      "worst_expectancy_bps": -1.801461,
+      "worst_profit_factor": 0.970471,
+      "worst_removed_key": "2024-Q1"
+    },
+    "leave_one_symbol_out": {
+      "pass": false,
+      "supported": true,
+      "worst_expectancy_bps": -1.887336,
+      "worst_profit_factor": 0.969601,
+      "worst_removed_key": "XRPUSDT"
+    },
+    "main_rejection_reason": "baseline expectancy failure",
+    "missing_required_metrics": null,
+    "promotion_allowed": false,
+    "raw_failures": [
+      "baseline_expectancy_non_positive",
+      "baseline_pf_non_positive",
+      "concentration_symbol",
+      "cost_7_5_fail",
+      "delay_1_expectancy_non_positive",
+      "leave_one_month_out_fail",
+      "leave_one_quarter_out_fail",
+      "leave_one_symbol_out_fail"
+    ],
+    "secondary_rejection_reasons": [
+      "profit factor failure",
+      "concentration failure",
+      "cost stress failure",
+      "delay sensitivity failure",
+      "leave-one-month-out failure",
+      "leave-one-quarter-out failure",
+      "leave-one-symbol-out failure"
+    ],
+    "side": "long",
+    "stressed_10_bps": {
+      "cost_bps": 10,
+      "de_clustered_event_count": 56518,
+      "event_count": 2145593,
+      "expectancy_bps": -5.541331,
+      "pass": false,
+      "pf": 0.913077
+    },
+    "stressed_7_5_bps": {
+      "cost_bps": 7.5,
+      "de_clustered_event_count": 56518,
+      "event_count": 2145593,
+      "expectancy_bps": -3.041331,
+      "pass": false,
+      "pf": 0.951298
+    },
+    "warnings": [
+      "concentration_bucket",
+      "cost_10_fragile"
+    ]
+  },
+  "title": "Phase 10.10 Final Rejection Audit",
+  "top_10_ranked_candidates": [
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -0.541331,
+      "baseline_pf": 0.99115,
+      "candidate_key": "NegativeFundingLong|long|240m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -2.394307,
+        "worst_profit_factor": 0.960745,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -1.801461,
+        "worst_profit_factor": 0.970471,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -1.887336,
+        "worst_profit_factor": 0.969601,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -5.541331,
+        "pass": false,
+        "pf": 0.913077
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.041331,
+        "pass": false,
+        "pf": 0.951298
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -2.627213,
+      "baseline_pf": 0.940714,
+      "candidate_key": "NegativeFundingLong|long|120m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "120m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -3.50462,
+        "worst_profit_factor": 0.920256,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -3.272614,
+        "worst_profit_factor": 0.925623,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -3.232992,
+        "worst_profit_factor": 0.927794,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -7.627213,
+        "pass": false,
+        "pf": 0.837614
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -5.127213,
+        "pass": false,
+        "pf": 0.887623
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -3.204769,
+      "baseline_pf": 0.948998,
+      "candidate_key": "RegimeFundingLong|long|240m",
+      "cluster_count": 41440,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.459742,
+        "pass": false,
+        "pf": 0.838712
+      },
+      "event_count": 564007,
+      "family": "RegimeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "240m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.906205,
+        "worst_profit_factor": 0.921421,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.644072,
+        "worst_profit_factor": 0.929138,
+        "worst_removed_key": "2024-Q3"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.49868,
+        "worst_profit_factor": 0.92952,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -8.204769,
+        "pass": false,
+        "pf": 0.874694
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 41440,
+        "event_count": 564007,
+        "expectancy_bps": -5.704769,
+        "pass": false,
+        "pf": 0.911065
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -3.781133,
+      "baseline_pf": 0.883501,
+      "candidate_key": "NegativeFundingLong|long|60m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "60m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.203068,
+        "worst_profit_factor": 0.868953,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.110782,
+        "worst_profit_factor": 0.872471,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.065064,
+        "worst_profit_factor": 0.875602,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -8.781133,
+        "pass": false,
+        "pf": 0.750563
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -6.281133,
+        "pass": false,
+        "pf": 0.814207
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.364798,
+      "baseline_pf": 0.81827,
+      "candidate_key": "NegativeFundingLong|long|30m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.580756,
+        "worst_profit_factor": 0.80676,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.525262,
+        "worst_profit_factor": 0.810069,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.500861,
+        "worst_profit_factor": 0.813676,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -9.364798,
+        "pass": false,
+        "pf": 0.651667
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -6.864798,
+        "pass": false,
+        "pf": 0.72994
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.658988,
+      "baseline_pf": 0.740992,
+      "candidate_key": "NegativeFundingLong|long|15m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.773089,
+        "worst_profit_factor": 0.73085,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.733925,
+        "worst_profit_factor": 0.734383,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.727481,
+        "worst_profit_factor": 0.738271,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -9.658988,
+        "pass": false,
+        "pf": 0.540068
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -7.158988,
+        "pass": false,
+        "pf": 0.631968
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.87925,
+      "baseline_pf": 0.584388,
+      "candidate_key": "NegativeFundingLong|long|5m",
+      "cluster_count": 56518,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -3.782922,
+        "pass": false,
+        "pf": 0.883446
+      },
+      "event_count": 2145593,
+      "family": "NegativeFundingLong",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.919298,
+        "worst_profit_factor": 0.575463,
+        "worst_removed_key": "2024-11"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.903433,
+        "worst_profit_factor": 0.578205,
+        "worst_removed_key": "2024-Q1"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -4.902146,
+        "worst_profit_factor": 0.583551,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -9.87925,
+        "pass": false,
+        "pf": 0.345865
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 56518,
+        "event_count": 2145593,
+        "expectancy_bps": -7.37925,
+        "pass": false,
+        "pf": 0.447593
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.988562,
+      "baseline_pf": 0.715021,
+      "candidate_key": "FundingFlipLong|long|15m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "15m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.135057,
+        "worst_profit_factor": 0.708303,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.125103,
+        "worst_profit_factor": 0.710935,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.053137,
+        "worst_profit_factor": 0.72187,
+        "worst_removed_key": "BNBUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -9.988562,
+        "pass": false,
+        "pf": 0.513599
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.488562,
+        "pass": false,
+        "pf": 0.605426
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.993643,
+      "baseline_pf": 0.563539,
+      "candidate_key": "FundingFlipLong|long|5m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "5m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.044843,
+        "worst_profit_factor": 0.560841,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.04263,
+        "worst_profit_factor": 0.563688,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.014943,
+        "worst_profit_factor": 0.575789,
+        "worst_removed_key": "BNBUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -9.993643,
+        "pass": false,
+        "pf": 0.32508
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.493643,
+        "pass": false,
+        "pf": 0.426262
+      },
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "ak_trader_ready": false,
+      "baseline_expectancy_bps": -4.999753,
+      "baseline_pf": 0.786647,
+      "candidate_key": "FundingFlipLong|long|30m",
+      "cluster_count": 24995,
+      "delay_1": {
+        "available": true,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -5.110857,
+        "pass": false,
+        "pf": 0.839739
+      },
+      "event_count": 842528,
+      "family": "FundingFlipLong",
+      "final_label": "REJECTED",
+      "horizon": "30m",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.273169,
+        "worst_profit_factor": 0.77657,
+        "worst_removed_key": "2025-04"
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.23078,
+        "worst_profit_factor": 0.779821,
+        "worst_removed_key": "2025-Q2"
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_expectancy_bps": -5.146782,
+        "worst_profit_factor": 0.782587,
+        "worst_removed_key": "XRPUSDT"
+      },
+      "main_rejection_reason": "baseline expectancy failure",
+      "missing_required_metrics": null,
+      "promotion_allowed": false,
+      "raw_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_month",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "secondary_rejection_reasons": [
+        "profit factor failure",
+        "concentration failure",
+        "cost stress failure",
+        "delay sensitivity failure",
+        "leave-one-month-out failure",
+        "leave-one-quarter-out failure",
+        "leave-one-symbol-out failure"
+      ],
+      "side": "long",
+      "stressed_10_bps": {
+        "cost_bps": 10,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -9.999753,
+        "pass": false,
+        "pf": 0.620073
+      },
+      "stressed_7_5_bps": {
+        "cost_bps": 7.5,
+        "de_clustered_event_count": 24995,
+        "event_count": 842528,
+        "expectancy_bps": -7.499753,
+        "pass": false,
+        "pf": 0.698154
+      },
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    }
+  ]
+}

@@ -1002,22 +1002,45 @@ func deClusterFundingEvents(events []FundingEventRow) []fundingEventCluster {
 	}
 	cp := append([]FundingEventRow(nil), events...)
 	sort.Slice(cp, func(i, j int) bool {
-		ki := cp[i].Symbol + "|" + cp[i].Family + "|" + cp[i].Side + "|" + cp[i].FundingBucket + "|" + cp[i].RegimeComposite
-		kj := cp[j].Symbol + "|" + cp[j].Family + "|" + cp[j].Side + "|" + cp[j].FundingBucket + "|" + cp[j].RegimeComposite
-		if ki == kj {
-			return cp[i].EventTimeMS < cp[j].EventTimeMS
+		if cp[i].Symbol != cp[j].Symbol {
+			return cp[i].Symbol < cp[j].Symbol
 		}
-		return ki < kj
+		if cp[i].Family != cp[j].Family {
+			return cp[i].Family < cp[j].Family
+		}
+		if cp[i].Side != cp[j].Side {
+			return cp[i].Side < cp[j].Side
+		}
+		if cp[i].FundingBucket != cp[j].FundingBucket {
+			return cp[i].FundingBucket < cp[j].FundingBucket
+		}
+		if cp[i].RegimeComposite != cp[j].RegimeComposite {
+			return cp[i].RegimeComposite < cp[j].RegimeComposite
+		}
+		return cp[i].EventTimeMS < cp[j].EventTimeMS
 	})
 
 	var clusters []fundingEventCluster
-	currentKey := ""
-	lastTime := int64(0)
-	for _, event := range cp {
-		key := event.Symbol + "|" + event.Family + "|" + event.Side + "|" + event.FundingBucket + "|" + event.RegimeComposite
-		if len(clusters) == 0 || key != currentKey || event.EventTimeMS-lastTime > fundingClusterWindowMS {
+	var lastTime int64
+	for i, event := range cp {
+		isNewCluster := false
+		if i == 0 {
+			isNewCluster = true
+		} else {
+			prev := cp[i-1]
+			if event.Symbol != prev.Symbol ||
+				event.Family != prev.Family ||
+				event.Side != prev.Side ||
+				event.FundingBucket != prev.FundingBucket ||
+				event.RegimeComposite != prev.RegimeComposite ||
+				event.EventTimeMS-lastTime > fundingClusterWindowMS {
+				isNewCluster = true
+			}
+		}
+
+		if isNewCluster {
+			key := event.Symbol + "|" + event.Family + "|" + event.Side + "|" + event.FundingBucket + "|" + event.RegimeComposite
 			clusters = append(clusters, fundingEventCluster{Key: key})
-			currentKey = key
 		}
 		idx := len(clusters) - 1
 		clusters[idx].Events = append(clusters[idx].Events, event)
