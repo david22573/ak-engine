@@ -1,0 +1,523 @@
+{
+  "additional_repair_regenerated_on_phone_after_stale_pull_overwrite": {
+    "ADAUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "BNBUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "DOGEUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "ETHUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "LINKUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12"
+    ]
+  },
+  "ak_trader_status": "untouched",
+  "any_candidate_became_stronger": false,
+  "became_research_lead_or_shadow_candidate": false,
+  "candidate_family_scope": [
+    "ConfirmedNegativeFundingLong",
+    "ConfirmedPositiveFundingShort"
+  ],
+  "candidate_improvement_after_full_coverage": {
+    "ConfirmedNegativeFundingLong|long|240m": {
+      "became_stronger": false,
+      "expectancy_delta_bps": -0.536856,
+      "label_changed": false,
+      "pf_delta": -0.007113
+    },
+    "ConfirmedPositiveFundingShort|short|5m": {
+      "became_stronger": false,
+      "expectancy_delta_bps": -0.001842,
+      "label_changed": false,
+      "pf_delta": 0.019666
+    }
+  },
+  "candidate_labels": {
+    "ConfirmedNegativeFundingLong|long|240m": "REJECTED",
+    "ConfirmedPositiveFundingShort|short|5m": "REJECTED"
+  },
+  "candidate_results": [
+    {
+      "candidate_key": "ConfirmedNegativeFundingLong|long|240m",
+      "cluster_count": 51997,
+      "cost_10": {
+        "available": true,
+        "expectancy_bps": -7.014372,
+        "pf": 0.889589
+      },
+      "cost_7_5": {
+        "available": true,
+        "expectancy_bps": -4.514372,
+        "pf": 0.927433
+      },
+      "delay_1": {
+        "available": true,
+        "expectancy_bps": -4.269912,
+        "pf": 0.867293
+      },
+      "event_count": 1353932,
+      "expectancy_5bps_bps": -2.014372,
+      "failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "concentration_symbol",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "family": "ConfirmedNegativeFundingLong",
+      "horizon": "240m",
+      "label": "REJECTED",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_remaining": {
+          "cluster_count": 50296,
+          "event_count": 1310197,
+          "expectancy_bps": -3.754513,
+          "net_bps": -4919151.327815,
+          "pass": false,
+          "profit_factor": 0.938063,
+          "removed_key": "2024-11"
+        }
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_remaining": {
+          "cluster_count": 42395,
+          "event_count": 1095080,
+          "expectancy_bps": -3.146348,
+          "net_bps": -3445503.207125,
+          "pass": false,
+          "profit_factor": 0.94804,
+          "removed_key": "2024-Q1"
+        }
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_remaining": {
+          "cluster_count": 45689,
+          "event_count": 1186831,
+          "expectancy_bps": -3.358729,
+          "net_bps": -3986243.949732,
+          "pass": false,
+          "profit_factor": 0.945609,
+          "removed_key": "XRPUSDT"
+        }
+      },
+      "months_represented": 24,
+      "pf_5bps": 0.966931,
+      "positive_month_count": 22,
+      "promotion_allowed": false,
+      "quarters_represented": 8,
+      "shadow_candidate": false,
+      "side": "long",
+      "symbols_represented": 8,
+      "warnings": [
+        "concentration_bucket",
+        "cost_10_fragile"
+      ]
+    },
+    {
+      "candidate_key": "ConfirmedPositiveFundingShort|short|5m",
+      "cluster_count": 60407,
+      "cost_10": {
+        "available": true,
+        "expectancy_bps": -10.164622,
+        "pf": 0.31536
+      },
+      "cost_7_5": {
+        "available": true,
+        "expectancy_bps": -7.664622,
+        "pf": 0.413199
+      },
+      "delay_1": {
+        "available": true,
+        "expectancy_bps": -6.558198,
+        "pf": 0.792523
+      },
+      "event_count": 1589488,
+      "expectancy_5bps_bps": -5.164622,
+      "failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "family": "ConfirmedPositiveFundingShort",
+      "horizon": "5m",
+      "label": "REJECTED",
+      "leave_one_month_out": {
+        "pass": false,
+        "supported": true,
+        "worst_remaining": {
+          "cluster_count": 59188,
+          "event_count": 1556007,
+          "expectancy_bps": -5.193367,
+          "net_bps": -8080916.037606,
+          "pass": false,
+          "profit_factor": 0.54199,
+          "removed_key": "2025-10"
+        }
+      },
+      "leave_one_quarter_out": {
+        "pass": false,
+        "supported": true,
+        "worst_remaining": {
+          "cluster_count": 55739,
+          "event_count": 1463157,
+          "expectancy_bps": -5.237299,
+          "net_bps": -7662990.047892,
+          "pass": false,
+          "profit_factor": 0.541664,
+          "removed_key": "2025-Q4"
+        }
+      },
+      "leave_one_symbol_out": {
+        "pass": false,
+        "supported": true,
+        "worst_remaining": {
+          "cluster_count": 53048,
+          "event_count": 1392245,
+          "expectancy_bps": -5.176287,
+          "net_bps": -7206660.363087,
+          "pass": false,
+          "profit_factor": 0.539477,
+          "removed_key": "AVAXUSDT"
+        }
+      },
+      "months_represented": 24,
+      "pf_5bps": 0.547049,
+      "positive_month_count": 1,
+      "promotion_allowed": false,
+      "quarters_represented": 8,
+      "shadow_candidate": false,
+      "side": "short",
+      "symbols_represented": 8,
+      "warnings": [
+        "cost_10_fragile"
+      ]
+    }
+  ],
+  "chromebook_raw_files_remaining": [],
+  "chromebook_raw_free": true,
+  "coverage_after": "192/192",
+  "coverage_before": "132/192",
+  "coverage_found_after": 192,
+  "coverage_found_before": 132,
+  "date": "2026-07-03",
+  "full_evaluation_complete": true,
+  "initial_available_coverage_results": {
+    "ConfirmedNegativeFundingLong|long|240m": {
+      "expectancy_5bps_bps": -1.477516,
+      "label": "REJECTED",
+      "pf_5bps": 0.974044
+    },
+    "ConfirmedPositiveFundingShort|short|5m": {
+      "expectancy_5bps_bps": -5.16278,
+      "label": "REJECTED",
+      "pf_5bps": 0.527383
+    }
+  },
+  "live_trading_code_added": false,
+  "missing_after": {},
+  "missing_before": {
+    "AVAXUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "LINKUSDT": [
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "SOLUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ]
+  },
+  "new_data_fetch_performed": false,
+  "notes": [
+    "The original 60 missing symbol-months were regenerated first: AVAXUSDT 2024-2025, SOLUSDT 2024-2025, and LINKUSDT 2025.",
+    "A broad summary pull temporarily overwrote older local confirmed summaries with stale phone copies for ADA/BNB/DOGE/ETH and LINK 2024; those affected symbol-months were repaired on the phone and then pulled back selectively.",
+    "No raw event files were pulled to the Chromebook; local raw audit after pullback is zero."
+  ],
+  "phase": "10.11B",
+  "phone_raw_files_for_regenerated_symbols_remaining": 0,
+  "phone_worker_verification": {
+    "disk_space_sufficient": true,
+    "free_space_observed": "36G before launch; 29G after repair",
+    "primary_candle_data_verified": {
+      "AVAXUSDT": "2024-01..2025-12 direct monthly parquet present",
+      "LINKUSDT": "2025-01..2025-12 direct monthly parquet present",
+      "SOLUSDT": "2024-01..2025-12 direct monthly parquet present"
+    },
+    "remote_go_test_internal_app": "passed",
+    "repo_git_backed": true,
+    "stale_phase10_worker_running_before_launch": false
+  },
+  "promotion_to_ak_trader": false,
+  "r2_restore_used": false,
+  "raw_files_kept_only_phone_or_drive": true,
+  "raw_required": false,
+  "rejection_reasons": {
+    "ConfirmedNegativeFundingLong|long|240m": [
+      "baseline_expectancy_non_positive",
+      "baseline_pf_non_positive",
+      "concentration_symbol",
+      "cost_7_5_fail",
+      "delay_1_expectancy_non_positive",
+      "leave_one_month_out_fail",
+      "leave_one_quarter_out_fail",
+      "leave_one_symbol_out_fail"
+    ],
+    "ConfirmedPositiveFundingShort|short|5m": [
+      "baseline_expectancy_non_positive",
+      "baseline_pf_non_positive",
+      "cost_7_5_fail",
+      "delay_1_expectancy_non_positive",
+      "leave_one_month_out_fail",
+      "leave_one_quarter_out_fail",
+      "leave_one_symbol_out_fail"
+    ]
+  },
+  "strongest_confirmed_family_candidate": "ConfirmedNegativeFundingLong|long|240m",
+  "symbols_months_regenerated_on_phone": {
+    "AVAXUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "LINKUSDT": [
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "SOLUSDT": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ]
+  },
+  "threshold_tuning_performed": false,
+  "title": "ConfirmedFundingExtreme full-coverage evaluation"
+}

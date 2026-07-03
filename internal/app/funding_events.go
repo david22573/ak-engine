@@ -20,7 +20,7 @@ const fundingClusterWindowMS int64 = 60 * 60 * 1000
 const fundingRateIntervalMS int64 = 8 * 60 * 60 * 1000
 
 var defaultFundingSymbols = []string{"LINKUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT", "ADAUSDT", "BNBUSDT", "XRPUSDT", "ETHUSDT"}
-var defaultFundingFamilies = []string{"NegativeFundingLong", "PositiveFundingShort", "FundingFlipLong", "FundingFlipShort", "RegimeFundingLong", "RegimeFundingShort"}
+var defaultFundingFamilies = []string{"NegativeFundingLong", "PositiveFundingShort", "FundingFlipLong", "FundingFlipShort", "RegimeFundingLong", "RegimeFundingShort", "ConfirmedNegativeFundingLong", "ConfirmedPositiveFundingShort"}
 var defaultFundingHorizons = []string{"5m", "15m", "30m", "60m", "120m", "240m"}
 
 var fundingHorizonMS = map[string]int64{
@@ -521,6 +521,8 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			{"FundingFlipShort", "short", flipShort, shortReturns},
 			{"RegimeFundingLong", "long", negativeExtreme && fundingLongRegime(label), longReturns},
 			{"RegimeFundingShort", "short", positiveExtreme && fundingShortRegime(label), shortReturns},
+			{"ConfirmedNegativeFundingLong", "long", negativeExtreme && (row.TrendSlope20 > 0 || row.Return15 > 0 || row.Close > row.EMA20), longReturns},
+			{"ConfirmedPositiveFundingShort", "short", positiveExtreme && (row.TrendSlope20 < 0 || row.Return15 < 0 || row.Close < row.EMA20), shortReturns},
 		}
 
 		for _, candidate := range candidates {

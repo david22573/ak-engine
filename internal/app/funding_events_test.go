@@ -95,6 +95,26 @@ func TestFundingPositiveFundingShortConditionWorks(t *testing.T) {
 	}
 }
 
+func TestFundingConfirmedNegativeFundingLongConditionWorks(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, -0.05, nil, false)
+	rows[20].TrendSlope20 = 1.0 // Price confirmation
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	events := buildFundingEvents(rows, fundingContextFixture("LINKUSDT", "btc_up"), &summary)
+	if !fundingHasFamilySide(events, "ConfirmedNegativeFundingLong", "long") {
+		t.Fatalf("confirmed negative funding condition did not emit long event: %+v", events)
+	}
+}
+
+func TestFundingConfirmedPositiveFundingShortConditionWorks(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, 0.05, nil, false)
+	rows[20].TrendSlope20 = -1.0 // Price confirmation
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	events := buildFundingEvents(rows, fundingContextFixture("LINKUSDT", "btc_down"), &summary)
+	if !fundingHasFamilySide(events, "ConfirmedPositiveFundingShort", "short") {
+		t.Fatalf("confirmed positive funding condition did not emit short event: %+v", events)
+	}
+}
+
 func TestFundingFlipConditionsWork(t *testing.T) {
 	longChange := 0.004
 	shortChange := -0.004

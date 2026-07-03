@@ -780,3 +780,76 @@
 | Step 4 | Initial V2 aggregate check failed because it assumed `gross_loss_bps` must be negative. | Verified generated schema stores gross loss as positive magnitude; removed sign assumption. |
 | Step 5 | `go test ./... -run '^$'` failed because `internal/app/phase10_funding_event_pipeline.go` still imported unused `"runtime"` (and other reporting packages). | Removed unused `"runtime"` import. Moved all report rendering and context audit functions from `phase10_funding_event_pipeline.go` to `phase10_funding_event_reports.go`, removing unused imports. |
 | Verification Closeout | Requested exact `go test` command could not write to host Go cache in sandbox. | Re-ran with workspace-local `GOCACHE` and `GOMODCACHE`; same package set passed. |
+# Session: 2026-07-03 Phase 10.11B Completion
+
+## Actions Taken
+- Restored existing planning context and added the Phase 10.11B active addendum.
+- Confirmed the local starting reports show `coverage_before=132/192` with missing confirmed-family coverage for `AVAXUSDT 2024-01..2025-12`, `SOLUSDT 2024-01..2025-12`, and `LINKUSDT 2025-01..2025-12`.
+- Preserving pre-existing dirty local worktree changes; current task will only update 10.11B summaries/reports/planning unless a code change becomes necessary.
+
+## Boundaries
+- Do not modify `ak-trader`.
+- Do not promote candidates.
+- Do not add live trading/order/exchange-key/mainnet logic.
+- Do not fetch new data if phone primary candles already exist.
+- Do not use R2 restore in this phase.
+- Pull compact summaries/reports/logs only back to the Chromebook.
+
+## Verification Results
+| Step | Command | Status | Notes |
+|------|---------|--------|-------|
+| Phone SSH | `ssh -F /dev/null -p 8022 ... 192.168.1.79` | fail/blocker | `ssh: connect to host 192.168.1.79 port 8022: No route to host`. |
+| Phone SSH fallback | `ssh -F /dev/null -p 8022 ... 192.168.1.81` | fail/blocker | Timed out after 12 seconds. |
+| Tailscale status | `tailscale status` | diagnostic | Phone nodes listed offline (`moto-g-5g---2023`, `moto-g-power-5g---2024`). |
+| Local app tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./internal/app` | pass | `ok github.com/davidmiguel22573/ak-engine/internal/app 12.418s`. |
+| Chromebook raw audit | `find runs/reports/chunks -type f \\( -name '*.jsonl' -o -name '*.jsonl.gz' -o -name '*funding-events*' \\) | wc -l` | pass after cleanup | Count is `0`. |
+| ak-trader status | `git -C /home/davidmiguel22573/Github/ak-trader status --short` | pass | No output; no ak-trader changes detected. |
+| Report JSON validation | `jq empty runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.json runs/reports/phase10_11b_confirmed_coverage_gap.json` | pass | Both refreshed report JSON files parse. |
+
+## Phase 10.11B Outcome
+- Phone worker became reachable again at `192.168.1.79:8022`; `.81` remained stale.
+- Phone verification completed:
+  - repo is git-backed
+  - no stale phase10 worker was running before launch
+  - confirmed-family source changes were present on phone
+  - direct primary candle parquet files existed for `AVAXUSDT 2024-01..2025-12`, `SOLUSDT 2024-01..2025-12`, and `LINKUSDT 2025-01..2025-12`
+  - disk had sufficient free space (`36G` observed before launch, `29G` after repair)
+  - phone-side `go test ./internal/app` passed
+- Regenerated the original missing 60 symbol-months on phone in order:
+  - `AVAXUSDT 2024-01..2025-12`
+  - `SOLUSDT 2024-01..2025-12`
+  - `LINKUSDT 2025-01..2025-12`
+- A broad `pull-summaries` pulled stale phone alpha summaries for some already-complete local symbols. To restore full confirmed coverage, repaired on phone and selectively pulled:
+  - `ADAUSDT 2024-01..2025-12`
+  - `BNBUSDT 2024-01..2025-12`
+  - `DOGEUSDT 2024-01..2025-12`
+  - `ETHUSDT 2024-01..2025-12`
+  - `LINKUSDT 2024-01..2024-12`
+- Updated final reports:
+  - `runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.json`
+  - `runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.md`
+  - `runs/reports/phase10_11b_confirmed_coverage_gap.json`
+  - `runs/reports/phase10_11b_confirmed_coverage_gap.md`
+- Pulled logs:
+  - `runs/reports/phase10_11b_phone_worker.log`
+  - `runs/reports/phase10_11b_phone_repair_worker.log`
+- `coverage_after=192/192`.
+- `missing_after=[]`.
+- `full_evaluation_complete=true`.
+- Final labels:
+  - `ConfirmedNegativeFundingLong|long|240m`: `REJECTED`, expectancy `-2.014372`, PF `0.966931`.
+  - `ConfirmedPositiveFundingShort|short|5m`: `REJECTED`, expectancy `-5.164622`, PF `0.547049`.
+- Strongest confirmed-family candidate: `ConfirmedNegativeFundingLong|long|240m`.
+- No candidate became stronger in label or expectancy after full coverage; neither became `RESEARCH_LEAD` nor `SHADOW_CANDIDATE`.
+- Local raw funding-event gzip files present at the start of this closeout were removed to restore Chromebook raw-free state; after final pullback, Chromebook raw count under `runs/reports/chunks` is `0`.
+- Phone-side raw counts for touched symbols `AVAXUSDT`, `SOLUSDT`, `LINKUSDT`, `ADAUSDT`, `BNBUSDT`, `DOGEUSDT`, and `ETHUSDT` are all `0`.
+- No R2 restore, no new data fetch, no threshold tuning, no candidate promotion, no ak-trader changes, and no live trading/order/exchange-key/mainnet code were added.
+
+## Final Test Results
+| Step | Command | Status | Notes |
+|------|---------|--------|-------|
+| Local app tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./internal/app` | pass | `ok github.com/davidmiguel22573/ak-engine/internal/app`. |
+| Full local tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./...` | pass | All packages passed. |
+| Final report JSON | `jq empty runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.json runs/reports/phase10_11b_confirmed_coverage_gap.json` | pass | Both parse. |
+| Chromebook raw audit | `find runs/reports/chunks -type f \\( -name '*.jsonl' -o -name '*.jsonl.gz' -o -name '*funding-events*' \\) | wc -l` | pass | `0`. |
+| ak-trader status | `git -C /home/davidmiguel22573/Github/ak-trader status --short` | pass | No output. |

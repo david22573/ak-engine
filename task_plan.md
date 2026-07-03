@@ -3,6 +3,55 @@
 ## Goal
 Restore full retained compact-summary coverage for the expected symbol universe on the local Chromebook by using the Termux phone as the low-storage batch worker, then verify whether `full_universe_ready=true`.
 
+## Phase 10.11B Active Addendum
+
+### Goal
+Complete the ConfirmedFundingExtreme retained-summary evaluation from `132/192` to full `192/192` coverage using the Termux phone worker for only the missing confirmed-family symbol-months, then pull compact reports/summaries back locally.
+
+### Scope and Boundaries
+- Work only in `ak-engine`; do not modify `ak-trader`.
+- Regenerate only confirmed-family missing months:
+  - `AVAXUSDT` `2024-01 .. 2025-12`
+  - `SOLUSDT` `2024-01 .. 2025-12`
+  - `LINKUSDT` `2025-01 .. 2025-12`
+- Use the phone worker for heavy regeneration; do not fetch new data if phone primary candles already exist.
+- Do not use R2 restore/download in this phase.
+- Pull compact `*-alpha-summary.json`, phase10_11b reports, and closeout logs only; do not pull raw JSONL/GZIP funding-event files.
+- Do not implement additional candidate families or tune thresholds.
+
+### Phase 10.11B Steps
+- [x] Verify phone repo/process/data/disk/test state.
+- [x] Regenerate missing confirmed summaries on phone, one symbol at a time: `AVAXUSDT`, `SOLUSDT`, `LINKUSDT`.
+- [x] Pull compact summaries/reports/logs only back to Chromebook.
+- [x] Rerun local 10.11B ConfirmedFundingExtreme evaluation and coverage gap reports from retained summaries.
+- [x] Run required local Go tests.
+- [x] Close out with coverage, labels, artifacts, commands, and boundary confirmations.
+
+### Phase 10.11B Starting State
+- `coverage_before=132/192`
+- `missing_before`: `AVAXUSDT 2024-01..2025-12`, `SOLUSDT 2024-01..2025-12`, `LINKUSDT 2025-01..2025-12`
+- Available-coverage labels:
+  - `ConfirmedNegativeFundingLong|long|240m`: `REJECTED`, expectancy `-1.477516`, PF `0.974044`
+  - `ConfirmedPositiveFundingShort|short|5m`: `REJECTED`, expectancy `-5.162780`, PF `0.527383`
+
+### Phase 10.11B Current State
+- `coverage_after=192/192`
+- `missing_after=[]`
+- `full_evaluation_complete=true`
+- Exact blocker: none.
+- Phone-side regeneration completed for the original missing 60 symbol-months:
+  - `AVAXUSDT 2024-01..2025-12`
+  - `SOLUSDT 2024-01..2025-12`
+  - `LINKUSDT 2025-01..2025-12`
+- Repair note: an initial broad summary pull overwrote some local confirmed summaries with stale phone copies. To restore full confirmed coverage, the phone regenerated `ADAUSDT`, `BNBUSDT`, `DOGEUSDT`, and `ETHUSDT` for `2024-01..2025-12`, plus `LINKUSDT 2024-01..2024-12`, then only those repaired alpha summaries were pulled back.
+- No R2 restore was used.
+- No new data fetch was performed.
+- Local and touched phone-side raw funding-event file counts are `0`.
+- Required local tests `go test ./internal/app` and `go test ./...` passed.
+- Final labels:
+  - `ConfirmedNegativeFundingLong|long|240m`: `REJECTED`, expectancy `-2.014372`, PF `0.966931`
+  - `ConfirmedPositiveFundingShort|short|5m`: `REJECTED`, expectancy `-5.164622`, PF `0.547049`
+
 ## Constraints
 - Work only in `ak-engine`.
 - Treat the Chromebook as planner/reviewer plus final artifact holder.
