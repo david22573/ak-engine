@@ -20,7 +20,7 @@ const fundingClusterWindowMS int64 = 60 * 60 * 1000
 const fundingRateIntervalMS int64 = 8 * 60 * 60 * 1000
 
 var defaultFundingSymbols = []string{"LINKUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT", "ADAUSDT", "BNBUSDT", "XRPUSDT", "ETHUSDT"}
-var defaultFundingFamilies = []string{"NegativeFundingLong", "PositiveFundingShort", "FundingFlipLong", "FundingFlipShort", "RegimeFundingLong", "RegimeFundingShort", "ConfirmedNegativeFundingLong", "ConfirmedPositiveFundingShort"}
+var defaultFundingFamilies = []string{"NegativeFundingLong", "PositiveFundingShort", "FundingFlipLong", "FundingFlipShort", "RegimeFundingLong", "RegimeFundingShort", "ConfirmedNegativeFundingLong", "ConfirmedPositiveFundingShort", "BreakoutFundingLong", "BreakoutFundingShort"}
 var defaultFundingHorizons = []string{"5m", "15m", "30m", "60m", "120m", "240m"}
 
 var fundingHorizonMS = map[string]int64{
@@ -61,6 +61,7 @@ type FundingEventRow struct {
 	Return120m5bpsBps  float64  `json:"return_120m_5bps_bps"`
 	Return240m5bpsBps  float64  `json:"return_240m_5bps_bps"`
 	EntryDelay1c60mBps *float64 `json:"entry_delay_1c_return_60m_5bps_bps,omitempty"`
+	SignalReasons      []string `json:"signal_reasons,omitempty"`
 	LeakageStatus      string   `json:"leakage_status"`
 }
 
@@ -113,6 +114,15 @@ type FundingDiagnostics struct {
 	NegativeFundingEventsEmitted          int    `json:"negative_funding_events_emitted"`
 	PositiveFundingCandidates             int    `json:"positive_funding_candidates"`
 	FundingFlipCandidates                 int    `json:"funding_flip_candidates"`
+	BreakoutFundingLongCandidates         int    `json:"breakout_funding_long_candidates"`
+	BreakoutFundingShortCandidates        int    `json:"breakout_funding_short_candidates"`
+	BreakoutFundingLongEventsEmitted      int    `json:"breakout_funding_long_events_emitted"`
+	BreakoutFundingShortEventsEmitted     int    `json:"breakout_funding_short_events_emitted"`
+	BreakoutRejectedFundingCondition      int    `json:"breakout_rejected_funding_condition"`
+	BreakoutRejectedPriceConfirmation     int    `json:"breakout_rejected_price_confirmation"`
+	BreakoutRejectedVolatilityExpansion   int    `json:"breakout_rejected_volatility_expansion"`
+	BreakoutRejectedVolumeConfirmation    int    `json:"breakout_rejected_volume_confirmation"`
+	BreakoutRejectedDirectionTrend        int    `json:"breakout_rejected_direction_trend"`
 	RejectedByContext                     int    `json:"rejected_by_context"`
 	RejectedByFundingThreshold            int    `json:"rejected_by_funding_threshold"`
 	RejectedByWarmup                      int    `json:"rejected_by_warmup"`
@@ -355,6 +365,7 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 	lastObservedFundingBucket := int64(-1)
 	seen := make(map[string]struct{})
 	var fundingRates []float64
+	familyFilter := fundingFamilyFilterFromEnv()
 
 	for i := range rows {
 		row := rows[i]
@@ -427,6 +438,8 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 		bucket := fundingBucket(rate, z, p20, p80)
 		flipLong := changeOK && priorRate < 0 && change > 0
 		flipShort := changeOK && priorRate > 0 && change < 0
+		breakoutLong := evaluateBreakoutFundingLong(row, negativeExtreme, flipLong)
+		breakoutShort := evaluateBreakoutFundingShort(row, positiveExtreme, flipShort)
 		if diagnostics != nil {
 			if negativeExtreme {
 				diagnostics.NegativeFundingCandidates++
@@ -437,6 +450,8 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			if flipLong || flipShort {
 				diagnostics.FundingFlipCandidates++
 			}
+			accumulateBreakoutDiagnostics(diagnostics, breakoutLong)
+			accumulateBreakoutDiagnostics(diagnostics, breakoutShort)
 		}
 
 		label, ok := fundingContextAt(labels, row.AvailableAtMS)
@@ -523,9 +538,14 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			{"RegimeFundingShort", "short", positiveExtreme && fundingShortRegime(label), shortReturns},
 			{"ConfirmedNegativeFundingLong", "long", negativeExtreme && (row.TrendSlope20 > 0 || row.Return15 > 0 || row.Close > row.EMA20), longReturns},
 			{"ConfirmedPositiveFundingShort", "short", positiveExtreme && (row.TrendSlope20 < 0 || row.Return15 < 0 || row.Close < row.EMA20), shortReturns},
+			{"BreakoutFundingLong", "long", breakoutLong.Match, longReturns},
+			{"BreakoutFundingShort", "short", breakoutShort.Match, shortReturns},
 		}
 
 		for _, candidate := range candidates {
+			if len(familyFilter) > 0 && !familyFilter[candidate.family] {
+				continue
+			}
 			if !candidate.match {
 				continue
 			}
@@ -564,6 +584,7 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 				Return120m5bpsBps:  candidate.ret.byHorizon["120m"] - 5,
 				Return240m5bpsBps:  candidate.ret.byHorizon["240m"] - 5,
 				EntryDelay1c60mBps: fundingEntryDelayReturn(rows, i, candidate.side),
+				SignalReasons:      fundingSignalReasons(candidate.family, breakoutLong, breakoutShort),
 				LeakageStatus:      "PASS",
 			}
 			events = append(events, event)
@@ -572,8 +593,14 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			if diagnostics != nil && candidate.family == "NegativeFundingLong" {
 				diagnostics.NegativeFundingEventsEmitted++
 			}
+			if diagnostics != nil && candidate.family == "BreakoutFundingLong" {
+				diagnostics.BreakoutFundingLongEventsEmitted++
+			}
+			if diagnostics != nil && candidate.family == "BreakoutFundingShort" {
+				diagnostics.BreakoutFundingShortEventsEmitted++
+			}
 		}
-		
+
 		if row.Symbol == "XRPUSDT" && !fundingUnsupportedContextLabel(label) && !label.Warmup {
 			reason := "not_extreme"
 			if negativeExtreme {
@@ -581,7 +608,7 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			}
 			realizedReturn := 0.0
 			if longReturns.byHorizon != nil {
-			    realizedReturn = longReturns.byHorizon["60m"]
+				realizedReturn = longReturns.byHorizon["60m"]
 			}
 			lRow := ParityLedgerRow{
 				EventTimeMS: row.EventTimeMS, DecisionTimeMS: row.AvailableAtMS,
@@ -589,7 +616,7 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 				FundingRate: rate, TrailingFundingMean: mean, TrailingFundingStd: sd,
 				TrailingFundingZ: z, TrailingFundingP20: p20,
 				TriggerZLTEMinus1: z <= -1, TriggerRateLTEP20: rate <= p20,
-				FundingBucket: bucket, RegimeBucket: label.Composite, FundingXRegimeBucket: bucket+"|"+label.Composite,
+				FundingBucket: bucket, RegimeBucket: label.Composite, FundingXRegimeBucket: bucket + "|" + label.Composite,
 				DelayCandles: 0, CostBps: 10, ExpectedEdgeBps: 0, RealizedReturnBps: realizedReturn,
 				ValidFeatureState: true, ValidFundingState: true, ValidRegimeState: true,
 				NoTradeReason: reason,
@@ -709,6 +736,118 @@ func fundingShortRegime(label regime.Label) bool {
 	return label.Composite == "compressed_range" ||
 		(label.Volatility == "compressed" && label.Trend == "range") ||
 		label.MarketBeta == "btc_down"
+}
+
+type breakoutFundingDecision struct {
+	Family                  string
+	Match                   bool
+	FundingCondition        bool
+	BreakoutConfirmation    bool
+	VolatilityExpansion     bool
+	VolumeConfirmation      bool
+	DirectionTrendAlignment bool
+	Reasons                 []string
+}
+
+func evaluateBreakoutFundingLong(row ResearchFeatureRow, negativeExtreme, flipLong bool) breakoutFundingDecision {
+	fundingOK := negativeExtreme || flipLong
+	breakoutOK := row.Close > 0 && row.EMA20 > 0 && (row.Return15 > 0 || row.Close > row.EMA20)
+	volatilityOK := row.BBWidthPctRank60 >= 0.60
+	volumeOK := row.VolumeRatio20 >= 1.05
+	trendOK := row.TrendSlope20 >= 0
+	return buildBreakoutFundingDecision("BreakoutFundingLong", fundingOK, breakoutOK, volatilityOK, volumeOK, trendOK)
+}
+
+func evaluateBreakoutFundingShort(row ResearchFeatureRow, positiveExtreme, flipShort bool) breakoutFundingDecision {
+	fundingOK := positiveExtreme || flipShort
+	breakoutOK := row.Close > 0 && row.EMA20 > 0 && (row.Return15 < 0 || row.Close < row.EMA20)
+	volatilityOK := row.BBWidthPctRank60 >= 0.60
+	volumeOK := row.VolumeRatio20 >= 1.05
+	trendOK := row.TrendSlope20 <= 0
+	return buildBreakoutFundingDecision("BreakoutFundingShort", fundingOK, breakoutOK, volatilityOK, volumeOK, trendOK)
+}
+
+func buildBreakoutFundingDecision(family string, fundingOK, breakoutOK, volatilityOK, volumeOK, trendOK bool) breakoutFundingDecision {
+	decision := breakoutFundingDecision{
+		Family:                  family,
+		FundingCondition:        fundingOK,
+		BreakoutConfirmation:    breakoutOK,
+		VolatilityExpansion:     volatilityOK,
+		VolumeConfirmation:      volumeOK,
+		DirectionTrendAlignment: trendOK,
+		Reasons: []string{
+			breakoutReason("funding_condition", fundingOK),
+			breakoutReason("breakout_confirmation", breakoutOK),
+			breakoutReason("volatility_expansion", volatilityOK),
+			breakoutReason("volume_confirmation", volumeOK),
+			breakoutReason("direction_trend_alignment", trendOK),
+		},
+	}
+	decision.Match = fundingOK && breakoutOK && volatilityOK && volumeOK && trendOK
+	return decision
+}
+
+func breakoutReason(name string, ok bool) string {
+	if ok {
+		return name + ":pass"
+	}
+	return name + ":fail"
+}
+
+func accumulateBreakoutDiagnostics(diagnostics *FundingDiagnostics, decision breakoutFundingDecision) {
+	if diagnostics == nil {
+		return
+	}
+	if decision.Match {
+		switch decision.Family {
+		case "BreakoutFundingLong":
+			diagnostics.BreakoutFundingLongCandidates++
+		case "BreakoutFundingShort":
+			diagnostics.BreakoutFundingShortCandidates++
+		}
+		return
+	}
+	if !decision.FundingCondition {
+		diagnostics.BreakoutRejectedFundingCondition++
+	}
+	if !decision.BreakoutConfirmation {
+		diagnostics.BreakoutRejectedPriceConfirmation++
+	}
+	if !decision.VolatilityExpansion {
+		diagnostics.BreakoutRejectedVolatilityExpansion++
+	}
+	if !decision.VolumeConfirmation {
+		diagnostics.BreakoutRejectedVolumeConfirmation++
+	}
+	if !decision.DirectionTrendAlignment {
+		diagnostics.BreakoutRejectedDirectionTrend++
+	}
+}
+
+func fundingSignalReasons(family string, longDecision, shortDecision breakoutFundingDecision) []string {
+	switch family {
+	case "BreakoutFundingLong":
+		return append([]string(nil), longDecision.Reasons...)
+	case "BreakoutFundingShort":
+		return append([]string(nil), shortDecision.Reasons...)
+	default:
+		return nil
+	}
+}
+
+func fundingFamilyFilterFromEnv() map[string]bool {
+	value := strings.TrimSpace(os.Getenv("AK_ENGINE_FUNDING_FAMILY_FILTER"))
+	if value == "" {
+		return nil
+	}
+	out := make(map[string]bool)
+	for _, part := range strings.Split(value, ",") {
+		family := strings.TrimSpace(part)
+		if family != "" {
+			out[family] = true
+		}
+	}
+	return out
 }
 
 type fundingReturnSet struct {

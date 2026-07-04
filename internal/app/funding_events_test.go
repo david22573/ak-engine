@@ -115,6 +115,81 @@ func TestFundingConfirmedPositiveFundingShortConditionWorks(t *testing.T) {
 	}
 }
 
+func TestBreakoutFundingLongAcceptedWhenFundingBreakoutVolatilityAndVolumePass(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, -0.05, nil, false)
+	applyLongBreakoutFundingFixture(&rows[20])
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_up"), &summary, &diagnostics)
+	if !fundingHasFamilySide(events, "BreakoutFundingLong", "long") {
+		t.Fatalf("breakout funding long did not emit: %+v", events)
+	}
+	event := fundingFindFamilySide(t, events, "BreakoutFundingLong", "long")
+	if !fundingReasonsContain(event.SignalReasons, "funding_condition:pass", "breakout_confirmation:pass", "volatility_expansion:pass", "volume_confirmation:pass", "direction_trend_alignment:pass") {
+		t.Fatalf("missing breakout reason codes: %+v", event.SignalReasons)
+	}
+	if diagnostics.BreakoutFundingLongEventsEmitted == 0 {
+		t.Fatalf("breakout diagnostics did not count long event: %+v", diagnostics)
+	}
+}
+
+func TestBreakoutFundingLongRejectedWhenPriceConfirmationFails(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, -0.05, nil, false)
+	applyLongBreakoutFundingFixture(&rows[20])
+	rows[20].Return15 = -0.01
+	rows[20].Close = 99
+	rows[20].EMA20 = 100
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_up"), &summary, &diagnostics)
+	if fundingHasFamilySide(events, "BreakoutFundingLong", "long") {
+		t.Fatalf("breakout funding long emitted despite failed price confirmation: %+v", events)
+	}
+	if diagnostics.BreakoutRejectedPriceConfirmation == 0 {
+		t.Fatalf("breakout diagnostics did not count price rejection: %+v", diagnostics)
+	}
+	if !fundingHasFamilySide(events, "NegativeFundingLong", "long") {
+		t.Fatalf("base funding family regressed: %+v", events)
+	}
+}
+
+func TestBreakoutFundingShortAcceptedWhenFundingBreakoutVolatilityAndVolumePass(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, 0.05, nil, false)
+	applyShortBreakoutFundingFixture(&rows[20])
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_down"), &summary, &diagnostics)
+	if !fundingHasFamilySide(events, "BreakoutFundingShort", "short") {
+		t.Fatalf("breakout funding short did not emit: %+v", events)
+	}
+	event := fundingFindFamilySide(t, events, "BreakoutFundingShort", "short")
+	if !fundingReasonsContain(event.SignalReasons, "funding_condition:pass", "breakout_confirmation:pass", "volatility_expansion:pass", "volume_confirmation:pass", "direction_trend_alignment:pass") {
+		t.Fatalf("missing breakout reason codes: %+v", event.SignalReasons)
+	}
+	if diagnostics.BreakoutFundingShortEventsEmitted == 0 {
+		t.Fatalf("breakout diagnostics did not count short event: %+v", diagnostics)
+	}
+}
+
+func TestBreakoutFundingShortRejectedWhenVolatilityOrVolumeFails(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, 0.05, nil, false)
+	applyShortBreakoutFundingFixture(&rows[20])
+	rows[20].BBWidthPctRank60 = 0.20
+	rows[20].VolumeRatio20 = 0.90
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_down"), &summary, &diagnostics)
+	if fundingHasFamilySide(events, "BreakoutFundingShort", "short") {
+		t.Fatalf("breakout funding short emitted despite failed volatility/volume confirmation: %+v", events)
+	}
+	if diagnostics.BreakoutRejectedVolatilityExpansion == 0 || diagnostics.BreakoutRejectedVolumeConfirmation == 0 {
+		t.Fatalf("breakout diagnostics did not count volatility/volume rejection: %+v", diagnostics)
+	}
+	if !fundingHasFamilySide(events, "PositiveFundingShort", "short") {
+		t.Fatalf("base funding family regressed: %+v", events)
+	}
+}
+
 func TestFundingFlipConditionsWork(t *testing.T) {
 	longChange := 0.004
 	shortChange := -0.004
@@ -375,6 +450,48 @@ func fundingHasFamilySide(events []FundingEventRow, family, side string) bool {
 		}
 	}
 	return false
+}
+
+func fundingFindFamilySide(t *testing.T, events []FundingEventRow, family, side string) FundingEventRow {
+	t.Helper()
+	for _, event := range events {
+		if event.Family == family && event.Side == side {
+			return event
+		}
+	}
+	t.Fatalf("event not found for %s %s", family, side)
+	return FundingEventRow{}
+}
+
+func fundingReasonsContain(reasons []string, want ...string) bool {
+	seen := make(map[string]struct{})
+	for _, reason := range reasons {
+		seen[reason] = struct{}{}
+	}
+	for _, reason := range want {
+		if _, ok := seen[reason]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func applyLongBreakoutFundingFixture(row *ResearchFeatureRow) {
+	row.Close = 101
+	row.EMA20 = 100
+	row.Return15 = 0.01
+	row.TrendSlope20 = 0.25
+	row.BBWidthPctRank60 = 0.75
+	row.VolumeRatio20 = 1.20
+}
+
+func applyShortBreakoutFundingFixture(row *ResearchFeatureRow) {
+	row.Close = 99
+	row.EMA20 = 100
+	row.Return15 = -0.01
+	row.TrendSlope20 = -0.25
+	row.BBWidthPctRank60 = 0.75
+	row.VolumeRatio20 = 1.20
 }
 
 func fundingTestEvent(symbol, family, side string, ts int64, return60 float64) FundingEventRow {
