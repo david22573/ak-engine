@@ -1,4 +1,27 @@
-# Task Plan: Phase 10.8C / 10.9C Retained-Coverage Recovery
+# Task Plan: Phase 10.12 Second-Generation Funding Candidate Rejection Audit
+
+## Current Phase
+Phase 10.12 is complete as a report-only rejection audit. It compares 10.11B, 10.11C, and 10.11D, confirms that all second-generation funding candidates remain rejected after full `192/192` coverage, and recommends closing funding-event research with current data.
+
+## Phase 10.12 Artifacts
+- `runs/reports/phase10_12_second_generation_funding_rejection_audit.json`
+- `runs/reports/phase10_12_second_generation_funding_rejection_audit.md`
+
+## Phase 10.12 Decision
+- Funding-event alpha is dead for the current feature set.
+- Do not implement `SqueezeFundingUnwind` yet.
+- Phase 11 should pivot away from funding events unless it first adds real new data sources: true OI, liquidations, positioning, or true taker buy/sell volume.
+- No candidate promotion, no shadow planning, and no `ak-trader` changes are justified.
+
+## Phase 10.12 Verification
+- 10.11B `ConfirmedFundingExtreme`: `192/192`, strongest `ConfirmedNegativeFundingLong|long|240m`, expectancy `-2.014372`, PF `0.966931`, `REJECTED`.
+- 10.11C `BreakoutFundingMomentum`: `192/192`, strongest `BreakoutFundingLong|long|240m`, expectancy `-2.943941`, PF `0.953242`, `REJECTED`.
+- 10.11D `VolumeImbalanceFundingReversionProxy`: `192/192`, strongest `VolumeImbalanceFundingReversionProxyLong|long|240m`, expectancy `-2.511184`, PF `0.958095`, `REJECTED`.
+- 10.11D limitation preserved: `uses TakerBuyRatio fallback only; full taker-buy-sell-volume join not implemented`.
+- `ak-trader` status inspected clean.
+- Local Chromebook raw funding-event file count under `runs/reports/chunks` is `0`.
+
+# Historical Task Plan: Phase 10.8C / 10.9C Retained-Coverage Recovery
 
 ## Goal
 Restore full retained compact-summary coverage for the expected symbol universe on the local Chromebook by using the Termux phone as the low-storage batch worker, then verify whether `full_universe_ready=true`.

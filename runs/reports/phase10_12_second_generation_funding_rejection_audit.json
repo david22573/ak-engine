@@ -1,0 +1,108 @@
+{
+  "phase": "10.12",
+  "title": "Second-Generation Funding Candidate Rejection Audit",
+  "date": "2026-07-04",
+  "source_artifacts": [
+    "runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.json",
+    "runs/reports/phase10_11c_breakout_funding_momentum_evaluation.json",
+    "runs/reports/phase10_11d_volume_imbalance_funding_reversion_proxy_evaluation.json",
+    "runs/reports/phase10_11d_volume_imbalance_funding_reversion_proxy_coverage.json"
+  ],
+  "scope": {
+    "expected_symbol_months": 192,
+    "symbols": 8,
+    "months": 24,
+    "raw_required": false,
+    "ak_trader_touched": false,
+    "chromebook_raw_funding_event_files": 0
+  },
+  "candidate_family_results": [
+    {
+      "phase": "10.11B",
+      "family": "ConfirmedFundingExtreme",
+      "coverage": "192/192",
+      "best_candidate": "ConfirmedNegativeFundingLong|long|240m",
+      "best_candidate_events": 1353932,
+      "best_candidate_clusters": 51997,
+      "best_candidate_expectancy_5bps": -2.014372,
+      "best_candidate_pf_5bps": 0.966931,
+      "final_label": "REJECTED",
+      "research_lead": false,
+      "shadow_candidate": false,
+      "promotion_allowed": false,
+      "primary_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ]
+    },
+    {
+      "phase": "10.11C",
+      "family": "BreakoutFundingMomentum",
+      "coverage": "192/192",
+      "best_candidate": "BreakoutFundingLong|long|240m",
+      "best_candidate_events": 197685,
+      "best_candidate_clusters": 45740,
+      "best_candidate_expectancy_5bps": -2.943941,
+      "best_candidate_pf_5bps": 0.953242,
+      "final_label": "REJECTED",
+      "research_lead": false,
+      "shadow_candidate": false,
+      "promotion_allowed": false,
+      "primary_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive"
+      ]
+    },
+    {
+      "phase": "10.11D",
+      "family": "VolumeImbalanceFundingReversionProxy",
+      "coverage": "192/192",
+      "best_candidate": "VolumeImbalanceFundingReversionProxyLong|long|240m",
+      "best_candidate_events": 1110149,
+      "best_candidate_clusters": 77502,
+      "best_candidate_expectancy_5bps": -2.511184,
+      "best_candidate_pf_5bps": 0.958095,
+      "final_label": "REJECTED",
+      "research_lead": false,
+      "shadow_candidate": false,
+      "promotion_allowed": false,
+      "primary_failures": [
+        "baseline_expectancy_non_positive",
+        "baseline_pf_non_positive",
+        "cost_7_5_fail",
+        "delay_1_expectancy_non_positive",
+        "leave_one_month_out_fail",
+        "leave_one_quarter_out_fail",
+        "leave_one_symbol_out_fail"
+      ],
+      "limitation": "uses TakerBuyRatio fallback only; full taker-buy-sell-volume join not implemented"
+    }
+  ],
+  "audit_answers": {
+    "is_funding_event_alpha_dead_with_current_data": "Yes for the tested current feature set. Plain, confirmed, breakout/momentum, and taker-ratio proxy funding variants all remain below baseline expectancy and PF gates after full retained coverage.",
+    "would_new_data_plausibly_change_the_answer": "Possibly, but only if it is genuinely new positioning or flow information. True open interest, liquidation, and taker buy/sell volume joins could support a different hypothesis; TakerBuyRatio fallback alone did not.",
+    "should_phase11_pivot_away_from_funding_events": "Yes unless new OI/liquidation/true taker buy-sell data is added first."
+  },
+  "decision": {
+    "funding_event_research_status": "CLOSE_WITH_CURRENT_DATA",
+    "phase11_recommendation": "Pivot away from funding-event research unless adding real new data sources first.",
+    "do_not_implement_yet": [
+      "SqueezeFundingUnwind"
+    ],
+    "blocked_by_missing_data": [
+      "true_open_interest",
+      "liquidations",
+      "positioning",
+      "true_taker_buy_sell_volume_join"
+    ],
+    "ak_trader_promotion": false,
+    "shadow_planning": false
+  }
+}

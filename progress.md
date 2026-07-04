@@ -1,5 +1,29 @@
 # Progress Log
 
+## Session: 2026-07-04 Phase 10.12 Second-Generation Funding Rejection Audit
+
+## Actions Taken
+- Read the pasted 10.11D closeout objective.
+- Verified current `ak-engine` artifacts for 10.11B, 10.11C, and 10.11D.
+- Added the Phase 10.12 rejection audit report:
+  - `runs/reports/phase10_12_second_generation_funding_rejection_audit.json`
+  - `runs/reports/phase10_12_second_generation_funding_rejection_audit.md`
+- Updated `task_plan.md` with the Phase 10.12 closeout decision.
+
+## Evidence
+- 10.11B `ConfirmedFundingExtreme`: full `192/192`, strongest candidate `ConfirmedNegativeFundingLong|long|240m`, expectancy `-2.014372`, PF `0.966931`, rejected.
+- 10.11C `BreakoutFundingMomentum`: full `192/192`, strongest candidate `BreakoutFundingLong|long|240m`, expectancy `-2.943941`, PF `0.953242`, rejected.
+- 10.11D `VolumeImbalanceFundingReversionProxy`: full `192/192`, strongest candidate `VolumeImbalanceFundingReversionProxyLong|long|240m`, expectancy `-2.511184`, PF `0.958095`, rejected.
+- 10.11D limitation explicitly retained: it uses only `TakerBuyRatio` fallback, not a true taker buy/sell volume join.
+- `git -C /home/davidmiguel22573/Github/ak-trader status --short` produced no output.
+- Chromebook raw funding-event file count under `runs/reports/chunks` is `0`.
+
+## Decision
+- Close funding-event research with the current data set.
+- Do not implement `SqueezeFundingUnwind` until true OI/liquidation/positioning or true taker buy/sell data exists.
+- Phase 11 should pivot away from funding events unless it starts with new data-source work.
+- No promotion, no shadow plan, and no `ak-trader` change.
+
 ## Session: 2026-06-30
 
 ### Final Local + SSH Status Check
