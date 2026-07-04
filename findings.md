@@ -1,5 +1,15 @@
 # Findings
 
+## Phase 11.1 CompressionVolumeBreakout Findings
+- Implemented exactly one Phase 11.1 family: `CompressionVolumeBreakout`.
+- The trigger uses compressed price structure from retained feature fields, completed-candle EMA20 directional breaks, volume confirmation, Bollinger-width rank expansion, and BTC beta agreement.
+- Funding is not a primary trigger and no funding-rate condition participates in signal generation.
+- Full local evaluation completed for 8 symbols (`ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, `ETHUSDT`, `LINKUSDT`, `SOLUSDT`, `XRPUSDT`) across `2024-01` through `2025-12`: `192/192` symbol-months.
+- Retained summaries only were written to `runs/reports/phase11_1_compression_volume_breakout.json`; raw event detail retention is `false`.
+- Verdict counts: `rejected=6`, `fragile=0`, `research_lead=0`, `missing_data=0`, `unsupported_context=0`, `inconclusive=0`.
+- Best PF row was `CompressionVolumeBreakout|long|240m` with PF `0.877362` after 5 bps and expectancy `-8.200320` bps; it still failed PF, expectancy, delay, and worst-quarter gates.
+- `CompressionVolumeBreakout` is rejected for promotion under Phase 11.1 gates.
+
 ## Phase 11.0 Non-Funding Candidate Design Findings
 - `features.Row` exposes READY_NOW non-funding fields for price, trailing returns, realized volatility, ATR, Bollinger width/rank, EMAs, trend slope, volume ratios, `TakerBuyRatio`, BTC/ETH 60-minute context returns, and as-of timestamps.
 - `regime.Label` exposes READY_NOW buckets for volatility, trend, liquidity, market beta, sentiment, composite, reasons, warmup, and `AvailableAtMS`.

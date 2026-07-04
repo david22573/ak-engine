@@ -1,5 +1,31 @@
 # Progress Log
 
+## Session: 2026-07-04 Phase 11.1 CompressionVolumeBreakout Evaluation
+
+## Actions Taken
+- Committed the Phase 11.0 planning/report closeout as `dd998ec`.
+- Implemented one research-only candidate family: `CompressionVolumeBreakout`.
+- Ran the full 8-symbol x 24-month local evaluation using existing local historian data only.
+- Created the Phase 11.1 reports:
+  - `runs/reports/phase11_1_compression_volume_breakout.json`
+  - `runs/reports/phase11_1_compression_volume_breakout.md`
+- Updated planning files with the Phase 11.1 rejection result.
+
+## Evidence
+- Coverage: `192/192` symbol-months.
+- Raw event detail retained: `false`.
+- Verdict counts: `rejected=6`, `fragile=0`, `research_lead=0`.
+- Best PF row: `CompressionVolumeBreakout|long|240m`, PF `0.877362`, expectancy `-8.200320` bps after 5 bps.
+- `go test ./internal/app` passed.
+- JSON validated with `jq`.
+
+## Boundaries Preserved
+- No `RegimeTrendPullbackContinuation` implementation.
+- No funding-primary trigger.
+- No data fetch.
+- No `ak-trader` modification.
+- No promotion, shadow plan, live trading, order placement, exchange key, execution, or mainnet logic.
+
 ## Session: 2026-07-04 Phase 11.0 Non-Funding Candidate Design
 
 ## Actions Taken

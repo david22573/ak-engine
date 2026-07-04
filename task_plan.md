@@ -1,4 +1,28 @@
-# Task Plan: Phase 10.12 Second-Generation Funding Candidate Rejection Audit
+# Task Plan: Phase 11.1 CompressionVolumeBreakout Evaluation
+
+## Current Phase
+Phase 11.1 is complete as a research/evaluation-only implementation of exactly one non-funding family: `CompressionVolumeBreakout`.
+
+## Phase 11.1 Artifacts
+- `internal/app/phase11_compression_volume_breakout.go`
+- `runs/reports/phase11_1_compression_volume_breakout.json`
+- `runs/reports/phase11_1_compression_volume_breakout.md`
+
+## Phase 11.1 Decision
+- `CompressionVolumeBreakout` is rejected for promotion under Phase 11.1 gates.
+- Full 8-symbol x 24-month coverage completed: `192/192`.
+- All six side/horizon rows were rejected: `long|15m`, `short|15m`, `long|60m`, `short|60m`, `long|240m`, `short|240m`.
+- No research lead, no fragile candidate, no shadow plan, and no `ak-trader` change are justified.
+- The next candidate remains `RegimeTrendPullbackContinuation` only if Phase 11 continues with the predeclared second family.
+
+## Phase 11.1 Verification
+- JSON validated with `jq`.
+- `go test ./internal/app` passed.
+- No data fetch was performed; local historian data was read from `/home/davidmiguel22573/Github/ak-historian/.ak-historian/work`.
+- No funding-primary trigger was implemented.
+- Retained summaries only; raw event detail retained: `false`.
+
+# Historical Task Plan: Phase 10.12 Second-Generation Funding Candidate Rejection Audit
 
 ## Current Phase
 Phase 10.12 is complete as a report-only rejection audit. It compares 10.11B, 10.11C, and 10.11D, confirms that all second-generation funding candidates remain rejected after full `192/192` coverage, and recommends closing funding-event research with current data.
