@@ -1,4 +1,4 @@
-.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 termux-worker-remote-mkdir termux-worker-push termux-worker-pull-summaries termux-worker-pull-reports phase10-9c-coverage phase10-9c-run-symbol phase10-9c-raw-files help
+.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 termux-worker-remote-mkdir termux-worker-push termux-worker-pull-summaries termux-worker-pull-reports phone-raw-count phone-backup-raw-to-drive phase10-9c-coverage phase10-9c-run-symbol phase10-9c-raw-files help
  
 # Default target
 all: build
@@ -193,7 +193,7 @@ proof-r2: ci
 termux-worker-remote-mkdir:
 	./scripts/termux_worker_sync.sh remote-mkdir
 
-## termux-worker-push: Push the repo to the Termux phone worker
+## termux-worker-push: Update the phone git checkout, then push synced repo files
 termux-worker-push:
 	./scripts/termux_worker_sync.sh push
 
@@ -204,6 +204,14 @@ termux-worker-pull-summaries:
 ## termux-worker-pull-reports: Pull phase reports and chunk outputs from the Termux phone worker
 termux-worker-pull-reports:
 	./scripts/termux_worker_sync.sh pull-reports
+
+## phone-raw-count: Count raw funding-event gzip files under runs/reports/chunks
+phone-raw-count:
+	./scripts/backup_raw_to_drive.sh count
+
+## phone-backup-raw-to-drive: Copy and verify phone raw funding-event gzip files with rclone
+phone-backup-raw-to-drive:
+	./scripts/backup_raw_to_drive.sh backup
 
 ## phase10-9c-coverage: Scan retained compact-summary coverage and ranked inventory
 phase10-9c-coverage:

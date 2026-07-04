@@ -57,7 +57,8 @@ Environment:
   RSYNC_RSH    Backward-compatible fallback; if set, SSH args are derived from it
 
 Behavior:
-  - push: sync source code and lightweight repo files to the phone worker.
+  - push: update the phone-side git checkout from local HEAD, then sync source
+          code and lightweight repo files to the phone worker.
   - pull-summaries: pull only compact *-alpha-summary.json artifacts.
   - pull-reports: pull phase reports and the chunks directory.
   - remote-mkdir: create the remote repo directory over SSH.
@@ -78,6 +79,53 @@ run_ssh() {
 
 has_rsync() {
   command -v rsync >/dev/null 2>&1
+}
+
+require_local_git() {
+  if ! git -C "${LOCAL_REPO}" rev-parse --show-toplevel >/dev/null 2>&1; then
+    echo "LOCAL_REPO must be a git repository" >&2
+    exit 1
+  fi
+}
+
+local_branch_name() {
+  git -C "${LOCAL_REPO}" symbolic-ref --quiet --short HEAD 2>/dev/null || echo "sync-head"
+}
+
+local_origin_url() {
+  git -C "${LOCAL_REPO}" remote get-url origin 2>/dev/null || true
+}
+
+sync_remote_git_checkout() {
+  require_host
+  require_local_git
+
+  local branch bundle_path origin_url remote_origin_cmd
+  branch=$(local_branch_name)
+  origin_url=$(local_origin_url)
+  bundle_path=$(mktemp "${TMPDIR:-/tmp}/ak-engine-phone-sync.XXXXXX.bundle")
+
+  remote_origin_cmd="true"
+  if [[ -n "${origin_url}" ]]; then
+    remote_origin_cmd="if git -C \"${PHONE_REPO}\" remote get-url origin >/dev/null 2>&1; then \
+      git -C \"${PHONE_REPO}\" remote set-url origin \"${origin_url}\"; \
+    else \
+      git -C \"${PHONE_REPO}\" remote add origin \"${origin_url}\"; \
+    fi"
+  fi
+
+  git -C "${LOCAL_REPO}" bundle create "${bundle_path}" HEAD >/dev/null
+  cat "${bundle_path}" | run_ssh "tmp_bundle=\$(mktemp) && \
+    cat > \"\${tmp_bundle}\" && \
+    mkdir -p \"${PHONE_REPO}\" && \
+    if [ ! -d \"${PHONE_REPO}/.git\" ]; then git -C \"${PHONE_REPO}\" init -b \"${branch}\" >/dev/null; fi && \
+    ${remote_origin_cmd} && \
+    git -C \"${PHONE_REPO}\" fetch \"\${tmp_bundle}\" \"HEAD:refs/remotes/origin/${branch}\" >/dev/null && \
+    git -C \"${PHONE_REPO}\" checkout --force -B \"${branch}\" FETCH_HEAD >/dev/null && \
+    git -C \"${PHONE_REPO}\" branch --set-upstream-to \"origin/${branch}\" \"${branch}\" >/dev/null && \
+    git -C \"${PHONE_REPO}\" reset --hard FETCH_HEAD >/dev/null && \
+    rm -f \"\${tmp_bundle}\""
+  rm -f "${bundle_path}"
 }
 
 remote_mkdir() {
@@ -101,6 +149,7 @@ push_repo_tar() {
 
 push_repo() {
   require_host
+  sync_remote_git_checkout
   local rsync_ssh_cmd="${SSH_BIN}"
   if [[ -n "${SSH_CONFIG_FILE}" ]]; then
     rsync_ssh_cmd+=" -F ${SSH_CONFIG_FILE}"
