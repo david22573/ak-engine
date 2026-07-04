@@ -190,6 +190,76 @@ func TestBreakoutFundingShortRejectedWhenVolatilityOrVolumeFails(t *testing.T) {
 	}
 }
 
+func TestVolumeImbalanceFundingReversionProxyLongAcceptedWithLowTakerBuyRatio(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, -0.05, nil, false)
+	rows[20].TakerBuyRatio = 0.42
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_up"), &summary, &diagnostics)
+	if !fundingHasFamilySide(events, "VolumeImbalanceFundingReversionProxyLong", "long") {
+		t.Fatalf("volume imbalance proxy long did not emit: %+v", events)
+	}
+	event := fundingFindFamilySide(t, events, "VolumeImbalanceFundingReversionProxyLong", "long")
+	if !fundingReasonsContain(event.SignalReasons, "funding_condition:pass", "taker_buy_ratio_proxy_available:pass", "taker_buy_ratio_proxy_reversion_signal:pass", "full_taker_buy_sell_volume_join:not_implemented") {
+		t.Fatalf("missing proxy reason codes: %+v", event.SignalReasons)
+	}
+	if diagnostics.VolumeImbalanceFundingLongEmitted == 0 {
+		t.Fatalf("volume imbalance diagnostics did not count long event: %+v", diagnostics)
+	}
+}
+
+func TestVolumeImbalanceFundingReversionProxyShortAcceptedWithHighTakerBuyRatio(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, 0.05, nil, false)
+	rows[20].TakerBuyRatio = 0.58
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_down"), &summary, &diagnostics)
+	if !fundingHasFamilySide(events, "VolumeImbalanceFundingReversionProxyShort", "short") {
+		t.Fatalf("volume imbalance proxy short did not emit: %+v", events)
+	}
+	event := fundingFindFamilySide(t, events, "VolumeImbalanceFundingReversionProxyShort", "short")
+	if !fundingReasonsContain(event.SignalReasons, "funding_condition:pass", "taker_buy_ratio_proxy_available:pass", "taker_buy_ratio_proxy_reversion_signal:pass", "full_taker_buy_sell_volume_join:not_implemented") {
+		t.Fatalf("missing proxy reason codes: %+v", event.SignalReasons)
+	}
+	if diagnostics.VolumeImbalanceFundingShortEmitted == 0 {
+		t.Fatalf("volume imbalance diagnostics did not count short event: %+v", diagnostics)
+	}
+}
+
+func TestVolumeImbalanceFundingReversionProxyRejectedWhenRatioIsNeutral(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, -0.05, nil, false)
+	rows[20].TakerBuyRatio = 0.50
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_up"), &summary, &diagnostics)
+	if fundingHasFamilySide(events, "VolumeImbalanceFundingReversionProxyLong", "long") {
+		t.Fatalf("volume imbalance proxy long emitted with neutral ratio: %+v", events)
+	}
+	if diagnostics.VolumeImbalanceRejectedProxySignal == 0 {
+		t.Fatalf("volume imbalance diagnostics did not count neutral-ratio rejection: %+v", diagnostics)
+	}
+	if !fundingHasFamilySide(events, "NegativeFundingLong", "long") {
+		t.Fatalf("base funding family regressed: %+v", events)
+	}
+}
+
+func TestVolumeImbalanceFundingReversionProxyRejectedWhenRatioMissing(t *testing.T) {
+	rows := fundingRowsWithCandidate("LINKUSDT", 20, 0.05, nil, false)
+	rows[20].TakerBuyRatio = 0
+	summary := FundingChunkSummary{FamilyEventCounts: map[string]int{}, SideEventCounts: map[string]int{}, LeakageStatus: "PASS"}
+	diagnostics := FundingDiagnostics{}
+	events := buildFundingEventsWithDiagnostics(rows, fundingContextFixture("LINKUSDT", "btc_down"), &summary, &diagnostics)
+	if fundingHasFamilySide(events, "VolumeImbalanceFundingReversionProxyShort", "short") {
+		t.Fatalf("volume imbalance proxy short emitted with missing ratio: %+v", events)
+	}
+	if diagnostics.VolumeImbalanceRejectedProxyMissing == 0 {
+		t.Fatalf("volume imbalance diagnostics did not count missing-proxy rejection: %+v", diagnostics)
+	}
+	if !fundingHasFamilySide(events, "PositiveFundingShort", "short") {
+		t.Fatalf("base funding family regressed: %+v", events)
+	}
+}
+
 func TestFundingFlipConditionsWork(t *testing.T) {
 	longChange := 0.004
 	shortChange := -0.004

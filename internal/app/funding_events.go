@@ -20,7 +20,7 @@ const fundingClusterWindowMS int64 = 60 * 60 * 1000
 const fundingRateIntervalMS int64 = 8 * 60 * 60 * 1000
 
 var defaultFundingSymbols = []string{"LINKUSDT", "SOLUSDT", "AVAXUSDT", "DOGEUSDT", "ADAUSDT", "BNBUSDT", "XRPUSDT", "ETHUSDT"}
-var defaultFundingFamilies = []string{"NegativeFundingLong", "PositiveFundingShort", "FundingFlipLong", "FundingFlipShort", "RegimeFundingLong", "RegimeFundingShort", "ConfirmedNegativeFundingLong", "ConfirmedPositiveFundingShort", "BreakoutFundingLong", "BreakoutFundingShort"}
+var defaultFundingFamilies = []string{"NegativeFundingLong", "PositiveFundingShort", "FundingFlipLong", "FundingFlipShort", "RegimeFundingLong", "RegimeFundingShort", "ConfirmedNegativeFundingLong", "ConfirmedPositiveFundingShort", "BreakoutFundingLong", "BreakoutFundingShort", "VolumeImbalanceFundingReversionProxyLong", "VolumeImbalanceFundingReversionProxyShort"}
 var defaultFundingHorizons = []string{"5m", "15m", "30m", "60m", "120m", "240m"}
 
 var fundingHorizonMS = map[string]int64{
@@ -123,6 +123,13 @@ type FundingDiagnostics struct {
 	BreakoutRejectedVolatilityExpansion   int    `json:"breakout_rejected_volatility_expansion"`
 	BreakoutRejectedVolumeConfirmation    int    `json:"breakout_rejected_volume_confirmation"`
 	BreakoutRejectedDirectionTrend        int    `json:"breakout_rejected_direction_trend"`
+	VolumeImbalanceFundingLongCandidates  int    `json:"volume_imbalance_funding_long_candidates"`
+	VolumeImbalanceFundingShortCandidates int    `json:"volume_imbalance_funding_short_candidates"`
+	VolumeImbalanceFundingLongEmitted     int    `json:"volume_imbalance_funding_long_emitted"`
+	VolumeImbalanceFundingShortEmitted    int    `json:"volume_imbalance_funding_short_emitted"`
+	VolumeImbalanceRejectedFunding        int    `json:"volume_imbalance_rejected_funding"`
+	VolumeImbalanceRejectedProxySignal    int    `json:"volume_imbalance_rejected_proxy_signal"`
+	VolumeImbalanceRejectedProxyMissing   int    `json:"volume_imbalance_rejected_proxy_missing"`
 	RejectedByContext                     int    `json:"rejected_by_context"`
 	RejectedByFundingThreshold            int    `json:"rejected_by_funding_threshold"`
 	RejectedByWarmup                      int    `json:"rejected_by_warmup"`
@@ -440,6 +447,8 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 		flipShort := changeOK && priorRate > 0 && change < 0
 		breakoutLong := evaluateBreakoutFundingLong(row, negativeExtreme, flipLong)
 		breakoutShort := evaluateBreakoutFundingShort(row, positiveExtreme, flipShort)
+		volumeImbalanceLong := evaluateVolumeImbalanceFundingReversionProxyLong(row, negativeExtreme, flipLong)
+		volumeImbalanceShort := evaluateVolumeImbalanceFundingReversionProxyShort(row, positiveExtreme, flipShort)
 		if diagnostics != nil {
 			if negativeExtreme {
 				diagnostics.NegativeFundingCandidates++
@@ -452,6 +461,8 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			}
 			accumulateBreakoutDiagnostics(diagnostics, breakoutLong)
 			accumulateBreakoutDiagnostics(diagnostics, breakoutShort)
+			accumulateVolumeImbalanceDiagnostics(diagnostics, volumeImbalanceLong)
+			accumulateVolumeImbalanceDiagnostics(diagnostics, volumeImbalanceShort)
 		}
 
 		label, ok := fundingContextAt(labels, row.AvailableAtMS)
@@ -540,6 +551,8 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			{"ConfirmedPositiveFundingShort", "short", positiveExtreme && (row.TrendSlope20 < 0 || row.Return15 < 0 || row.Close < row.EMA20), shortReturns},
 			{"BreakoutFundingLong", "long", breakoutLong.Match, longReturns},
 			{"BreakoutFundingShort", "short", breakoutShort.Match, shortReturns},
+			{"VolumeImbalanceFundingReversionProxyLong", "long", volumeImbalanceLong.Match, longReturns},
+			{"VolumeImbalanceFundingReversionProxyShort", "short", volumeImbalanceShort.Match, shortReturns},
 		}
 
 		for _, candidate := range candidates {
@@ -584,7 +597,7 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 				Return120m5bpsBps:  candidate.ret.byHorizon["120m"] - 5,
 				Return240m5bpsBps:  candidate.ret.byHorizon["240m"] - 5,
 				EntryDelay1c60mBps: fundingEntryDelayReturn(rows, i, candidate.side),
-				SignalReasons:      fundingSignalReasons(candidate.family, breakoutLong, breakoutShort),
+				SignalReasons:      fundingSignalReasons(candidate.family, breakoutLong, breakoutShort, volumeImbalanceLong, volumeImbalanceShort),
 				LeakageStatus:      "PASS",
 			}
 			events = append(events, event)
@@ -598,6 +611,12 @@ func buildFundingEventsWithDiagnostics(rows []ResearchFeatureRow, labels []regim
 			}
 			if diagnostics != nil && candidate.family == "BreakoutFundingShort" {
 				diagnostics.BreakoutFundingShortEventsEmitted++
+			}
+			if diagnostics != nil && candidate.family == "VolumeImbalanceFundingReversionProxyLong" {
+				diagnostics.VolumeImbalanceFundingLongEmitted++
+			}
+			if diagnostics != nil && candidate.family == "VolumeImbalanceFundingReversionProxyShort" {
+				diagnostics.VolumeImbalanceFundingShortEmitted++
 			}
 		}
 
@@ -824,12 +843,88 @@ func accumulateBreakoutDiagnostics(diagnostics *FundingDiagnostics, decision bre
 	}
 }
 
-func fundingSignalReasons(family string, longDecision, shortDecision breakoutFundingDecision) []string {
+type volumeImbalanceFundingDecision struct {
+	Family           string
+	Match            bool
+	FundingCondition bool
+	ProxyAvailable   bool
+	ProxySignal      bool
+	Reasons          []string
+}
+
+func evaluateVolumeImbalanceFundingReversionProxyLong(row ResearchFeatureRow, negativeExtreme, flipLong bool) volumeImbalanceFundingDecision {
+	return buildVolumeImbalanceFundingDecision(
+		"VolumeImbalanceFundingReversionProxyLong",
+		negativeExtreme || flipLong,
+		row.TakerBuyRatio,
+		row.TakerBuyRatio > 0,
+		func(ratio float64) bool { return ratio <= 0.45 },
+	)
+}
+
+func evaluateVolumeImbalanceFundingReversionProxyShort(row ResearchFeatureRow, positiveExtreme, flipShort bool) volumeImbalanceFundingDecision {
+	return buildVolumeImbalanceFundingDecision(
+		"VolumeImbalanceFundingReversionProxyShort",
+		positiveExtreme || flipShort,
+		row.TakerBuyRatio,
+		row.TakerBuyRatio > 0,
+		func(ratio float64) bool { return ratio >= 0.55 },
+	)
+}
+
+func buildVolumeImbalanceFundingDecision(family string, fundingOK bool, takerBuyRatio float64, proxyAvailable bool, proxyRule func(float64) bool) volumeImbalanceFundingDecision {
+	proxySignal := proxyAvailable && proxyRule(takerBuyRatio)
+	decision := volumeImbalanceFundingDecision{
+		Family:           family,
+		FundingCondition: fundingOK,
+		ProxyAvailable:   proxyAvailable,
+		ProxySignal:      proxySignal,
+		Reasons: []string{
+			breakoutReason("funding_condition", fundingOK),
+			breakoutReason("taker_buy_ratio_proxy_available", proxyAvailable),
+			breakoutReason("taker_buy_ratio_proxy_reversion_signal", proxySignal),
+			"full_taker_buy_sell_volume_join:not_implemented",
+		},
+	}
+	decision.Match = fundingOK && proxySignal
+	return decision
+}
+
+func accumulateVolumeImbalanceDiagnostics(diagnostics *FundingDiagnostics, decision volumeImbalanceFundingDecision) {
+	if diagnostics == nil {
+		return
+	}
+	if decision.Match {
+		switch decision.Family {
+		case "VolumeImbalanceFundingReversionProxyLong":
+			diagnostics.VolumeImbalanceFundingLongCandidates++
+		case "VolumeImbalanceFundingReversionProxyShort":
+			diagnostics.VolumeImbalanceFundingShortCandidates++
+		}
+		return
+	}
+	if !decision.FundingCondition {
+		diagnostics.VolumeImbalanceRejectedFunding++
+	}
+	if !decision.ProxyAvailable {
+		diagnostics.VolumeImbalanceRejectedProxyMissing++
+		return
+	}
+	if !decision.ProxySignal {
+		diagnostics.VolumeImbalanceRejectedProxySignal++
+	}
+}
+
+func fundingSignalReasons(family string, longDecision, shortDecision breakoutFundingDecision, volumeImbalanceLong, volumeImbalanceShort volumeImbalanceFundingDecision) []string {
 	switch family {
 	case "BreakoutFundingLong":
 		return append([]string(nil), longDecision.Reasons...)
 	case "BreakoutFundingShort":
 		return append([]string(nil), shortDecision.Reasons...)
+	case "VolumeImbalanceFundingReversionProxyLong":
+		return append([]string(nil), volumeImbalanceLong.Reasons...)
+	case "VolumeImbalanceFundingReversionProxyShort":
+		return append([]string(nil), volumeImbalanceShort.Reasons...)
 	default:
 		return nil
 	}

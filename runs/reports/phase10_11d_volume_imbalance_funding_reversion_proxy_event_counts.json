@@ -1,0 +1,112 @@
+{
+  "phase": "10.11D",
+  "candidate": "VolumeImbalanceFundingReversionProxy",
+  "limitation": "uses TakerBuyRatio fallback only; full taker-buy-sell-volume join not implemented",
+  "coverage_status": "full_universe_ready",
+  "full_universe_ready": true,
+  "raw_required": false,
+  "ak_trader_touched": false,
+  "research_lead_count": 0,
+  "shadow_candidate_count": 0,
+  "rejected_count": 12,
+  "long": [
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyLong|long|240m",
+      "final_label": "REJECTED",
+      "event_count": 1110149,
+      "cluster_count": 77502,
+      "expectancy_bps_after_5_bps": -2.511184,
+      "pf_after_5_bps": 0.958095
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyLong|long|120m",
+      "final_label": "REJECTED",
+      "event_count": 1110149,
+      "cluster_count": 77502,
+      "expectancy_bps_after_5_bps": -3.475678,
+      "pf_after_5_bps": 0.919134
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyLong|long|60m",
+      "final_label": "REJECTED",
+      "event_count": 1110149,
+      "cluster_count": 77502,
+      "expectancy_bps_after_5_bps": -4.04423,
+      "pf_after_5_bps": 0.870552
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyLong|long|30m",
+      "final_label": "REJECTED",
+      "event_count": 1110149,
+      "cluster_count": 77502,
+      "expectancy_bps_after_5_bps": -4.405061,
+      "pf_after_5_bps": 0.809095
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyLong|long|15m",
+      "final_label": "REJECTED",
+      "event_count": 1110149,
+      "cluster_count": 77502,
+      "expectancy_bps_after_5_bps": -4.563096,
+      "pf_after_5_bps": 0.734629
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyLong|long|5m",
+      "final_label": "REJECTED",
+      "event_count": 1110149,
+      "cluster_count": 77502,
+      "expectancy_bps_after_5_bps": -4.806953,
+      "pf_after_5_bps": 0.573287
+    }
+  ],
+  "short": [
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyShort|short|5m",
+      "final_label": "REJECTED",
+      "event_count": 1645518,
+      "cluster_count": 118173,
+      "expectancy_bps_after_5_bps": -4.963354,
+      "pf_after_5_bps": 0.550962
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyShort|short|15m",
+      "final_label": "REJECTED",
+      "event_count": 1645518,
+      "cluster_count": 118173,
+      "expectancy_bps_after_5_bps": -5.068631,
+      "pf_after_5_bps": 0.701776
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyShort|short|30m",
+      "final_label": "REJECTED",
+      "event_count": 1645518,
+      "cluster_count": 118173,
+      "expectancy_bps_after_5_bps": -5.210624,
+      "pf_after_5_bps": 0.77157
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyShort|short|60m",
+      "final_label": "REJECTED",
+      "event_count": 1645518,
+      "cluster_count": 118173,
+      "expectancy_bps_after_5_bps": -5.612153,
+      "pf_after_5_bps": 0.819903
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyShort|short|120m",
+      "final_label": "REJECTED",
+      "event_count": 1645518,
+      "cluster_count": 118173,
+      "expectancy_bps_after_5_bps": -6.48965,
+      "pf_after_5_bps": 0.84979
+    },
+    {
+      "candidate_key": "VolumeImbalanceFundingReversionProxyShort|short|240m",
+      "final_label": "REJECTED",
+      "event_count": 1645518,
+      "cluster_count": 118173,
+      "expectancy_bps_after_5_bps": -7.809675,
+      "pf_after_5_bps": 0.871866
+    }
+  ]
+}
