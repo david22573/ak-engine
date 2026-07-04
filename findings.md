@@ -1,5 +1,15 @@
 # Findings
 
+## Phase 11.0 Non-Funding Candidate Design Findings
+- `features.Row` exposes READY_NOW non-funding fields for price, trailing returns, realized volatility, ATR, Bollinger width/rank, EMAs, trend slope, volume ratios, `TakerBuyRatio`, BTC/ETH 60-minute context returns, and as-of timestamps.
+- `regime.Label` exposes READY_NOW buckets for volatility, trend, liquidity, market beta, sentiment, composite, reasons, warmup, and `AvailableAtMS`.
+- `pkg/protocol.Candle` exposes OHLCV, quote volume, trade count, and taker buy base/quote volume after candle close.
+- Existing app evaluators already contain non-funding baseline surfaces for `TrendContinuation`, `CompressionBreakout`, `ShockFade`, `VolumeMomentum`, `BetaAgrees`, and `BetaDiverges`; Phase 11.0 uses these as feasibility evidence only and does not implement candidate code.
+- `join_research_features.go` supports derivative research fields conceptually, but true taker buy/sell imbalance, open interest, long/short ratio, and positioning should not be assumed available for a READY_NOW non-funding phase. Phase 10.11D documented only `TakerBuyRatio` fallback, not a full taker buy/sell volume join.
+- Phase 11.0 recommended top candidate: `CompressionVolumeBreakout`.
+- Phase 11.0 second candidate: `RegimeTrendPullbackContinuation`.
+- Phase 11.0 blocked/deferred candidate: `BasketDispersionLeadLag`, because cross-symbol relative strength and basket dispersion are not current retained-summary fields.
+
 ## Requirements
 - Work only in `ak-engine`.
 - Reduce research-script debt, phase-specific sprawl, and fragile pipeline orchestration.

@@ -1,5 +1,28 @@
 # Progress Log
 
+## Session: 2026-07-04 Phase 11.0 Non-Funding Candidate Design
+
+## Actions Taken
+- Read the Phase 11.0 objective attachment.
+- Inspected current feature, regime, candle, research-join, and candidate-evaluator code surfaces.
+- Created the Phase 11.0 design reports:
+  - `runs/reports/phase11_0_non_funding_candidate_design.json`
+  - `runs/reports/phase11_0_non_funding_candidate_design.md`
+- Updated planning files with the Phase 11.0 design findings and recommendation.
+
+## Current Recommendation
+- Next phase: `Phase 11.1 - Implement Top Non-Funding Candidate Family`.
+- Implement first: `CompressionVolumeBreakout`.
+- Second candidate: `RegimeTrendPullbackContinuation`.
+- Blocked/deferred: `BasketDispersionLeadLag`.
+
+## Boundaries Preserved
+- No candidate code implemented.
+- No `ak-trader` modification or promotion.
+- No live trading, order placement, exchange key, execution, or mainnet logic.
+- No new data fetch.
+- Funding is not used as the primary trigger in proposed Phase 11 candidates.
+
 ## Session: 2026-07-04 Phase 10.12 Second-Generation Funding Rejection Audit
 
 ## Actions Taken

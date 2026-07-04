@@ -94,6 +94,17 @@ Complete the ConfirmedFundingExtreme retained-summary evaluation from `132/192` 
 ## Current Phase
 Step 4 closeout complete for local retained coverage and inventory: the all-8-symbol retained scan refreshed Phase 10.8C coverage, Phase 10.9C recovery coverage copies, and the unfiltered retained ranked inventory with `full_universe_ready=true`, `raw_required=false`, `summary files found=192`, and `malformed summaries=0`. The phone worker is idle, the remote phone `ak-engine` tree is now git-backed, and remote raw gzip cleanup was intentionally not performed; aggregate-report reconciliation remains future work outside this closeout.
 
+## Phase 11.0 Non-Funding Candidate Design
+- [x] Read the Phase 11.0 objective attachment.
+- [x] Inspect available feature, regime, candle, and research-join structs.
+- [x] Review prior non-funding baseline surfaces and Phase 10.12 funding rejection evidence.
+- [x] Create `runs/reports/phase11_0_non_funding_candidate_design.json`.
+- [x] Create `runs/reports/phase11_0_non_funding_candidate_design.md`.
+- [x] Validate JSON and run required `go test ./internal/app`.
+- [x] Final git hygiene audit.
+
+Current recommendation: `Phase 11.1 - Implement Top Non-Funding Candidate Family`, specifically `CompressionVolumeBreakout`. Second candidate: `RegimeTrendPullbackContinuation`. Blocked/deferred candidate: `BasketDispersionLeadLag` until cross-symbol relative-strength/basket-dispersion support exists.
+
 ## Current Verified State
 - Local retained coverage report date: `2026-06-30`
 - Coverage status: `full_universe_ready`
