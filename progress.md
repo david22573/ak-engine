@@ -1,5 +1,33 @@
 # Progress Log
 
+## Session: 2026-07-04 Phase 11.2 RegimeTrendPullbackContinuation Evaluation
+
+## Actions Taken
+- Committed the Phase 11.1 rejected experiment as `6db5806`.
+- Implemented one research-only candidate family: `RegimeTrendPullbackContinuation`.
+- Added focused app tests for long/short acceptance, rejection gates, no funding-primary dependency, and unchanged `CompressionVolumeBreakout` constants.
+- Ran the full 8-symbol x 24-month local evaluation using existing local historian data only.
+- Created the Phase 11.2 reports:
+  - `runs/reports/phase11_2_regime_trend_pullback_continuation.json`
+  - `runs/reports/phase11_2_regime_trend_pullback_continuation.md`
+- Updated planning files with the Phase 11.2 rejection result.
+
+## Evidence
+- Coverage: `192/192` symbol-months.
+- Raw event detail retained: `false`.
+- Funding primary trigger: `false`.
+- `ak_trader_touched=false`.
+- Label counts: `rejected=10`, `fragile=0`, `research_lead=0`, `shadow_candidate=0`.
+- Best PF row: `RegimeTrendPullbackContinuation|long|240m`, PF `0.944932`, expectancy `-3.536483` bps after 5 bps.
+- JSON validated with `jq`.
+
+## Boundaries Preserved
+- No additional Phase 11 candidate family implemented.
+- No funding-primary trigger.
+- No data fetch.
+- No `ak-trader` modification.
+- No promotion, shadow plan, live trading, order placement, exchange key, execution, or mainnet logic.
+
 ## Session: 2026-07-04 Phase 11.1 CompressionVolumeBreakout Evaluation
 
 ## Actions Taken

@@ -1,4 +1,31 @@
-# Task Plan: Phase 11.1 CompressionVolumeBreakout Evaluation
+# Task Plan: Phase 11.2 RegimeTrendPullbackContinuation Evaluation
+
+## Current Phase
+Phase 11.2 is complete as a research/evaluation-only implementation of exactly one non-funding family: `RegimeTrendPullbackContinuation`.
+
+## Phase 11.2 Artifacts
+- `internal/app/phase11_regime_trend_pullback_continuation.go`
+- `internal/app/phase11_regime_trend_pullback_continuation_test.go`
+- `runs/reports/phase11_2_regime_trend_pullback_continuation.json`
+- `runs/reports/phase11_2_regime_trend_pullback_continuation.md`
+
+## Phase 11.2 Decision
+- `RegimeTrendPullbackContinuation` is rejected for promotion under Phase 11.2 gates.
+- Full 8-symbol x 24-month coverage completed: `192/192`.
+- All ten side/horizon rows were rejected across `long|short` and `15m`, `30m`, `60m`, `120m`, `240m`.
+- Best PF row was `RegimeTrendPullbackContinuation|long|240m`, PF `0.944932` after 5 bps, expectancy `-3.536483` bps after 5 bps.
+- Label counts: `rejected=10`, `fragile=0`, `research_lead=0`, `shadow_candidate=0`.
+- No research lead, no fragile candidate, no shadow plan, and no `ak-trader` change are justified.
+
+## Phase 11.2 Verification
+- JSON validated with `jq`.
+- `go test ./internal/app` passed before full evaluation; final validation is run after this planning update.
+- No data fetch was performed; local historian data was read from `/home/davidmiguel22573/Github/ak-historian/.ak-historian/work`.
+- No funding-primary trigger was implemented.
+- Retained summaries only; raw event detail retained: `false`.
+- `ak_trader_touched=false`.
+
+# Historical Task Plan: Phase 11.1 CompressionVolumeBreakout Evaluation
 
 ## Current Phase
 Phase 11.1 is complete as a research/evaluation-only implementation of exactly one non-funding family: `CompressionVolumeBreakout`.

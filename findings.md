@@ -1,5 +1,15 @@
 # Findings
 
+## Phase 11.2 RegimeTrendPullbackContinuation Findings
+- Implemented exactly one Phase 11.2 family: `RegimeTrendPullbackContinuation`.
+- The trigger uses favorable trend/regime context, EMA20/EMA50/EMA200 trend alignment, controlled pullback structure, Return15 or EMA20 continuation confirmation, and a volume/chop filter.
+- Funding is not a primary trigger and no funding-rate condition participates in signal generation.
+- Full local evaluation completed for 8 symbols (`ADAUSDT`, `AVAXUSDT`, `BNBUSDT`, `DOGEUSDT`, `ETHUSDT`, `LINKUSDT`, `SOLUSDT`, `XRPUSDT`) across `2024-01` through `2025-12`: `192/192` symbol-months.
+- Retained summaries only were written to `runs/reports/phase11_2_regime_trend_pullback_continuation.json`; raw event detail retention is `false`.
+- Label counts: `rejected=10`, `fragile=0`, `research_lead=0`, `shadow_candidate=0`, `missing_data=0`, `unsupported_context=0`, `inconclusive=0`.
+- Best PF row was `RegimeTrendPullbackContinuation|long|240m` with PF `0.944932` after 5 bps and expectancy `-3.536483` bps; it still failed PF, expectancy, delay, and worst-quarter gates.
+- `RegimeTrendPullbackContinuation` is rejected for promotion under Phase 11.2 gates.
+
 ## Phase 11.1 CompressionVolumeBreakout Findings
 - Implemented exactly one Phase 11.1 family: `CompressionVolumeBreakout`.
 - The trigger uses compressed price structure from retained feature fields, completed-candle EMA20 directional breaks, volume confirmation, Bollinger-width rank expansion, and BTC beta agreement.
