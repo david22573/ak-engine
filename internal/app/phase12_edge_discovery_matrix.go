@@ -91,6 +91,24 @@ type phase120BucketSummary struct {
 	ExpectancyAfter5Bps       float64                 `json:"expectancy_after_5_bps"`
 	ExpectancyAfter7_5Bps     float64                 `json:"expectancy_after_7_5_bps"`
 	ExpectancyAfter10Bps      float64                 `json:"expectancy_after_10_bps"`
+	PFAfter5Bps               float64                 `json:"pf_after_5_bps"`
+	PFAfter7_5Bps             float64                 `json:"pf_after_7_5_bps"`
+	PFAfter10Bps              float64                 `json:"pf_after_10_bps"`
+	WinRateAfter5Bps          float64                 `json:"win_rate_after_5_bps"`
+	WinRateAfter7_5Bps        float64                 `json:"win_rate_after_7_5_bps"`
+	WinRateAfter10Bps         float64                 `json:"win_rate_after_10_bps"`
+	GrossProfitAfter5Bps      float64                 `json:"gross_profit_after_5_bps"`
+	GrossLossAfter5Bps        float64                 `json:"gross_loss_after_5_bps"`
+	GrossProfitAfter7_5Bps    float64                 `json:"gross_profit_after_7_5_bps"`
+	GrossLossAfter7_5Bps      float64                 `json:"gross_loss_after_7_5_bps"`
+	GrossProfitAfter10Bps     float64                 `json:"gross_profit_after_10_bps"`
+	GrossLossAfter10Bps       float64                 `json:"gross_loss_after_10_bps"`
+	WinCountAfter5Bps         int                     `json:"win_count_after_5_bps"`
+	LossCountAfter5Bps        int                     `json:"loss_count_after_5_bps"`
+	WinCountAfter7_5Bps       int                     `json:"win_count_after_7_5_bps"`
+	LossCountAfter7_5Bps      int                     `json:"loss_count_after_7_5_bps"`
+	WinCountAfter10Bps        int                     `json:"win_count_after_10_bps"`
+	LossCountAfter10Bps       int                     `json:"loss_count_after_10_bps"`
 	WinRate                   float64                 `json:"win_rate"`
 	ProfitFactor              float64                 `json:"profit_factor"`
 	AverageForwardReturn      float64                 `json:"average_forward_return"`
@@ -496,6 +514,24 @@ func phase120Summaries(aggs map[phase120AggKey]*phase120Agg) []phase120BucketSum
 			ExpectancyAfter5Bps:       phase120Expectancy(agg.cost5),
 			ExpectancyAfter7_5Bps:     phase120Expectancy(agg.cost75),
 			ExpectancyAfter10Bps:      phase120Expectancy(agg.cost10),
+			PFAfter5Bps:               phase120ProfitFactor(agg.cost5),
+			PFAfter7_5Bps:             phase120ProfitFactor(agg.cost75),
+			PFAfter10Bps:              phase120ProfitFactor(agg.cost10),
+			WinRateAfter5Bps:          phase120WinRate(agg.cost5),
+			WinRateAfter7_5Bps:        phase120WinRate(agg.cost75),
+			WinRateAfter10Bps:         phase120WinRate(agg.cost10),
+			GrossProfitAfter5Bps:      agg.cost5.profit,
+			GrossLossAfter5Bps:        agg.cost5.loss,
+			GrossProfitAfter7_5Bps:    agg.cost75.profit,
+			GrossLossAfter7_5Bps:      agg.cost75.loss,
+			GrossProfitAfter10Bps:     agg.cost10.profit,
+			GrossLossAfter10Bps:       agg.cost10.loss,
+			WinCountAfter5Bps:         agg.cost5.wins,
+			LossCountAfter5Bps:        agg.cost5.losses,
+			WinCountAfter7_5Bps:       agg.cost75.wins,
+			LossCountAfter7_5Bps:      agg.cost75.losses,
+			WinCountAfter10Bps:        agg.cost10.wins,
+			LossCountAfter10Bps:       agg.cost10.losses,
 			WinRate:                   phase120WinRate(agg.cost5),
 			ProfitFactor:              phase120ProfitFactor(agg.cost5),
 			AverageForwardReturn:      phase120Expectancy(agg.raw),
@@ -869,6 +905,18 @@ func phase120RoundBucket(row phase120BucketSummary) phase120BucketSummary {
 	row.ExpectancyAfter5Bps = roundMetric(row.ExpectancyAfter5Bps)
 	row.ExpectancyAfter7_5Bps = roundMetric(row.ExpectancyAfter7_5Bps)
 	row.ExpectancyAfter10Bps = roundMetric(row.ExpectancyAfter10Bps)
+	row.PFAfter5Bps = roundMetric(row.PFAfter5Bps)
+	row.PFAfter7_5Bps = roundMetric(row.PFAfter7_5Bps)
+	row.PFAfter10Bps = roundMetric(row.PFAfter10Bps)
+	row.WinRateAfter5Bps = roundMetric(row.WinRateAfter5Bps)
+	row.WinRateAfter7_5Bps = roundMetric(row.WinRateAfter7_5Bps)
+	row.WinRateAfter10Bps = roundMetric(row.WinRateAfter10Bps)
+	row.GrossProfitAfter5Bps = roundMetric(row.GrossProfitAfter5Bps)
+	row.GrossLossAfter5Bps = roundMetric(row.GrossLossAfter5Bps)
+	row.GrossProfitAfter7_5Bps = roundMetric(row.GrossProfitAfter7_5Bps)
+	row.GrossLossAfter7_5Bps = roundMetric(row.GrossLossAfter7_5Bps)
+	row.GrossProfitAfter10Bps = roundMetric(row.GrossProfitAfter10Bps)
+	row.GrossLossAfter10Bps = roundMetric(row.GrossLossAfter10Bps)
 	row.WinRate = roundMetric(row.WinRate)
 	row.ProfitFactor = roundMetric(row.ProfitFactor)
 	row.AverageForwardReturn = roundMetric(row.AverageForwardReturn)
@@ -1007,7 +1055,22 @@ func writePhase120CSV(path string, rows []phase120BucketSummary) error {
 	defer f.Close()
 	w := csv.NewWriter(f)
 	defer w.Flush()
-	header := []string{"feature", "bucket", "regime", "side", "horizon", "label", "sample_count", "cluster_count", "raw_expectancy_bps", "expectancy_after_5_bps", "expectancy_after_7_5_bps", "expectancy_after_10_bps", "win_rate", "profit_factor", "average_forward_return", "median_forward_return", "worst_month_expectancy", "worst_symbol_expectancy", "leave_one_symbol_out_passed", "leave_one_month_out_passed", "leave_one_quarter_out_passed", "top_symbol_contribution_pct", "top_month_contribution_pct", "top_quarter_contribution_pct"}
+	header := []string{
+		"feature", "bucket", "regime", "side", "horizon", "label", "sample_count", "cluster_count",
+		"raw_expectancy_bps", "expectancy_after_5_bps", "expectancy_after_7_5_bps", "expectancy_after_10_bps",
+		"pf_after_5_bps", "pf_after_7_5_bps", "pf_after_10_bps",
+		"win_rate_after_5_bps", "win_rate_after_7_5_bps", "win_rate_after_10_bps",
+		"gross_profit_after_5_bps", "gross_loss_after_5_bps",
+		"gross_profit_after_7_5_bps", "gross_loss_after_7_5_bps",
+		"gross_profit_after_10_bps", "gross_loss_after_10_bps",
+		"win_count_after_5_bps", "loss_count_after_5_bps",
+		"win_count_after_7_5_bps", "loss_count_after_7_5_bps",
+		"win_count_after_10_bps", "loss_count_after_10_bps",
+		"win_rate", "profit_factor", "average_forward_return", "median_forward_return",
+		"worst_month_expectancy", "worst_symbol_expectancy",
+		"leave_one_symbol_out_passed", "leave_one_month_out_passed", "leave_one_quarter_out_passed",
+		"top_symbol_contribution_pct", "top_month_contribution_pct", "top_quarter_contribution_pct",
+	}
 	if err := w.Write(header); err != nil {
 		return err
 	}
@@ -1016,6 +1079,14 @@ func writePhase120CSV(path string, rows []phase120BucketSummary) error {
 			row.Feature, row.Bucket, row.Regime, row.Side, row.Horizon, row.Label,
 			strconv.Itoa(row.SampleCount), strconv.Itoa(row.ClusterCount),
 			phase120Fmt(row.RawExpectancyBps), phase120Fmt(row.ExpectancyAfter5Bps), phase120Fmt(row.ExpectancyAfter7_5Bps), phase120Fmt(row.ExpectancyAfter10Bps),
+			phase120Fmt(row.PFAfter5Bps), phase120Fmt(row.PFAfter7_5Bps), phase120Fmt(row.PFAfter10Bps),
+			phase120Fmt(row.WinRateAfter5Bps), phase120Fmt(row.WinRateAfter7_5Bps), phase120Fmt(row.WinRateAfter10Bps),
+			phase120Fmt(row.GrossProfitAfter5Bps), phase120Fmt(row.GrossLossAfter5Bps),
+			phase120Fmt(row.GrossProfitAfter7_5Bps), phase120Fmt(row.GrossLossAfter7_5Bps),
+			phase120Fmt(row.GrossProfitAfter10Bps), phase120Fmt(row.GrossLossAfter10Bps),
+			strconv.Itoa(row.WinCountAfter5Bps), strconv.Itoa(row.LossCountAfter5Bps),
+			strconv.Itoa(row.WinCountAfter7_5Bps), strconv.Itoa(row.LossCountAfter7_5Bps),
+			strconv.Itoa(row.WinCountAfter10Bps), strconv.Itoa(row.LossCountAfter10Bps),
 			phase120Fmt(row.WinRate), phase120Fmt(row.ProfitFactor), phase120Fmt(row.AverageForwardReturn), phase120Fmt(row.MedianForwardReturn),
 			phase120Fmt(row.WorstMonthExpectancy), phase120Fmt(row.WorstSymbolExpectancy),
 			strconv.FormatBool(row.LeaveOneSymbolOut.Passed), strconv.FormatBool(row.LeaveOneMonthOut.Passed), strconv.FormatBool(row.LeaveOneQuarterOut.Passed),

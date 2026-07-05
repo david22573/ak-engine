@@ -1,0 +1,31 @@
+{
+  "final_label": "strict_audit_complete",
+  "focus_bucket": "RealizedVol60 / realized_vol_60_mid / trend_down / long / 240m",
+  "focus_bucket_label": "STRICT_TOP_CANDIDATE",
+  "cluster_label": "CLUSTER_TOP_CANDIDATE",
+  "pf_after_5_bps": 1.174282,
+  "pf_after_7_5_bps": 1.14694,
+  "pf_after_10_bps": 1.120205,
+  "win_count_after_5_bps": 9906,
+  "loss_count_after_5_bps": 8107,
+  "win_count_after_7_5_bps": 9827,
+  "loss_count_after_7_5_bps": 8186,
+  "win_count_after_10_bps": 9753,
+  "loss_count_after_10_bps": 8260,
+  "pf_metrics_available": true,
+  "q4_2024_exclusion_result": true,
+  "leave_one_quarter_out_result": true,
+  "leave_one_symbol_out_result": true,
+  "overlap_cluster_members": [
+    "RealizedVol60 / realized_vol_60_mid / trend_down / long / 240m",
+    "CloseRelativeEMA20 / above_ema20_strong / long / 240m",
+    "CloseRelativeEMA20 / below_ema20_strong / long / 240m",
+    "CloseRelativeEMA20 / above_ema20_strong / long / 120m",
+    "Return15 / return15_down_strong / long / 240m"
+  ],
+  "edge_theme_name": "DowntrendMidVolReliefLong240m",
+  "recommended_next_phase": "Phase 12.2 - Candidate Promotion",
+  "ak_trader_touched": false,
+  "promotion_allowed": false,
+  "strategy_implemented": false
+}
