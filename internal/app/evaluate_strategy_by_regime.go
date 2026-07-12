@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davidmiguel22573/ak-engine/internal/backtest"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/backtest"
+	"github.com/david22573/ak-engine/internal/regime"
 	"github.com/spf13/cobra"
 )
 

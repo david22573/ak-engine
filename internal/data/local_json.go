@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 type LocalJSONSource struct{}

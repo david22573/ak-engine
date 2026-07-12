@@ -3,7 +3,7 @@ package strategy
 import (
 	"context"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 type Side string

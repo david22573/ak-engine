@@ -1,6 +1,6 @@
 package backtest
 
-import "github.com/davidmiguel22573/ak-engine/internal/strategy"
+import "github.com/david22573/ak-engine/internal/strategy"
 
 type ExitReason string
 

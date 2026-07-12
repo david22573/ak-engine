@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func TestPhase103InventoryExtractsOnlyResearchLeadRows(t *testing.T) {

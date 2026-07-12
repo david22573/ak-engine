@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 	"testing"
 )
 

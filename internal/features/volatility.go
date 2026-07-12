@@ -3,7 +3,7 @@ package features
 import (
 	"math"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func ATR(candles []protocol.Candle, idx int, period int) (float64, bool) {
