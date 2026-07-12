@@ -6,7 +6,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 )
 
 func exactThresholds(rows []features.Row, idx int, lookback int) Thresholds {

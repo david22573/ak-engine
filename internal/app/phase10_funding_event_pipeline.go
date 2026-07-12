@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 	"github.com/spf13/cobra"
 )
 

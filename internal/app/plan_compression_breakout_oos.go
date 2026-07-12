@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/data"
 	"github.com/spf13/cobra"
 )
 

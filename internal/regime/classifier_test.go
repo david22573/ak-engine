@@ -3,7 +3,7 @@ package regime
 import (
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 )
 
 func TestClassifier_ShockAndCompressed(t *testing.T) {

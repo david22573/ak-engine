@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func TestFastAccumulationEveryCompleted15mWindowProducesDecision(t *testing.T) {

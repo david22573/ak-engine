@@ -3,7 +3,7 @@ package regime
 import (
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 )
 
 func TestClassify_MarketBeta(t *testing.T) {

@@ -3,7 +3,7 @@ package features
 import (
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func TestBuildRows_WarmupAndFuture(t *testing.T) {
