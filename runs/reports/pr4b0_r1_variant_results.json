@@ -1,0 +1,203 @@
+{
+  "schema_version": "ak.engine.pr4b0_r1.variant_results.v1",
+  "phase": "PR4B0-R1",
+  "status": "BLOCKED_BEFORE_VARIANT_EXECUTION",
+  "final_label": "PR4B0_R1_RESEARCH_BLOCKED",
+  "executive_verdict": "The exact baseline is byte-reproducible, but immutable dataset/PIT identity, retained event and cluster replay data, and the accepted uncertainty methodology are unavailable. Phase A therefore blocked the epoch before partitions or variants.",
+  "protocol": {
+    "json_path": "runs/reports/pr4b0_r1_research_protocol.json",
+    "markdown_path": "runs/reports/pr4b0_r1_research_protocol.md",
+    "sha256": "sha256:7d1305bb418d2463c966f1383be4e9b7e30b0aa08dd254cd60eb55e7825cb072",
+    "commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+    "preceded_results": true,
+    "proof": "The protocol commit contains only the two protocol artifacts and has the accepted PR4B0 report commit as its parent."
+  },
+  "search_budget": {
+    "maximum_variants": 12,
+    "declared_variants": 0,
+    "executed_development_variants": 0,
+    "executed_validation_variants": 0,
+    "executed_holdout_variants": 0,
+    "expanded_after_results": false
+  },
+  "complete_declared_variant_list": [],
+  "baseline_reproduction": {
+    "status": "PASS_BYTE_EQUIVALENT",
+    "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+    "candidate_version": "v1",
+    "implementation_commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+    "implementation_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "json_sha256": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
+    "markdown_sha256": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed",
+    "json_byte_equal": true,
+    "expected_symbol_months": 192,
+    "completed_symbol_months": 192,
+    "raw_event_count": 329842,
+    "legacy_declustered_count_unaccepted": 13178,
+    "cost_results": [
+      {
+        "cost_bps": 5,
+        "profit_factor": 1.168963677,
+        "expectancy_bps": 16.473088653
+      },
+      {
+        "cost_bps": 7.5,
+        "profit_factor": 1.141681883,
+        "expectancy_bps": 13.973088653
+      },
+      {
+        "cost_bps": 10,
+        "profit_factor": 1.115003906,
+        "expectancy_bps": 11.473088653
+      },
+      {
+        "cost_bps": 15,
+        "profit_factor": 1.063413696,
+        "expectancy_bps": 6.473088653
+      }
+    ],
+    "worst_month": {
+      "period": "2025-03",
+      "pf_5_bps": 0.66171108,
+      "pf_10_bps": 0.634441669
+    },
+    "worst_quarter": {
+      "period": "2025-Q1",
+      "pf_5_bps": 0.847931049,
+      "pf_10_bps": 0.813544771
+    }
+  },
+  "development": {
+    "status": "NOT_RUN_PHASE_A_BLOCKED",
+    "partition": null,
+    "variant_results": [],
+    "exclusion_counts_by_reason": {}
+  },
+  "validation": {
+    "status": "NOT_RUN_NO_DEVELOPMENT_SURVIVORS",
+    "partition": null,
+    "variant_results": []
+  },
+  "walk_forward": {
+    "status": "NOT_RUN_PHASE_A_BLOCKED",
+    "slices": [],
+    "failed_periods": []
+  },
+  "combined_results": {
+    "status": "NOT_COMPUTED",
+    "reason": "No variant evaluation occurred."
+  },
+  "parameter_neighborhood": {
+    "status": "NOT_RUN_PHASE_A_BLOCKED",
+    "results": []
+  },
+  "holdout": {
+    "authorization_status": "NOT_REQUESTED_NO_FROZEN_SURVIVOR",
+    "rif_authority_commit": "29350344a57e46f064442eada26e9418515990be",
+    "candidate_frozen": false,
+    "registration_requested": false,
+    "exposure_recorded": false,
+    "exposure_count": 0,
+    "holdout_read": false,
+    "final_holdout_result": null
+  },
+  "blocking_evidence": [
+    {
+      "code": "IMMUTABLE_DATASET_IDENTITY_NOT_ESTABLISHED",
+      "status": "FAIL",
+      "evidence": "No dataset ID/version, manifest ID/hash, evaluation cutoff, or policy identities exist for the replayed inputs."
+    },
+    {
+      "code": "COMPLETE_PIT_VALID_DATA_UNAVAILABLE",
+      "status": "FAIL",
+      "evidence": "No accepted Historian PIT snapshot manifest or evidence envelope exists for the 2024-2025 research inputs."
+    },
+    {
+      "code": "CANDIDATE_EVALUATION_BLOCKED_BY_RETAINED_SCHEMA",
+      "status": "FAIL",
+      "evidence": "The original report retained aggregate summaries only and no event, cluster, return, context-value, or replay-hash rows."
+    },
+    {
+      "code": "ACCEPTED_UNCERTAINTY_METHODOLOGY_UNSPECIFIED",
+      "status": "FAIL",
+      "evidence": "The gate exists but its estimator, confidence level, resampling unit, seed, and interval construction are absent."
+    }
+  ],
+  "qualification_gate_results": [
+    {
+      "gate": "implementation reproducible",
+      "status": "PASS",
+      "evidence": "JSON and Markdown hashes exactly reproduce."
+    },
+    {
+      "gate": "immutable dataset and PIT identity",
+      "status": "FAIL",
+      "evidence": "Required identities are unavailable."
+    },
+    {
+      "gate": "retained event replay and clustering",
+      "status": "FAIL",
+      "evidence": "Raw event details and cluster outcomes were not retained."
+    },
+    {
+      "gate": "at least 300 independent decisions",
+      "status": "UNPROVEN",
+      "evidence": "13,178 is a legacy per-symbol-month spacing sum, not accepted independent clusters."
+    },
+    {
+      "gate": "net PF at 10 bps at least 1.10",
+      "status": "BASELINE_ONLY_PASS",
+      "evidence": "Unpartitioned baseline PF is 1.115004; no variant qualification was run."
+    },
+    {
+      "gate": "net expectancy and lower bound positive",
+      "status": "FAIL_UNPROVEN",
+      "evidence": "Baseline expectancy is positive, but the accepted lower-bound method is unavailable."
+    },
+    {
+      "gate": "worst-period PF at least 0.95",
+      "status": "BASELINE_FAIL",
+      "evidence": "Baseline Q1 2025 PF at 10 bps is 0.813545."
+    },
+    {
+      "gate": "OOS, walk-forward, concentration, and parameter stability",
+      "status": "NOT_RUN",
+      "evidence": "Phase A stopped execution."
+    },
+    {
+      "gate": "RIF-controlled final holdout",
+      "status": "NOT_REQUESTED",
+      "evidence": "No frozen survivor exists and holdout was not read."
+    }
+  ],
+  "qualified_candidate": null,
+  "frozen_descriptor": null,
+  "candidate_registration_request": null,
+  "statements": {
+    "gates_altered_after_results": false,
+    "paper_evaluator_implemented": false,
+    "rif_paper_authorization_issued": false,
+    "trader_behavior_changed": false,
+    "holdout_inspected": false,
+    "strongest_failing_variant_promoted": false
+  },
+  "local_verification": {
+    "status": "PASS_WITH_DOCUMENTED_LINKED_WORKTREE_VCS_WORKAROUND",
+    "gofmt": "NOT_APPLICABLE_NO_CHANGED_GO_FILES",
+    "go_mod_tidy": "PASS_NO_DIFF",
+    "go_vet": "PASS",
+    "go_test": "PASS",
+    "go_test_race": "PASS",
+    "go_build": "PASS",
+    "make_verify": "PASS",
+    "json_validation": "PASS",
+    "integrity_scans": "PASS",
+    "git_diff_check": "PASS",
+    "note": "Local Go commands set GOFLAGS=-buildvcs=false because the workspace parent contains an invalid empty .git directory. Exact commands without this environment workaround are reserved for the isolated clone."
+  },
+  "result_source_commit": null,
+  "fresh_clone": {
+    "status": "PENDING_RESULT_SOURCE_COMMIT",
+    "commit": null
+  }
+}
