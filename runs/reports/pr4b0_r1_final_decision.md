@@ -22,7 +22,7 @@ This is not a no-candidate result: the registered hypothesis was not evaluated.
 | Historian authority | `3eeff1eb45da281e0003dc1577ec55aa6cda1b1b` |
 | Protocol commit | `ce1377682975c8bc3d5b947d35900500b03403bf` |
 | Protocol JSON SHA-256 | `7d1305bb418d2463c966f1383be4e9b7e30b0aa08dd254cd60eb55e7825cb072` |
-| Result source commit | `PENDING_RESULT_SOURCE_COMMIT` |
+| Result source commit | `8f4df1e61455541262cc1c95e6a32e6b8948f980` |
 | Final report commit | Resolve with `git log -1 -- runs/reports/pr4b0_r1_final_decision.md` |
 
 The protocol commit directly follows the accepted report commit and contains exactly the two protocol artifacts. Results files were created only afterward.
@@ -114,7 +114,7 @@ No qualified result is claimed while a high-severity readiness gap remains.
 
 Local verification passed: module tidy produced no diff; vet, tests, race tests, build, `make verify`, JSON validation, integrity scans, and `git diff --check` all passed. No Go file changed, so `gofmt` was not applicable.
 
-The workspace parent contains an invalid empty `.git` directory, so linked-worktree Go commands used the documented `GOFLAGS=-buildvcs=false` workaround. Exact commands without that workaround remain pending the result-source commit and isolated clone. The final JSON records every command and exit status.
+The workspace parent contains an invalid empty `.git` directory, so linked-worktree Go commands used the documented `GOFLAGS=-buildvcs=false` workaround. Exact commands without that workaround passed in an isolated no-sibling clone at `8f4df1e61455541262cc1c95e6a32e6b8948f980`: tidy/no module diff, vet, tests, race tests, build, `make verify`, JSON/hash checks, integrity scans, `git diff --check`, and clean-tree verification all returned zero. The final JSON records every command and exit status.
 
 ## Artifacts and scope statements
 

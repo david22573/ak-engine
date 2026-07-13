@@ -11,7 +11,7 @@
   },
   "result_commits": {
     "protocol_commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
-    "result_source_commit": null,
+    "result_source_commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
     "final_report_commit": "RESOLVE_WITH_GIT_LOG_AFTER_REPORT_COMMIT"
   },
   "protocol": {
@@ -153,7 +153,7 @@
     "ACCEPTED_UNCERTAINTY_METHODOLOGY_UNSPECIFIED"
   ],
   "tests_and_race_results": {
-    "status": "LOCAL_PASS_FRESH_CLONE_PENDING",
+    "status": "PASS_LOCAL_AND_FRESH_CLONE",
     "commands": [
       {
         "command": "gofmt -w <changed-go-files>",
@@ -241,10 +241,44 @@
     }
   ],
   "fresh_clone": {
-    "status": "PENDING_RESULT_SOURCE_COMMIT",
-    "commit": null,
+    "status": "PASS",
+    "commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
     "no_sibling_repositories": true,
-    "commands": []
+    "commands": [
+      {
+        "command": "GOWORK=off go mod tidy",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --exit-code -- go.mod go.sum",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go vet ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go test ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go test -race ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go build ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off make verify",
+        "exit_code": 0
+      },
+      {
+        "command": "jq, protocol-hash, path, secret, sibling-import, trader-import, qualified-artifact, Go-diff, diff-check, and clean-tree checks",
+        "exit_code": 0
+      }
+    ],
+    "working_tree_clean": true
   },
   "files_changed": [
     "runs/reports/pr4b0_r1_research_protocol.json",

@@ -195,9 +195,18 @@
     "git_diff_check": "PASS",
     "note": "Local Go commands set GOFLAGS=-buildvcs=false because the workspace parent contains an invalid empty .git directory. Exact commands without this environment workaround are reserved for the isolated clone."
   },
-  "result_source_commit": null,
+  "result_source_commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
   "fresh_clone": {
-    "status": "PENDING_RESULT_SOURCE_COMMIT",
-    "commit": null
+    "status": "PASS",
+    "commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
+    "no_sibling_repositories": true,
+    "go_mod_tidy_no_diff": true,
+    "go_vet": "PASS",
+    "go_test": "PASS",
+    "go_test_race": "PASS",
+    "go_build": "PASS",
+    "make_verify": "PASS",
+    "json_and_integrity_scans": "PASS",
+    "working_tree_clean": true
   }
 }

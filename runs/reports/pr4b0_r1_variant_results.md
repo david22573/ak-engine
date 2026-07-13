@@ -74,4 +74,4 @@ The accepted RIF exposure mechanism is available, but no candidate was frozen or
 
 No gates were altered after results; in fact no variant result was produced. No paper evaluator was implemented, no RIF paper authorization was issued, no trader behavior changed, no holdout was inspected, and no failing variant was promoted.
 
-Local module tidy, vet, tests, race tests, build, `make verify`, JSON validation, integrity scans, and diff checks passed. Exact no-workaround verification is recorded after the result-source commit in the isolated-clone section of the final decision.
+Local module tidy, vet, tests, race tests, build, `make verify`, JSON validation, integrity scans, and diff checks passed. The exact no-workaround suite also passed in a clean no-sibling clone at `8f4df1e61455541262cc1c95e6a32e6b8948f980`.
