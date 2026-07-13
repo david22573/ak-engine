@@ -624,11 +624,11 @@ func pr4b0VerificationResults(complete bool, resultingCommit, freshCloneCommit s
 		{"git diff --check", "no whitespace errors"},
 		{fmt.Sprintf("GOWORK=off go run ./cmd/ak-engine pr4b0-candidate-qualification --out-dir runs/reports --resulting-commit %s --verification-complete --fresh-clone-commit %s", resultingCommit, freshCloneCommit), "generated exactly four mandatory reports"},
 		{"find runs/reports -maxdepth 1 -type f -name 'pr4b0_*.json' -print0 | xargs -0 -n1 jq -e .", "two JSON artifacts parsed successfully"},
-		{"test -z \"$(rg -l '/home/|/Users/|[A-Za-z]:\\\\\\\\' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero absolute-path matches"},
+		{"test -z \"$(rg -l '/h[o]me/|/U[s]ers/|[A-Za-z]:\\\\\\\\' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero absolute-path matches"},
 		{"test -z \"$(rg -l 'github\\.com/.+/(ak-rif|ak-historian|ak-trader)' --glob '*.go' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification)\"", "zero sibling or trader imports"},
 		{"test -z \"$(rg -l -i '(api[_-]?key|api[_-]?secret|private[_-]?key|access[_-]?token|password)[[:space:]]*[:=][[:space:]]*\\\"' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero credential assignments"},
 		{"test -z \"$(rg -l -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero private-key markers"},
-		{"test -z \"$(rg -l 'net/http|os\\.Getenv|exec\\.Command|websocket|NewClient' internal/app/pr4b0_candidate_qualification.go internal/qualification)\"", "zero network, credential-environment, or subprocess calls"},
+		{"test -z \"$(rg -l 'n[e]t/http|os[.]Getenv|exec[.]Command|w[e]bsocket|N[e]wClient' internal/app/pr4b0_candidate_qualification.go internal/qualification)\"", "zero network, credential-environment, or subprocess calls"},
 		{"test -z \"$(find runs/reports -maxdepth 1 -type f \\( -name 'pr4b0_candidate_qualification_protocol.*' -o -name 'pr4b0_frozen_candidate.*' -o -name 'pr4b0_candidate_registration_request.*' \\) -print)\"", "zero outcome-inapplicable artifacts"},
 	}
 	results := make([]pr4b0CommandResult, 0, len(commands))
