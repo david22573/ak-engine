@@ -1,0 +1,5042 @@
+{
+  "schema_version": "ak.engine.candidate_qualification.v1",
+  "phase": "PR4B0",
+  "executive_verdict": "Existing Engine evidence was completely inventoried. No candidate satisfies every mandatory qualification gate; no search, holdout exposure, freeze, registration request, promotion, or paper evaluator was performed.",
+  "final_label": "PR4B0_NO_CANDIDATE_QUALIFIED",
+  "accepted_baselines": {
+    "ak-engine": "a04f6d6c8631e06049c7e108581dd638e9962a7b",
+    "ak-historian": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
+    "ak-rif": "29350344a57e46f064442eada26e9418515990be"
+  },
+  "resulting_commit": "25efa97ca89f8dcb724f9872e798bc789123caac",
+  "candidate_inventory_summary": {
+    "candidate_count": 99,
+    "omitted_candidates": [],
+    "registered_candidate_count": 17,
+    "status_counts": {
+      "INSUFFICIENT_SAMPLE": 1,
+      "NEAR_MISS": 3,
+      "PIT_EVIDENCE_MISSING": 24,
+      "REJECTED": 71
+    },
+    "unknown_implementations": []
+  },
+  "qualification_gates": {
+    "policy_status": "DECLARED_FOR_EXISTING_EVIDENCE_ASSESSMENT; NO_NEW_SEARCH_EXECUTED",
+    "data_integrity": {
+      "dataset_id": "required exact immutable identity; none established for an Engine candidate",
+      "dataset_version": "required immutable version; mutable aliases prohibited",
+      "gap_policy": "reject undeclared internal gaps",
+      "manifest_id_and_hash": "required and must match accepted Historian PIT evidence",
+      "pit_policy": "source available_at must be no later than decision cutoff",
+      "required_context_symbols": [
+        "BTCUSDT",
+        "ETHUSDT where candidate capability requires them"
+      ],
+      "required_symbols": [
+        "ADAUSDT",
+        "AVAXUSDT",
+        "BNBUSDT",
+        "DOGEUSDT",
+        "ETHUSDT",
+        "LINKUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+      ],
+      "windows": "non-overlapping development, validation, and one-time final holdout"
+    },
+    "sample_sufficiency": {
+      "minimum_events": 300,
+      "minimum_independent_clusters": 300,
+      "minimum_trades_or_decisions": 300,
+      "minimum_symbols": 4,
+      "minimum_months": 12,
+      "minimum_positive_regimes": 1,
+      "minimum_negative_regimes": 1
+    },
+    "performance": {
+      "minimum_net_expectancy_bps": 0.01,
+      "minimum_profit_factor": 1.1,
+      "maximum_drawdown_bps": 2500,
+      "minimum_confidence_lower_bound_bps": 0,
+      "downside_tail_policy": "lower confidence bound must be positive and worst-decile/worst-symbol-month loss must fit declared drawdown budget"
+    },
+    "robustness": {
+      "require_out_of_sample": true,
+      "require_walk_forward": true,
+      "minimum_worst_period_profit_factor": 0.95,
+      "maximum_symbol_contribution_percent": 50,
+      "maximum_temporal_contribution_percent": 50,
+      "maximum_regime_contribution_percent": 60,
+      "minimum_stable_parameter_neighbors": 2,
+      "require_cluster_deduplication": true,
+      "require_missing_context_sensitivity": true
+    },
+    "cost_stress": {
+      "fee_bps": 5,
+      "spread_bps": 1,
+      "slippage_bps": 1,
+      "funding_bps": 1,
+      "adverse_selection_bps": 2,
+      "stress_total_bps": 10,
+      "minimum_stress_profit_factor": 1.01,
+      "minimum_stress_expectancy_bps": 0.01
+    },
+    "leakage_rules": [
+      "reject future candles",
+      "reject revised data unavailable at cutoff",
+      "reject final outcomes in features",
+      "reject holdout-derived feature selection",
+      "require PIT-compatible source timing",
+      "reject manifest/dataset mismatch"
+    ],
+    "simplicity_rule": "select the simplest candidate only after all mandatory gates pass; additional degrees of freedom require material validation improvement",
+    "search_policy": {
+      "final_holdout_used_for_selection": false,
+      "future_search_requires_separate_pre_registration": true,
+      "new_search_performed": false,
+      "open_ended_tuning_allowed": false
+    }
+  },
+  "candidate_assessments": [
+    {
+      "candidate_id": "baseline",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "H2 out-of-sample failure"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "H2 out-of-sample failure"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_breakeven_guard",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_breakout_retest",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_cut_no_progress",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_economics_guard",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_momentum_continuation",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_partial_trail",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_pullback_reclaim",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_1h",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_cost_guard",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_high_confidence",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_low_frequency",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_no_70_84_longs",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_short_bias",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/BreakoutFundingLong|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/BreakoutFundingShort|short|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/ConfirmedNegativeFundingLong|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/ConfirmedPositiveFundingShort|short|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|5m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|120m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|15m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|30m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|60m",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "candidate_version": "v1",
+      "eligibility_classification": "NEAR_MISS",
+      "final_status": "NEAR_MISS",
+      "failed_gates": [
+        "failed fixed worst-quarter gate and cluster-independence evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "phase13/ContextFreeMomentumBreakoutProbe",
+      "candidate_version": "v1",
+      "eligibility_classification": "INFRASTRUCTURE_PROBE",
+      "final_status": "INSUFFICIENT_SAMPLE",
+      "failed_gates": [
+        "infrastructure proof only",
+        "one symbol-month",
+        "negative net result",
+        "leave-one-out segments unavailable"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/BetaAgrees/long",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/BetaAgrees/short",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/BetaDiverges/long",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/BetaDiverges/short",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/CompressionBreakout/long",
+      "candidate_version": "v1",
+      "eligibility_classification": "NEAR_MISS",
+      "final_status": "NEAR_MISS",
+      "failed_gates": [
+        "bracket/concentration failure; fragile is not paper eligible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/CompressionBreakout/short",
+      "candidate_version": "v1",
+      "eligibility_classification": "NEAR_MISS",
+      "final_status": "NEAR_MISS",
+      "failed_gates": [
+        "bracket/concentration failure; fragile is not paper eligible"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/ShockFade/long",
+      "candidate_version": "v1",
+      "eligibility_classification": "REJECTED",
+      "final_status": "REJECTED",
+      "failed_gates": [
+        "out-of-sample and/or concentration/sample gates failed"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/ShockFade/short",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/TrendContinuation/long",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/TrendContinuation/short",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/VolumeMomentum/long",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    },
+    {
+      "candidate_id": "price-alpha/VolumeMomentum/short",
+      "candidate_version": "v1",
+      "eligibility_classification": "MISSING_EVIDENCE",
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "failed_gates": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "decision": "EXCLUDED_FROM_FREEZE"
+    }
+  ],
+  "existing_candidates_excluded": [
+    {
+      "candidate_id": "baseline",
+      "reasons": [
+        "H2 out-of-sample failure"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "fast_accumulation",
+      "reasons": [
+        "H2 out-of-sample failure"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "fast_accumulation_breakeven_guard",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_breakout_retest",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_cut_no_progress",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_economics_guard",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_momentum_continuation",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_partial_trail",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_pullback_reclaim",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_1h",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_30m",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_cost_guard",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_high_confidence",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_low_frequency",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_no_70_84_longs",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_short_bias",
+      "reasons": [
+        "no complete immutable OOS, walk-forward, cost-tail-concentration, PIT, and controlled-holdout evidence for this exact preset"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "funding-alpha/BreakoutFundingLong|long|240m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/BreakoutFundingShort|short|5m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/ConfirmedNegativeFundingLong|long|240m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/ConfirmedPositiveFundingShort|short|5m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|120m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|15m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|240m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|30m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|5m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|60m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|120m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|15m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|240m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|30m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|5m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|60m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|120m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|15m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|240m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|30m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|5m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|60m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|120m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|15m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|240m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|30m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|5m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|60m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|120m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|15m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|240m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|30m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|5m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|60m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|120m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|15m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|240m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|30m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|5m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|60m",
+      "reasons": [
+        "candidate side/horizon row rejected after full retained coverage"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|120m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|15m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|240m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|30m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|5m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|60m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|120m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|15m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|240m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|30m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|5m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|60m",
+      "reasons": [
+        "failed net performance, robustness, and/or concentration gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|15m",
+      "reasons": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|240m",
+      "reasons": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|60m",
+      "reasons": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|15m",
+      "reasons": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|240m",
+      "reasons": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|60m",
+      "reasons": [
+        "side/horizon row failed net and worst-period gates"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|120m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|15m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|240m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|30m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|60m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|120m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|15m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|240m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|30m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|60m",
+      "reasons": [
+        "side/horizon row failed; exact implementation is not committed/reproducible"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "reasons": [
+        "failed fixed worst-quarter gate and cluster-independence evidence"
+      ],
+      "status": "NEAR_MISS"
+    },
+    {
+      "candidate_id": "phase13/ContextFreeMomentumBreakoutProbe",
+      "reasons": [
+        "infrastructure proof only",
+        "one symbol-month",
+        "negative net result",
+        "leave-one-out segments unavailable"
+      ],
+      "status": "INSUFFICIENT_SAMPLE"
+    },
+    {
+      "candidate_id": "price-alpha/BetaAgrees/long",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/BetaAgrees/short",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/BetaDiverges/long",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/BetaDiverges/short",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/CompressionBreakout/long",
+      "reasons": [
+        "bracket/concentration failure; fragile is not paper eligible"
+      ],
+      "status": "NEAR_MISS"
+    },
+    {
+      "candidate_id": "price-alpha/CompressionBreakout/short",
+      "reasons": [
+        "bracket/concentration failure; fragile is not paper eligible"
+      ],
+      "status": "NEAR_MISS"
+    },
+    {
+      "candidate_id": "price-alpha/ShockFade/long",
+      "reasons": [
+        "out-of-sample and/or concentration/sample gates failed"
+      ],
+      "status": "REJECTED"
+    },
+    {
+      "candidate_id": "price-alpha/ShockFade/short",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/TrendContinuation/long",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/TrendContinuation/short",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/VolumeMomentum/long",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    },
+    {
+      "candidate_id": "price-alpha/VolumeMomentum/short",
+      "reasons": [
+        "no complete exact-candidate qualification evidence"
+      ],
+      "status": "PIT_EVIDENCE_MISSING"
+    }
+  ],
+  "new_research": {
+    "performed": false,
+    "protocol_artifacts_created": false,
+    "reason": "No existing candidate reached QUALIFICATION_CANDIDATE; a new search would require a separately pre-registered research epoch with immutable data/PIT identity and controlled RIF holdout access."
+  },
+  "data_and_holdout_controls": {
+    "accepted_holdout_mechanism": "ak.rif.holdout_ledger.v1 / ak.rif.holdout_exposure.v1",
+    "engine_candidate_pit_evidence_present": false,
+    "existing_report_window": "2024-01 through 2025-12 where recorded",
+    "final_holdout_inspected": false,
+    "final_holdout_used_for_selection": false,
+    "historian_fixture_reuse_prohibited": "accepted PIT fixture belongs to historian-pr3-candidate, not an Engine candidate",
+    "immutable_dataset_identity_established_for_engine_candidate": false,
+    "rif_holdout_exposure_registered": false
+  },
+  "selected_candidate": null,
+  "qualification_metrics": [
+    {
+      "candidate_id": "baseline",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_breakeven_guard",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_breakout_retest",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_cut_no_progress",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_economics_guard",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_momentum_continuation",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_partial_trail",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_pullback_reclaim",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_1h",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_cost_guard",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_high_confidence",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_low_frequency",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_no_70_84_longs",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "fast_accumulation_strict_short_bias",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/BreakoutFundingLong|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -2.943941,
+          "profit_factor_after_5_bps": 0.953242
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 197685,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 45740,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.79144
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/BreakoutFundingShort|short|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.932819,
+          "profit_factor_after_5_bps": 0.580236
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 307793,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 68905,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.496542
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/ConfirmedNegativeFundingLong|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -2.014372,
+          "profit_factor_after_5_bps": 0.966931
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1353932,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 0,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/ConfirmedPositiveFundingShort|short|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.164622,
+          "profit_factor_after_5_bps": 0.547049
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1589488,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 0,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.228962,
+          "profit_factor_after_5_bps": 0.881472
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 842528,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 24995,
+      "months": 23,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.822583
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.988562,
+          "profit_factor_after_5_bps": 0.715021
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 842528,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 24995,
+      "months": 23,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.693863
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.587157,
+          "profit_factor_after_5_bps": 0.908957
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 842528,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 24995,
+      "months": 23,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.809921
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.999753,
+          "profit_factor_after_5_bps": 0.786647
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 842528,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 24995,
+      "months": 23,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.756138
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.993643,
+          "profit_factor_after_5_bps": 0.563539
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 842528,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 24995,
+      "months": 23,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.44218
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipLong|long|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.105788,
+          "profit_factor_after_5_bps": 0.839886
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 842528,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 24995,
+      "months": 23,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.791865
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.412705,
+          "profit_factor_after_5_bps": 0.842431
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 1840473,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 54410,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.687038
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.307997,
+          "profit_factor_after_5_bps": 0.712302
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 1840473,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 54410,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.624321
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -9.574813,
+          "profit_factor_after_5_bps": 0.85564
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 1840473,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 54410,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.639396
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.580282,
+          "profit_factor_after_5_bps": 0.775552
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 1840473,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 54410,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.680256
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.110659,
+          "profit_factor_after_5_bps": 0.570839
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 1840473,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 54410,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.484858
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/FundingFlipShort|short|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.147577,
+          "profit_factor_after_5_bps": 0.818872
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 1840473,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 54410,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.702332
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -2.627213,
+          "profit_factor_after_5_bps": 0.940714
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2145593,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 56518,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.830384
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.658988,
+          "profit_factor_after_5_bps": 0.740992
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2145593,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 56518,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.687693
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -0.541331,
+          "profit_factor_after_5_bps": 0.99115
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2145593,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 56518,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.849023
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.364798,
+          "profit_factor_after_5_bps": 0.81827
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2145593,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 56518,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.75747
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.87925,
+          "profit_factor_after_5_bps": 0.584388
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2145593,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 56518,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.487925
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/NegativeFundingLong|long|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -3.781133,
+          "profit_factor_after_5_bps": 0.883501
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2145593,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 56518,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.802787
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.96434,
+          "profit_factor_after_5_bps": 0.84007
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2560211,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 65914,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.725765
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.292278,
+          "profit_factor_after_5_bps": 0.694771
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2560211,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 65914,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.644937
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -8.433078,
+          "profit_factor_after_5_bps": 0.862259
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2560211,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 65914,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.692232
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.574096,
+          "profit_factor_after_5_bps": 0.760131
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2560211,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 65914,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.714951
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.10175,
+          "profit_factor_after_5_bps": 0.5483
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2560211,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 65914,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.486334
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/PositiveFundingShort|short|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.062138,
+          "profit_factor_after_5_bps": 0.807682
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2560211,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 65914,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.736491
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.558885,
+          "profit_factor_after_5_bps": 0.8802
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 564007,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 41440,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.77341
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.352378,
+          "profit_factor_after_5_bps": 0.711144
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 564007,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 41440,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.664733
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -3.204769,
+          "profit_factor_after_5_bps": 0.948998
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 564007,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 41440,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.791614
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.467639,
+          "profit_factor_after_5_bps": 0.780006
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 564007,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 41440,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.744937
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.014937,
+          "profit_factor_after_5_bps": 0.580754
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 564007,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 41440,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.481817
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingLong|long|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.455785,
+          "profit_factor_after_5_bps": 0.838956
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 564007,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 41440,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.777478
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.989412,
+          "profit_factor_after_5_bps": 0.826832
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 586958,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 44382,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.630307
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.905951,
+          "profit_factor_after_5_bps": 0.696417
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 586958,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 44382,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.580909
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -11.085126,
+          "profit_factor_after_5_bps": 0.827336
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 586958,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 44382,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.616844
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.389365,
+          "profit_factor_after_5_bps": 0.751444
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 586958,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 44382,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.655145
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.338937,
+          "profit_factor_after_5_bps": 0.579276
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 586958,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 44382,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.477351
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/RegimeFundingShort|short|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.766721,
+          "profit_factor_after_5_bps": 0.772157
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 586958,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 44382,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.658579
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -3.475678,
+          "profit_factor_after_5_bps": 0.919134
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1110149,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 77502,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.83276
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.563096,
+          "profit_factor_after_5_bps": 0.734629
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1110149,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 77502,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.684408
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -2.511184,
+          "profit_factor_after_5_bps": 0.958095
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1110149,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 77502,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.838737
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.405061,
+          "profit_factor_after_5_bps": 0.809095
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1110149,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 77502,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.751515
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.806953,
+          "profit_factor_after_5_bps": 0.573287
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1110149,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 77502,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.505951
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyLong|long|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.04423,
+          "profit_factor_after_5_bps": 0.870552
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1110149,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 77502,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.804239
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.48965,
+          "profit_factor_after_5_bps": 0.84979
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1645518,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 118173,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.759665
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.068631,
+          "profit_factor_after_5_bps": 0.701776
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1645518,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 118173,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.642328
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.809675,
+          "profit_factor_after_5_bps": 0.871866
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1645518,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 118173,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.751455
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.210624,
+          "profit_factor_after_5_bps": 0.77157
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1645518,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 118173,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.708321
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|5m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -4.963354,
+          "profit_factor_after_5_bps": 0.550962
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1645518,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 118173,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.483972
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "funding-alpha/VolumeImbalanceFundingReversionProxyShort|short|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.612153,
+          "profit_factor_after_5_bps": 0.819903
+        },
+        "notes": [
+          "net performance is non-positive"
+        ]
+      },
+      "event_count": 1645518,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 118173,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.749934
+        },
+        "notes": [
+          "below qualification gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.20119,
+          "profit_factor_after_5_bps": 0.68468
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2836,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 2693,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.486102
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -8.20032,
+          "profit_factor_after_5_bps": 0.877362
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2836,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 2693,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.595329
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|long|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.008594,
+          "profit_factor_after_5_bps": 0.798698
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2836,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 2693,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.644251
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.572455,
+          "profit_factor_after_5_bps": 0.751003
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2444,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 2311,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.560427
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -12.488132,
+          "profit_factor_after_5_bps": 0.831626
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2444,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 2311,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.654234
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/CompressionVolumeBreakout|short|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.070122,
+          "profit_factor_after_5_bps": 0.82157
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 2444,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 2311,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.490578
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.456263,
+          "profit_factor_after_5_bps": 0.881617
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 611891,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 73685,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.798115
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.322336,
+          "profit_factor_after_5_bps": 0.715045
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 611891,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 73685,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.650478
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -3.536483,
+          "profit_factor_after_5_bps": 0.944932
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 611891,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 73685,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.835574
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.435371,
+          "profit_factor_after_5_bps": 0.781964
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 611891,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 73685,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.703588
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|long|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.063854,
+          "profit_factor_after_5_bps": 0.848628
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 611891,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 73685,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.748081
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|120m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -7.10483,
+          "profit_factor_after_5_bps": 0.859495
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 581746,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 71499,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.69524
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|15m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.37038,
+          "profit_factor_after_5_bps": 0.737606
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 581746,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 71499,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.636446
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|240m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -8.749475,
+          "profit_factor_after_5_bps": 0.877256
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 581746,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 71499,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.687034
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|30m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -5.537108,
+          "profit_factor_after_5_bps": 0.798376
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 581746,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 71499,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.671713
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase11/RegimeTrendPullbackContinuation|short|60m",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "expectancy_after_5_bps": -6.374382,
+          "profit_factor_after_5_bps": 0.827767
+        },
+        "notes": [
+          "net performance failed"
+        ]
+      },
+      "event_count": 581746,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 71499,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "worst_quarter_profit_factor_after_5_bps": 0.714644
+        },
+        "notes": [
+          "below prior 0.95 gate"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "concentration": {
+        "status": "FAIL",
+        "metrics": {
+          "average_events_per_cluster": 25.029746,
+          "cluster_pnl_available": false
+        },
+        "notes": [
+          "retained schema cannot establish cluster independence"
+        ]
+      },
+      "cost_stress": {
+        "status": "PASS",
+        "metrics": {
+          "expectancy_after_5_bps": 16.473089,
+          "profit_factor_after_5_bps": 1.168964
+        },
+        "notes": [
+          "positive aggregate result did not cure robustness failure"
+        ]
+      },
+      "event_count": 329842,
+      "final_status": "NEAR_MISS",
+      "independent_cluster_count": 13178,
+      "months": 24,
+      "symbols": 8,
+      "worst_period": {
+        "status": "FAIL",
+        "metrics": {
+          "minimum_required": 0.95,
+          "worst_quarter_profit_factor_after_5_bps": 0.847931
+        },
+        "notes": [
+          "structural Q1 2025 weakness"
+        ]
+      }
+    },
+    {
+      "candidate_id": "phase13/ContextFreeMomentumBreakoutProbe",
+      "concentration": {
+        "status": "FAIL",
+        "metrics": {
+          "top_month_percent": 100,
+          "top_quarter_percent": 100,
+          "top_symbol_percent": 100
+        },
+        "notes": [
+          "single symbol/month/quarter"
+        ]
+      },
+      "cost_stress": {
+        "status": "FAIL",
+        "metrics": {
+          "net_after_5_bps": -1315.6691553193095,
+          "profit_factor_after_5_bps": 0.8710474571572268
+        },
+        "notes": [
+          "negative net infrastructure proof"
+        ]
+      },
+      "event_count": 138,
+      "final_status": "INSUFFICIENT_SAMPLE",
+      "independent_cluster_count": 138,
+      "months": 1,
+      "symbols": 1,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/BetaAgrees/long",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/BetaAgrees/short",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/BetaDiverges/long",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/BetaDiverges/short",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/CompressionBreakout/long",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "NEAR_MISS",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/CompressionBreakout/short",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "NEAR_MISS",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/ShockFade/long",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "REJECTED",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/ShockFade/short",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/TrendContinuation/long",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/TrendContinuation/short",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/VolumeMomentum/long",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    },
+    {
+      "candidate_id": "price-alpha/VolumeMomentum/short",
+      "concentration": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "cost_stress": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      },
+      "event_count": 0,
+      "final_status": "PIT_EVIDENCE_MISSING",
+      "independent_cluster_count": 0,
+      "months": 0,
+      "symbols": 0,
+      "worst_period": {
+        "status": "MISSING",
+        "metrics": {},
+        "notes": []
+      }
+    }
+  ],
+  "frozen_identity": null,
+  "direct_implementation_parity_fixtures": [],
+  "candidate_registration_artifact": null,
+  "tests_and_race_results": [
+    {
+      "command": "gofmt -w internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification/qualification.go internal/qualification/qualification_test.go",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "four changed Go files"
+    },
+    {
+      "command": "GOWORK=off go mod tidy",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "module graph remained unchanged"
+    },
+    {
+      "command": "git diff --exit-code -- go.mod go.sum",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "no module-file drift"
+    },
+    {
+      "command": "GOWORK=off go vet ./...",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "all packages"
+    },
+    {
+      "command": "GOWORK=off go test ./...",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "all packages"
+    },
+    {
+      "command": "GOWORK=off go test -race ./...",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "all packages"
+    },
+    {
+      "command": "GOWORK=off go build ./...",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "all packages"
+    },
+    {
+      "command": "GOWORK=off make verify",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "project verification target"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "no whitespace errors"
+    },
+    {
+      "command": "GOWORK=off go run ./cmd/ak-engine pr4b0-candidate-qualification --out-dir runs/reports --resulting-commit 25efa97ca89f8dcb724f9872e798bc789123caac --verification-complete --fresh-clone-commit 25efa97ca89f8dcb724f9872e798bc789123caac",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "generated exactly four mandatory reports"
+    },
+    {
+      "command": "find runs/reports -maxdepth 1 -type f -name 'pr4b0_*.json' -print0 | xargs -0 -n1 jq -e .",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "two JSON artifacts parsed successfully"
+    },
+    {
+      "command": "test -z \"$(rg -l '/h[o]me/|/U[s]ers/|[A-Za-z]:\\\\\\\\' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "zero absolute-path matches"
+    },
+    {
+      "command": "test -z \"$(rg -l 'github\\.com/.+/(ak-rif|ak-historian|ak-trader)' --glob '*.go' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification)\"",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "zero sibling or trader imports"
+    },
+    {
+      "command": "test -z \"$(rg -l -i '(api[_-]?key|api[_-]?secret|private[_-]?key|access[_-]?token|password)[[:space:]]*[:=][[:space:]]*\\\"' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "zero credential assignments"
+    },
+    {
+      "command": "test -z \"$(rg -l -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "zero private-key markers"
+    },
+    {
+      "command": "test -z \"$(rg -l 'n[e]t/http|os[.]Getenv|exec[.]Command|w[e]bsocket|N[e]wClient' internal/app/pr4b0_candidate_qualification.go internal/qualification)\"",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "zero network, credential-environment, or subprocess calls"
+    },
+    {
+      "command": "test -z \"$(find runs/reports -maxdepth 1 -type f \\( -name 'pr4b0_candidate_qualification_protocol.*' -o -name 'pr4b0_frozen_candidate.*' -o -name 'pr4b0_candidate_registration_request.*' \\) -print)\"",
+      "exit_code": 0,
+      "status": "PASS",
+      "notes": "zero outcome-inapplicable artifacts"
+    }
+  ],
+  "security_findings": [
+    {
+      "area": "data leakage",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "final-holdout reuse",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "parameter overfitting",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "candidate-selection bias",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "report substitution",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "dataset substitution",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "implementation substitution",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "configuration substitution",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "mutable dataset aliases",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "hash confusion",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "schema downgrade",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "path-derived identity",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "nondeterministic source hashing",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "hidden generic fallbacks",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "log leakage",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    },
+    {
+      "area": "fail-open qualification rules",
+      "control": "fail-closed inventory/qualification identity checks; no candidate freeze or holdout exposure",
+      "status": "NO_UNRESOLVED_HIGH_SEVERITY_FINDING"
+    }
+  ],
+  "fresh_clone": {
+    "commands_and_exit_codes": [
+      {
+        "command": "gofmt -w internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification/qualification.go internal/qualification/qualification_test.go",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "four changed Go files"
+      },
+      {
+        "command": "GOWORK=off go mod tidy",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "module graph remained unchanged"
+      },
+      {
+        "command": "git diff --exit-code -- go.mod go.sum",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "no module-file drift"
+      },
+      {
+        "command": "GOWORK=off go vet ./...",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "all packages"
+      },
+      {
+        "command": "GOWORK=off go test ./...",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "all packages"
+      },
+      {
+        "command": "GOWORK=off go test -race ./...",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "all packages"
+      },
+      {
+        "command": "GOWORK=off go build ./...",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "all packages"
+      },
+      {
+        "command": "GOWORK=off make verify",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "project verification target"
+      },
+      {
+        "command": "git diff --check",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "no whitespace errors"
+      },
+      {
+        "command": "GOWORK=off go run ./cmd/ak-engine pr4b0-candidate-qualification --out-dir runs/reports --resulting-commit 25efa97ca89f8dcb724f9872e798bc789123caac --verification-complete --fresh-clone-commit 25efa97ca89f8dcb724f9872e798bc789123caac",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "generated exactly four mandatory reports"
+      },
+      {
+        "command": "find runs/reports -maxdepth 1 -type f -name 'pr4b0_*.json' -print0 | xargs -0 -n1 jq -e .",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "two JSON artifacts parsed successfully"
+      },
+      {
+        "command": "test -z \"$(rg -l '/h[o]me/|/U[s]ers/|[A-Za-z]:\\\\\\\\' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "zero absolute-path matches"
+      },
+      {
+        "command": "test -z \"$(rg -l 'github\\.com/.+/(ak-rif|ak-historian|ak-trader)' --glob '*.go' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification)\"",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "zero sibling or trader imports"
+      },
+      {
+        "command": "test -z \"$(rg -l -i '(api[_-]?key|api[_-]?secret|private[_-]?key|access[_-]?token|password)[[:space:]]*[:=][[:space:]]*\\\"' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "zero credential assignments"
+      },
+      {
+        "command": "test -z \"$(rg -l -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "zero private-key markers"
+      },
+      {
+        "command": "test -z \"$(rg -l 'n[e]t/http|os[.]Getenv|exec[.]Command|w[e]bsocket|N[e]wClient' internal/app/pr4b0_candidate_qualification.go internal/qualification)\"",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "zero network, credential-environment, or subprocess calls"
+      },
+      {
+        "command": "test -z \"$(find runs/reports -maxdepth 1 -type f \\( -name 'pr4b0_candidate_qualification_protocol.*' -o -name 'pr4b0_frozen_candidate.*' -o -name 'pr4b0_candidate_registration_request.*' \\) -print)\"",
+        "exit_code": 0,
+        "status": "PASS",
+        "notes": "zero outcome-inapplicable artifacts"
+      }
+    ],
+    "commit": "25efa97ca89f8dcb724f9872e798bc789123caac",
+    "no_sibling_ak_repositories": true,
+    "status": "PASS"
+  },
+  "boundaries": {
+    "authenticated_exchange_operations": false,
+    "candidate_promoted": false,
+    "historian_modified": false,
+    "mainnet_behavior_changed": false,
+    "paper_evaluator_implemented": false,
+    "rif_authorized_candidate": false,
+    "rif_implementation_imported": false,
+    "trader_behavior_changed": false
+  },
+  "deferred_work": [
+    "separately pre-register a bounded research epoch with immutable dataset/manifest/PIT identity",
+    "obtain complete required context without mutable aliases",
+    "register and consume a one-time final holdout only through accepted RIF orchestration",
+    "PR4B1 remains ineligible until a future candidate qualifies"
+  ],
+  "generated_report_paths": [
+    "runs/reports/pr4b0_candidate_inventory.md",
+    "runs/reports/pr4b0_candidate_inventory.json",
+    "runs/reports/pr4b0_candidate_qualification.md",
+    "runs/reports/pr4b0_candidate_qualification.json"
+  ],
+  "recommended_next_phase": "SEPARATELY_PRE_REGISTERED_BOUNDED_RESEARCH_PHASE",
+  "qualification_report_id": "pr4b0_candidate_qualification",
+  "qualification_report_hash": "sha256:1ada24828f159a386f5337441b347f204f1e29ca5165c70c69ebe4259f4e1252"
+}
