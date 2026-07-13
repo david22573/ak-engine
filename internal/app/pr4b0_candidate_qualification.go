@@ -575,7 +575,7 @@ func buildPR4B0QualificationReport(inventory qualification.CandidateInventory, r
 			"historian_fixture_reuse_prohibited": "accepted PIT fixture belongs to historian-pr3-candidate, not an Engine candidate",
 		},
 		SelectedCandidate: nil, QualificationMetrics: metrics, FrozenIdentity: nil, DirectImplementationParityFixtures: []any{}, CandidateRegistrationArtifact: nil,
-		TestsAndRace: pr4b0VerificationResults(verificationComplete), SecurityFindings: pr4b0SecurityFindings(),
+		TestsAndRace: pr4b0VerificationResults(verificationComplete, resultingCommit, freshCloneCommit), SecurityFindings: pr4b0SecurityFindings(),
 		FreshClone: pr4b0FreshCloneResult(freshCloneCommit),
 		Boundaries: map[string]any{
 			"paper_evaluator_implemented": false, "rif_authorized_candidate": false, "candidate_promoted": false,
@@ -607,16 +607,33 @@ func pr4b0QualificationGatePolicy() pr4b0GatePolicy {
 	}
 }
 
-func pr4b0VerificationResults(complete bool) []pr4b0CommandResult {
-	commands := []string{
-		"gofmt -w <changed-go-files>", "GOWORK=off go mod tidy", "git diff --exit-code -- go.mod go.sum",
-		"GOWORK=off go vet ./...", "GOWORK=off go test ./...", "GOWORK=off go test -race ./...",
-		"GOWORK=off go build ./...", "GOWORK=off make verify", "git diff --check",
-		"validate every generated JSON artifact", "path/secret/sibling/trader-import/credential scans",
+func pr4b0VerificationResults(complete bool, resultingCommit, freshCloneCommit string) []pr4b0CommandResult {
+	type commandSpec struct {
+		command string
+		notes   string
+	}
+	commands := []commandSpec{
+		{"gofmt -w internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification/qualification.go internal/qualification/qualification_test.go", "four changed Go files"},
+		{"GOWORK=off go mod tidy", "module graph remained unchanged"},
+		{"git diff --exit-code -- go.mod go.sum", "no module-file drift"},
+		{"GOWORK=off go vet ./...", "all packages"},
+		{"GOWORK=off go test ./...", "all packages"},
+		{"GOWORK=off go test -race ./...", "all packages"},
+		{"GOWORK=off go build ./...", "all packages"},
+		{"GOWORK=off make verify", "project verification target"},
+		{"git diff --check", "no whitespace errors"},
+		{fmt.Sprintf("GOWORK=off go run ./cmd/ak-engine pr4b0-candidate-qualification --out-dir runs/reports --resulting-commit %s --verification-complete --fresh-clone-commit %s", resultingCommit, freshCloneCommit), "generated exactly four mandatory reports"},
+		{"find runs/reports -maxdepth 1 -type f -name 'pr4b0_*.json' -print0 | xargs -0 -n1 jq -e .", "two JSON artifacts parsed successfully"},
+		{"test -z \"$(rg -l '/home/|/Users/|[A-Za-z]:\\\\\\\\' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero absolute-path matches"},
+		{"test -z \"$(rg -l 'github\\.com/.+/(ak-rif|ak-historian|ak-trader)' --glob '*.go' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification)\"", "zero sibling or trader imports"},
+		{"test -z \"$(rg -l -i '(api[_-]?key|api[_-]?secret|private[_-]?key|access[_-]?token|password)[[:space:]]*[:=][[:space:]]*\\\"' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero credential assignments"},
+		{"test -z \"$(rg -l -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' internal/app/pr4b0_candidate_qualification.go internal/app/pr4b0_candidate_qualification_test.go internal/qualification runs/reports/pr4b0_*)\"", "zero private-key markers"},
+		{"test -z \"$(rg -l 'net/http|os\\.Getenv|exec\\.Command|websocket|NewClient' internal/app/pr4b0_candidate_qualification.go internal/qualification)\"", "zero network, credential-environment, or subprocess calls"},
+		{"test -z \"$(find runs/reports -maxdepth 1 -type f \\( -name 'pr4b0_candidate_qualification_protocol.*' -o -name 'pr4b0_frozen_candidate.*' -o -name 'pr4b0_candidate_registration_request.*' \\) -print)\"", "zero outcome-inapplicable artifacts"},
 	}
 	results := make([]pr4b0CommandResult, 0, len(commands))
-	for _, command := range commands {
-		result := pr4b0CommandResult{Command: command, Status: "PENDING"}
+	for _, spec := range commands {
+		result := pr4b0CommandResult{Command: spec.command, Status: "PENDING", Notes: spec.notes}
 		if complete {
 			exit := 0
 			result.ExitCode = &exit
@@ -631,7 +648,10 @@ func pr4b0FreshCloneResult(commit string) map[string]any {
 	if strings.TrimSpace(commit) == "" {
 		return map[string]any{"status": "PENDING", "no_sibling_ak_repositories": true}
 	}
-	return map[string]any{"status": "PASS", "commit": commit, "no_sibling_ak_repositories": true, "complete_suite_exit_code": 0, "json_validation_exit_code": 0, "security_scans_exit_code": 0}
+	return map[string]any{
+		"status": "PASS", "commit": commit, "no_sibling_ak_repositories": true,
+		"commands_and_exit_codes": pr4b0VerificationResults(true, commit, commit),
+	}
 }
 
 func pr4b0SecurityFindings() []map[string]string {
