@@ -1,7 +1,7 @@
 {
   "schema_version": "ak.engine.pr4b0_r1.final_decision.v1",
   "phase": "PR4B0-R1",
-  "executive_verdict": "The baseline implementation and aggregate report reproduce exactly, but the research epoch is blocked before variant creation because immutable dataset/PIT identity, replayable retained event and cluster data, and the accepted uncertainty methodology are unavailable.",
+  "executive_verdict": "Legacy aggregate baseline metrics were reproduced exactly from the available accepted summary artifacts. Event-level and canonical-input reproduction could not be established. The epoch remains blocked before variant creation by missing immutable dataset/PIT identity, replayable event/cluster data, and accepted uncertainty methodology.",
   "final_label": "PR4B0_R1_RESEARCH_BLOCKED",
   "accepted_baselines": {
     "engine_source_commit": "25efa97ca89f8dcb724f9872e798bc789123caac",
@@ -17,10 +17,13 @@
   "protocol": {
     "sha256": "sha256:7d1305bb418d2463c966f1383be4e9b7e30b0aa08dd254cd60eb55e7825cb072",
     "preceded_results": true,
-    "proof_commit": "ce1377682975c8bc3d5b947d35900500b03403bf"
+    "proof_commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+    "artifact_ordering_only": true,
+    "execution_order_reference": "runs/reports/pr4b0_r1_evidence_supplement.json",
+    "baseline_command_ran_before_protocol_commit": true
   },
   "immutable_dataset_identity": {
-    "status": "UNAVAILABLE",
+    "status": "NOT_RECOVERED_AFTER_CONCRETE_INVENTORY",
     "dataset_id": null,
     "dataset_version": null,
     "manifest_id": null,
@@ -29,7 +32,8 @@
     "historian_pit_evidence_hash": null,
     "evaluation_cutoff": null,
     "coverage_policy_version": null,
-    "availability_policy_version": null
+    "availability_policy_version": null,
+    "inventory_reference": "runs/reports/pr4b0_r1_evidence_supplement.json"
   },
   "partition_boundaries": {
     "status": "NOT_CREATED_PHASE_A_BLOCKED",
@@ -39,11 +43,16 @@
     "gaps": null
   },
   "baseline_reproduction": {
-    "status": "PASS_BYTE_EQUIVALENT",
+    "status": "LEGACY_AGGREGATE_ARTIFACT_REPRODUCTION_ONLY",
     "implementation_commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
     "implementation_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
     "report_json_sha256": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
     "report_markdown_sha256": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed",
+    "json_byte_equality_explicitly_checked": true,
+    "markdown_byte_equality_explicitly_checked": false,
+    "event_level_reproduction_established": false,
+    "canonical_input_reproduction_established": false,
+    "legal_qualification_result": false,
     "event_count": 329842,
     "legacy_declustered_count_unaccepted": 13178,
     "pf_5_bps": 1.168963677,
@@ -54,8 +63,10 @@
   },
   "search": {
     "maximum_variants": 12,
-    "declared_variants": [],
-    "executed_variants": 0,
+    "declared_modified_variants": 0,
+    "executed_modified_variants": 0,
+    "a1_treated_as_v00": false,
+    "a1_readiness_calculation_preceded_protocol_freeze": true,
     "gates_changed_after_results": false
   },
   "development_results": [],
@@ -70,78 +81,79 @@
   },
   "qualification_gates": [
     {
-      "gate": "implementation reproducible",
-      "threshold": "exact deterministic tolerance",
+      "gate": "implementation identity",
+      "threshold": "exact source identity",
       "status": "PASS",
-      "evidence": "Both regenerated artifact hashes match; JSON is byte-identical."
+      "evidence": "Commit, path, source hash, and tests were recovered."
+    },
+    {
+      "gate": "legacy report artifact equality",
+      "threshold": "exact artifact evidence",
+      "status": "PASS",
+      "evidence": "JSON original/reproduced hashes match and cmp passed; Markdown hashes match."
     },
     {
       "gate": "immutable dataset/manifest/PIT identity",
       "threshold": "all exact identities present and verified",
       "status": "FAIL",
-      "evidence": "Identities and accepted PIT evidence are unavailable."
+      "evidence": "Concrete inventory found no candidate identities or accepted PIT evidence."
+    },
+    {
+      "gate": "retained event replay and canonical clustering",
+      "threshold": "required",
+      "status": "BLOCKED",
+      "evidence": "Event/cluster rows and input hashes were not retained."
     },
     {
       "gate": "independent decisions",
       "threshold": ">= 300",
-      "status": "UNPROVEN",
+      "status": "BLOCKED",
       "evidence": "Legacy spacing count is not accepted cluster independence."
     },
     {
-      "gate": "net PF at 10 bps",
-      "threshold": ">= 1.10",
-      "status": "BASELINE_ONLY_PASS",
-      "evidence": "Unpartitioned baseline is 1.115004; no variant was evaluated."
-    },
-    {
-      "gate": "net expectancy",
-      "threshold": "> 0 (accepted exact minimum 0.01 bps)",
-      "status": "BASELINE_ONLY_PASS",
-      "evidence": "Unpartitioned baseline is 11.473089 bps at 10 bps cost."
+      "gate": "net PF and expectancy at 10 bps",
+      "threshold": "PF >= 1.10 and expectancy >= 0.01 bps",
+      "status": "NOT RUN",
+      "evidence": "Legacy aggregates are not legal partition qualification results."
     },
     {
       "gate": "expectancy lower confidence bound",
       "threshold": "> 0",
-      "status": "FAIL_UNAVAILABLE",
+      "status": "BLOCKED",
       "evidence": "Accepted uncertainty method is not specified."
     },
     {
       "gate": "worst-period PF",
       "threshold": ">= 0.95",
-      "status": "BASELINE_FAIL",
-      "evidence": "Q1 2025 PF is 0.813545 at 10 bps."
+      "status": "NOT RUN",
+      "evidence": "Legacy Q1 value is not a legal partition qualification result."
     },
     {
       "gate": "OOS/validation",
       "threshold": "required",
-      "status": "NOT_RUN",
+      "status": "NOT RUN",
       "evidence": "No legal partition boundaries."
     },
     {
       "gate": "walk-forward stability",
       "threshold": "required",
-      "status": "NOT_RUN",
+      "status": "NOT RUN",
       "evidence": "Phase A blocked execution."
     },
     {
-      "gate": "symbol/temporal/regime/cluster concentration",
-      "threshold": "50% / 50% / 60% / accepted cluster limit",
-      "status": "NOT_EVALUABLE",
-      "evidence": "Required event and cluster data were not retained."
-    },
-    {
-      "gate": "parameter-neighborhood stability",
-      "threshold": ">= 2 stable neighbors",
-      "status": "NOT_RUN",
-      "evidence": "No variant execution."
+      "gate": "concentration and parameter-neighborhood stability",
+      "threshold": "50% / 50% / 60% limits and >= 2 stable neighbors",
+      "status": "NOT RUN",
+      "evidence": "Zero variants; required event and cluster data were not retained."
     },
     {
       "gate": "RIF-controlled final holdout",
       "threshold": "required one-time exposure after freeze",
-      "status": "NOT_REQUESTED",
+      "status": "NOT RUN",
       "evidence": "No candidate was frozen; holdout not read."
     }
   ],
+  "complete_qualification_gate_table": "runs/reports/pr4b0_r1_evidence_supplement.json",
   "qualified_candidate_identity": null,
   "frozen_descriptor_hash": null,
   "registration_request_hash": null,
@@ -280,13 +292,22 @@
     ],
     "working_tree_clean": true
   },
+  "documentation_closeout_verification": {
+    "status": "PASS_LOCAL_AND_FRESH_CLONE_WITH_MANDATED_EXACT_COMMAND_EXCEPTION",
+    "follow_up_commit": "RESOLVE_WITH_GIT_LOG_FOR_SUPPLEMENT",
+    "evidence": "runs/reports/pr4b0_r1_evidence_supplement.json",
+    "original_absolute_path_scan_hits": 2,
+    "hits_are_exact_command_fields_only": true
+  },
   "files_changed": [
     "runs/reports/pr4b0_r1_research_protocol.json",
     "runs/reports/pr4b0_r1_research_protocol.md",
     "runs/reports/pr4b0_r1_variant_results.json",
     "runs/reports/pr4b0_r1_variant_results.md",
     "runs/reports/pr4b0_r1_final_decision.json",
-    "runs/reports/pr4b0_r1_final_decision.md"
+    "runs/reports/pr4b0_r1_final_decision.md",
+    "runs/reports/pr4b0_r1_evidence_supplement.json",
+    "runs/reports/pr4b0_r1_evidence_supplement.md"
   ],
   "generated_report_paths": [
     "runs/reports/pr4b0_r1_research_protocol.md",
@@ -294,7 +315,9 @@
     "runs/reports/pr4b0_r1_variant_results.md",
     "runs/reports/pr4b0_r1_variant_results.json",
     "runs/reports/pr4b0_r1_final_decision.md",
-    "runs/reports/pr4b0_r1_final_decision.json"
+    "runs/reports/pr4b0_r1_final_decision.json",
+    "runs/reports/pr4b0_r1_evidence_supplement.md",
+    "runs/reports/pr4b0_r1_evidence_supplement.json"
   ],
   "explicit_statements": {
     "gates_were_not_altered_after_results": true,

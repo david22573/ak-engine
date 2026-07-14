@@ -2,7 +2,7 @@
 
 ## Executive verdict
 
-The exact `DowntrendMidVolReliefLong240m` implementation and aggregate report reproduce byte-for-byte, but this research epoch cannot legally create partitions or variants. Immutable dataset/PIT identity is absent, the retained schema cannot replay events or independent clusters, and the accepted uncertainty method is unspecified.
+Legacy aggregate baseline metrics were reproduced exactly from the available accepted summary artifacts. Event-level and canonical-input reproduction could not be established. This research epoch cannot legally create partitions or variants because immutable dataset/PIT identity is absent, the retained schema cannot replay events or independent clusters, and the accepted uncertainty method is unspecified.
 
 Final label:
 
@@ -25,11 +25,11 @@ This is not a no-candidate result: the registered hypothesis was not evaluated.
 | Result source commit | `8f4df1e61455541262cc1c95e6a32e6b8948f980` |
 | Final report commit | Resolve with `git log -1 -- runs/reports/pr4b0_r1_final_decision.md` |
 
-The protocol commit directly follows the accepted report commit and contains exactly the two protocol artifacts. Results files were created only afterward.
+The protocol commit directly follows the accepted report commit and contains exactly the two protocol artifacts. Results files were created only afterward. That Git artifact ordering does not prove execution ordering: the successful A1 readiness calculation completed before the protocol commit. Exact command/timestamp evidence and the resulting qualification limitation are recorded in `pr4b0_r1_evidence_supplement.{md,json}`.
 
 ## Dataset, PIT, and partitions
 
-Dataset ID/version, manifest ID/hash, Historian PIT evidence ID/hash, evaluation cutoff, coverage-policy version, and availability-policy version are all `UNAVAILABLE`.
+Dataset ID/version, manifest ID/hash, Historian PIT evidence ID/hash, evaluation cutoff, coverage-policy version, and availability-policy version were not recovered. The supplement inventories every searched path and the concrete evidence for each missing field.
 
 The only diagnostic local-source manifest covers 72 objects for three symbols, has no object checksums, row counts, or source availability timestamps, and is not accepted PIT evidence. It cannot identify the full replayed dataset.
 
@@ -43,12 +43,12 @@ No partition dates or gaps were invented.
 
 ## Baseline reproduction
 
-The implementation at `c2c7988712699b26ba7ab28e1cebb1f5312812a6` has SHA-256 `3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1`. Replay completed all 192 target symbol-months.
+The implementation identity at `c2c7988712699b26ba7ab28e1cebb1f5312812a6` has SHA-256 `3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1`. A1 ran that source against available local files and generated a report with all 192 target symbol-months, but missing input hashes and PIT identity prevent calling those files canonical or the run an event-level reproduction.
 
 | Artifact | Result |
 |---|---|
-| Evaluation JSON | byte-identical, SHA-256 `fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066` |
-| Evaluation Markdown | SHA-256 `fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed` |
+| Evaluation JSON | Original/reproduced SHA-256 `fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066`; explicit `cmp` PASS |
+| Evaluation Markdown | Original/reproduced SHA-256 `fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed`; no separate `cmp` recorded |
 
 | Cost | PF | Expectancy (bps) |
 |---:|---:|---:|
@@ -59,20 +59,21 @@ The implementation at `c2c7988712699b26ba7ab28e1cebb1f5312812a6` has SHA-256 `3c
 
 Worst month: March 2025, PF `0.634442` at 10 bps. Worst quarter: Q1 2025, PF `0.813545` at 10 bps.
 
-The 13,178 legacy spacing count is not accepted independent-cluster evidence.
+The values above are reaggregated from the legacy monthly summaries; formulas and exact gross/net totals are in the supplement. They are not legal DEVELOPMENT, VALIDATION, or FINAL_HOLDOUT results. The 13,178 legacy spacing count is not accepted independent-cluster evidence.
 
 ## Variants, development, and validation
 
 | Item | Count/status |
 |---|---|
-| Search budget | 12 maximum |
-| Complete declared variants | 0 |
+| Search budget | 12 maximum total |
+| Declared modified variants | 0 |
+| Executed modified variants | 0 |
 | Development results | 0, not run |
 | Validation results | 0, not run |
 | Walk-forward slices | 0, not run |
 | Parameter-neighborhood results | 0, not run |
 
-The baseline replay was a Phase A reproducibility check, not a candidate variant. No context, quality, cooldown, calendar, quarter, or symbol filter was evaluated.
+The A1 calculation was treated as a readiness check, not V00. It completed before protocol freeze and calculated legacy unpartitioned strategy aggregates, so those aggregates cannot contribute to qualification. The `0/0` count means zero declared and zero executed modified variants. No context, quality, cooldown, calendar, quarter, or symbol filter was evaluated.
 
 ## Holdout and frozen identity
 
@@ -84,18 +85,20 @@ Qualified candidate identity: none. Frozen descriptor hash: none. Registration-r
 
 | Gate | Threshold | Status | Evidence |
 |---|---|---|---|
-| Implementation reproducible | exact tolerance | PASS | JSON byte-identical; both report hashes match |
-| Dataset/manifest/PIT identity | exact and verified | FAIL | identities unavailable |
-| Independent decisions | >=300 | UNPROVEN | legacy spacing is not accepted clustering |
-| Net PF at 10 bps | >=1.10 | BASELINE-ONLY PASS | 1.115004 unpartitioned; no variants |
-| Net expectancy | >0; accepted minimum 0.01 bps | BASELINE-ONLY PASS | 11.473089 bps unpartitioned |
-| Expectancy lower bound | >0 | FAIL/UNAVAILABLE | accepted method unspecified |
-| Worst-period PF | >=0.95 | BASELINE FAIL | Q1 2025 is 0.813545 at 10 bps |
+| Implementation identity | exact source identity | PASS | commit/path/source hash recovered |
+| Legacy report artifact equality | exact artifact evidence | PASS | JSON hash + `cmp`; Markdown matching hashes |
+| Dataset/manifest/PIT identity | exact and verified | FAIL | concrete recovery inventory found no candidate identity |
+| Event replay and canonical clustering | required | BLOCKED | event/cluster rows were not retained |
+| Independent decisions | >=300 | BLOCKED | legacy spacing sum is not canonical clustering |
+| Net PF/expectancy at 10 bps | PF >=1.10; expectancy >=0.01 bps | NOT RUN | legacy aggregate is not a legal partition result |
+| Expectancy lower bound | >0 | BLOCKED | accepted method unspecified |
+| Worst-period PF | >=0.95 | NOT RUN | legacy Q1 value is not a legal partition result |
 | OOS/validation | required | NOT RUN | no legal partitions |
-| Walk-forward | required | NOT RUN | Phase A blocked |
-| Concentration | 50% symbol, 50% temporal, 60% regime, accepted cluster limit | NOT EVALUABLE | event/cluster rows absent |
-| Stable neighbors | >=2 | NOT RUN | zero variants |
-| RIF final holdout | required after freeze | NOT REQUESTED | no freeze; holdout unread |
+| Walk-forward | required | NOT RUN | no legal partitions |
+| Concentration and neighbors | accepted limits; >=2 neighbors | NOT RUN | zero variants; event/cluster evidence absent |
+| RIF final holdout | required after freeze | NOT RUN | no freeze; holdout unread |
+
+The supplement contains every accepted mandatory gate separately, using only `PASS`, `FAIL`, `BLOCKED`, or `NOT RUN`, with methodology, scope, exact evidence, and qualification contribution.
 
 Any one mandatory failure prevents qualification. Aggregate PF does not bypass missing identity, cluster evidence, uncertainty, worst-period, OOS, walk-forward, concentration, parameter, or holdout gates.
 
@@ -116,6 +119,8 @@ Local verification passed: module tidy produced no diff; vet, tests, race tests,
 
 The workspace parent contains an invalid empty `.git` directory, so linked-worktree Go commands used the documented `GOFLAGS=-buildvcs=false` workaround. Exact commands without that workaround passed in an isolated no-sibling clone at `8f4df1e61455541262cc1c95e6a32e6b8948f980`: tidy/no module diff, vet, tests, race tests, build, `make verify`, JSON/hash checks, integrity scans, `git diff --check`, and clean-tree verification all returned zero. The final JSON records every command and exit status.
 
+The documentation-closeout suite was repeated locally and in an isolated no-sibling clone of the follow-up commit. All checks passed except that the original absolute-host-path scan intentionally found the two required exact-command fields in the supplement; a narrow assertion proved there were exactly two and no others. Full evidence is in the supplement.
+
 ## Artifacts and scope statements
 
 Generated paths:
@@ -126,6 +131,8 @@ Generated paths:
 - `runs/reports/pr4b0_r1_variant_results.json`
 - `runs/reports/pr4b0_r1_final_decision.md`
 - `runs/reports/pr4b0_r1_final_decision.json`
+- `runs/reports/pr4b0_r1_evidence_supplement.md`
+- `runs/reports/pr4b0_r1_evidence_supplement.json`
 
 Gates were not altered after results. No paper evaluator was implemented. No RIF paper authorization was issued. No trader behavior changed. No next phase was started.
 

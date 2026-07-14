@@ -1,0 +1,640 @@
+{
+  "schema_version": "ak.engine.pr4b0_r1.evidence_supplement.v1",
+  "phase": "PR4B0-R1",
+  "final_label": "PR4B0_R1_RESEARCH_BLOCKED",
+  "scope": {
+    "documentation_and_evidence_only": true,
+    "candidate_research_rerun": false,
+    "variant_evaluation": false,
+    "holdout_inspection": false,
+    "protocol_artifacts_changed": false,
+    "next_phase_started": false,
+    "retained_schema_implemented": false,
+    "historian_data_generated": false,
+    "uncertainty_method_selected": false
+  },
+  "corrected_baseline_statement": "Legacy aggregate baseline metrics were reproduced exactly from the available accepted summary artifacts. Event-level and canonical-input reproduction could not be established.",
+  "commit_inspection": [
+    {
+      "commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+      "parent": "205cf59555006ce23fc58bc2c73262660a894850",
+      "committed_at": "2026-07-13T16:18:31-07:00",
+      "files": [
+        {
+          "path": "runs/reports/pr4b0_r1_research_protocol.json",
+          "change": "added",
+          "insertions": 255,
+          "deletions": 0
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_research_protocol.md",
+          "change": "added",
+          "insertions": 83,
+          "deletions": 0
+        }
+      ],
+      "source_change": false,
+      "summary": "Added only the blocked non-executable protocol JSON and Markdown: accepted authorities, baseline references, missing identity/schema/method evidence, unchanged gates and costs, zero variants, no partitions, holdout controls, and four blockers."
+    },
+    {
+      "commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
+      "parent": "ce1377682975c8bc3d5b947d35900500b03403bf",
+      "committed_at": "2026-07-13T16:25:51-07:00",
+      "files": [
+        {
+          "path": "runs/reports/pr4b0_r1_final_decision.json",
+          "change": "added",
+          "insertions": 273,
+          "deletions": 0
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_final_decision.md",
+          "change": "added",
+          "insertions": 134,
+          "deletions": 0
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_variant_results.json",
+          "change": "added",
+          "insertions": 203,
+          "deletions": 0
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_variant_results.md",
+          "change": "added",
+          "insertions": 77,
+          "deletions": 0
+        }
+      ],
+      "source_change": false,
+      "summary": "Added only blocked result/decision artifacts containing the label, legacy aggregate values, zero search/partition/holdout execution, blockers, gate summaries, and then-pending result-source/fresh-clone identities."
+    },
+    {
+      "commit": "945640fcd16537b8e1a82c49c4de28b5899982b9",
+      "parent": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
+      "committed_at": "2026-07-13T16:30:14-07:00",
+      "files": [
+        {
+          "path": "runs/reports/pr4b0_r1_final_decision.json",
+          "change": "modified",
+          "insertions": 39,
+          "deletions": 5,
+          "exact_change": "Set result_source_commit; changed fresh-clone state from pending to pass; added tidy, module-diff, vet, test, race, build, make verify, JSON/integrity, and clean-tree results."
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_final_decision.md",
+          "change": "modified",
+          "insertions": 2,
+          "deletions": 2,
+          "exact_change": "Replaced pending result-source identity and pending isolated-clone prose with commit 8f4df1e and passing results."
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_variant_results.json",
+          "change": "modified",
+          "insertions": 12,
+          "deletions": 3,
+          "exact_change": "Set result_source_commit and added passing fresh-clone checks."
+        },
+        {
+          "path": "runs/reports/pr4b0_r1_variant_results.md",
+          "change": "modified",
+          "insertions": 1,
+          "deletions": 1,
+          "exact_change": "Replaced pending isolated verification with the passing no-sibling clone result at 8f4df1e."
+        }
+      ],
+      "source_change": false,
+      "protocol_change": false
+    }
+  ],
+  "protocol_immutability": {
+    "commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+    "json": {
+      "path": "runs/reports/pr4b0_r1_research_protocol.json",
+      "current_sha256": "sha256:7d1305bb418d2463c966f1383be4e9b7e30b0aa08dd254cd60eb55e7825cb072",
+      "commit_sha256": "sha256:7d1305bb418d2463c966f1383be4e9b7e30b0aa08dd254cd60eb55e7825cb072",
+      "unchanged": true
+    },
+    "markdown": {
+      "path": "runs/reports/pr4b0_r1_research_protocol.md",
+      "current_sha256": "sha256:1d1a510de4a047faa4f4a6b2e73ef6225105d0fa8bb9cea73aad46dff09d6a37",
+      "commit_sha256": "sha256:1d1a510de4a047faa4f4a6b2e73ef6225105d0fa8bb9cea73aad46dff09d6a37",
+      "unchanged": true
+    }
+  },
+  "baseline_reproduction": {
+    "rendered_json": {
+      "established": true,
+      "original_sha256": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
+      "reproduced_sha256": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
+      "cmp_exit_code": 0,
+      "byte_equality_explicitly_checked": true
+    },
+    "rendered_markdown": {
+      "established_by_matching_hash": true,
+      "original_sha256": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed",
+      "reproduced_sha256": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed",
+      "byte_equality_explicitly_checked": false
+    },
+    "legacy_aggregate_metrics": {
+      "established": true,
+      "source": "runs/reports/phase12_3_downtrend_midvol_relief_eval.json at c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+      "expected_symbol_months_formula": "8 symbols * 24 months",
+      "expected_symbol_months": 192,
+      "completed_symbol_months": 192,
+      "retained_summary_rows": 384,
+      "distinct_symbol_months": 192,
+      "raw_event_count_formula": "sum retained_summaries long stats.raw_event_count",
+      "raw_event_count": 329842,
+      "legacy_declustered_count_formula": "sum retained_summaries long stats.de_clustered_event_count",
+      "legacy_declustered_count": 13178,
+      "legacy_declustered_count_is_canonical": false,
+      "cost_metrics": [
+        {
+          "cost_bps": 5,
+          "event_count": 329842,
+          "gross_profit_bps": 37591413.439301975,
+          "gross_loss_bps": 32157896.931923002,
+          "net_bps": 5433516.507368003,
+          "profit_factor": 1.168963677,
+          "expectancy_bps": 16.473088653
+        },
+        {
+          "cost_bps": 7.5,
+          "event_count": 329842,
+          "gross_profit_bps": 37138910.542528,
+          "gross_loss_bps": 32529999.035146035,
+          "net_bps": 4608911.507368002,
+          "profit_factor": 1.141681883,
+          "expectancy_bps": 13.973088653
+        },
+        {
+          "cost_bps": 10,
+          "event_count": 329842,
+          "gross_profit_bps": 36690202.051059,
+          "gross_loss_bps": 32905895.54368702,
+          "net_bps": 3784306.5073679998,
+          "profit_factor": 1.115003906,
+          "expectancy_bps": 11.473088653
+        },
+        {
+          "cost_bps": 15,
+          "event_count": 329842,
+          "gross_profit_bps": 35804423.884224,
+          "gross_loss_bps": 33669327.376830995,
+          "net_bps": 2135096.5073679993,
+          "profit_factor": 1.063413696,
+          "expectancy_bps": 6.473088653
+        }
+      ],
+      "worst_month": {
+        "period": "2025-03",
+        "pf_5_bps": 0.66171108,
+        "pf_10_bps": 0.634441669,
+        "formula": "group monthly retained cost rows; sum gross profit / sum gross loss"
+      },
+      "worst_quarter": {
+        "period": "2025-Q1",
+        "pf_5_bps": 0.847931049,
+        "pf_10_bps": 0.813544771,
+        "formula": "group monthly retained cost rows by quarter; sum gross profit / sum gross loss"
+      },
+      "legal_qualification_scope": false
+    },
+    "event_level_decisions": {
+      "established": false,
+      "evidence": "raw_event_detail_retained=false; event IDs, timestamps, prices, returns, features, and cluster membership are absent"
+    },
+    "implementation": {
+      "identity_established": true,
+      "commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+      "path": "internal/app/phase12_downtrend_midvol_relief.go",
+      "sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+      "executed_against_available_local_files": true,
+      "executed_against_immutable_canonical_files_established": false
+    },
+    "ordering": {
+      "exact_command": "GOWORK=off GOFLAGS=-buildvcs=false go build -o /tmp/pr4b0_r1_baseline_engine ./cmd/ak-engine && GOMEMLIMIT=1400MiB GOGC=25 /tmp/pr4b0_r1_baseline_engine phase12-downtrend-midvol-relief --workdir /home/davidmiguel22573/Github/ak-historian/.ak-historian/work --market futures-um --interval 1m --symbols LINKUSDT,SOLUSDT,AVAXUSDT,DOGEUSDT,ADAUSDT,BNBUSDT,XRPUSDT,ETHUSDT --from 2024-01 --to 2025-12 --out /tmp/pr4b0_r1_baseline_reproduction.md",
+      "invoked_at": "2026-07-13T22:51:50.238Z",
+      "completed_at": "2026-07-13T23:15:24.865Z",
+      "exit_code": 0,
+      "protocol_commit_observed": null,
+      "protocol_sha256_observed": null,
+      "reason_not_observed": "The command completed before the protocol artifacts and commit existed.",
+      "protocol_commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+      "protocol_committed_at": "2026-07-13T16:18:31-07:00",
+      "command_relative_to_protocol_commit": "BEFORE",
+      "strategy_metrics_calculated_before_protocol_freeze": true,
+      "modified_variant_metrics_calculated_before_protocol_freeze": false,
+      "execution_order_evidence": "session-log invocation/completion timestamps and commit timestamp; Git artifact ordering alone is not used"
+    },
+    "a1_classification": {
+      "treatment": "implementation/readiness check",
+      "treated_as_v00": false,
+      "declared_modified_variants": 0,
+      "executed_modified_variants": 0,
+      "maximum_total_variants": 12,
+      "zero_over_zero_explanation": "0/0 refers to declared/executed modified variants. Retroactively calling the pre-freeze readiness calculation V00 would invent a declaration and would not make its unpartitioned metrics legal qualification evidence."
+    }
+  },
+  "immutable_identity_recovery": {
+    "historian_authority_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
+    "paths_searched": [
+      "ak-historian@3eeff1eb:docs/pit_archive_evidence.md",
+      "ak-historian@3eeff1eb:internal/pitarchive/**",
+      "ak-historian@3eeff1eb:runs/reports/pr3_historian_pit_archive_enforcement.{md,json}",
+      "ak-historian@3eeff1eb:testdata/pitarchive/v1/evidence.example.json",
+      "ak-engine@205cf595:runs/reports/pr4b0_candidate_{inventory,qualification}.{md,json}",
+      "ak-engine@205cf595:internal/app/pr4b0_candidate_qualification{,_test}.go",
+      "ak-engine@205cf595:internal/qualification/qualification{,_test}.go",
+      "ak-engine@c2c7988:internal/app/phase12_downtrend_midvol_relief{,_test}.go",
+      "ak-engine@c2c7988:runs/reports/phase12_3_downtrend_midvol_relief_eval.{md,json}",
+      "ak-historian local workdir:.ak-historian/work/manifests/**",
+      "ak-historian local workdir:.ak-historian/work/candles/futures-um/1m/**"
+    ],
+    "manifests_found": [
+      {
+        "path": "testdata/pitarchive/v1/evidence.example.json",
+        "kind": "compatibility evidence fixture, not a manifest",
+        "production": false,
+        "dataset_id": "candles:BTCUSDT:1h",
+        "dataset_version": "2025-01-v1",
+        "window": "2025-01-01T00:00:00Z/2025-01-01T03:00:00Z",
+        "candidate_relevant": false
+      },
+      {
+        "path": ".ak-historian/work/manifests/local_source_manifest.json",
+        "kind": "diagnostic local object inventory",
+        "production_pit_manifest": false,
+        "file_sha256": "sha256:80ed307f181a16026b0b20970dfe4cfaeb8b1acdf1c9f0298181ecb2bb9ff329",
+        "top_level_keys": [
+          "objects"
+        ],
+        "object_count": 72,
+        "symbols": [
+          "AVAXUSDT",
+          "LINKUSDT",
+          "SOLUSDT"
+        ],
+        "coverage": "24 objects per symbol for 2024-01 through 2025-12",
+        "checksums_present": 0,
+        "known_row_counts": 0,
+        "coverage_status_declarations": 0,
+        "last_verified_at_min": "2026-06-07T20:07:30.188649389-07:00",
+        "last_verified_at_max": "2026-06-07T20:13:18.462730363-07:00",
+        "last_verified_at_is_source_available_at": false
+      }
+    ],
+    "production_snapshot_manifests_found": 0,
+    "production_historian_snapshots_found": 0,
+    "local_candle_files_present_but_not_bound_as_snapshots": true,
+    "local_candle_file_inventory": [
+      {"symbol":"LINKUSDT","files_found":69,"first_path_month":"2023-01","last_path_date":"2026-05-29"},
+      {"symbol":"SOLUSDT","files_found":36,"first_path_month":"2023-01","last_path_month":"2025-12"},
+      {"symbol":"AVAXUSDT","files_found":36,"first_path_month":"2023-01","last_path_month":"2025-12"},
+      {"symbol":"DOGEUSDT","files_found":36,"first_path_month":"2023-01","last_path_month":"2025-12"},
+      {"symbol":"ADAUSDT","files_found":36,"first_path_month":"2023-01","last_path_month":"2025-12"},
+      {"symbol":"BNBUSDT","files_found":36,"first_path_month":"2023-01","last_path_month":"2025-12"},
+      {"symbol":"XRPUSDT","files_found":36,"first_path_month":"2023-01","last_path_month":"2025-12"},
+      {"symbol":"ETHUSDT","files_found":37,"first_path_month":"2022-12","last_path_month":"2025-12"},
+      {"symbol":"BTCUSDT","files_found":37,"first_path_month":"2022-12","last_path_month":"2025-12"}
+    ],
+    "other_manifests_found_but_not_candidate_candle_identity": {
+      "funding_rate_manifests": 9,
+      "sentiment_manifests": 1,
+      "reason_irrelevant": "Different datasets; implemented signal declares funding_primary_trigger=false and consumes no funding/basis field."
+    },
+    "artifact_hashes": {
+      "pr4b0_candidate_inventory_json": "sha256:3c94708c81788cb7b21219c08c9482ac621d90ae9b58970365cace29fbaf2d6a",
+      "pr4b0_candidate_inventory_md": "sha256:71cb635b74f999cc9c0c2c93c2f68b47e233d5c61ea46821b376960090ab12e1",
+      "pr4b0_candidate_qualification_json": "sha256:1caac0af112610905229f2c620919508ac9db3a4fe98d1a9640696c066c52765",
+      "pr4b0_candidate_qualification_md": "sha256:4eb185283322fc3b3aac0cc29d31ba9b03dac98c1532e6f52e6d519b2123efc0",
+      "pr4b0_candidate_qualification_go": "sha256:e04b57f560aa4ac1c693dccbc95b30a1e9df06a2ae97d53cafcc5abea6d12f23",
+      "qualification_go": "sha256:efff909fff83d9821900cc3ac227450d6525b4d25961882af15960e94dabec29",
+      "phase12_source": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+      "phase12_report_json": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
+      "phase12_report_md": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed"
+    },
+    "field_recovery": [
+      {
+        "field": "dataset_id",
+        "value": null,
+        "evidence": "No production Historian manifest; local manifest has only objects; accepted Engine candidate has no value."
+      },
+      {
+        "field": "dataset_version",
+        "value": null,
+        "evidence": "No production Historian manifest or Engine candidate value."
+      },
+      {
+        "field": "manifest_id",
+        "value": null,
+        "evidence": "Local manifest has no manifest_id; no production Historian manifest."
+      },
+      {
+        "field": "manifest_hash",
+        "value": null,
+        "evidence": "File SHA-256 80ed... is not a declared canonical manifest_hash and all object checksums are empty."
+      },
+      {
+        "field": "evaluation_cutoff",
+        "value": null,
+        "evidence": "No candidate artifact contains an evaluation_cutoff; local last_verified_at cannot substitute."
+      },
+      {
+        "field": "coverage_policy_version",
+        "value": null,
+        "evidence": "Code defines ak-historian.coverage-policy.v1, but no candidate manifest instantiates it."
+      },
+      {
+        "field": "availability_policy_version",
+        "value": null,
+        "evidence": "Code defines ak-historian.availability-policy.v1, but no candidate manifest instantiates it."
+      },
+      {
+        "field": "source_availability_timestamps",
+        "value": null,
+        "evidence": "No candidate snapshot available_at; last_verified_at is local archive verification only."
+      },
+      {
+        "field": "expected_coverage_declaration",
+        "value": null,
+        "evidence": "No policy expected set; 72 local coverage_status fields are empty and cover only three target symbols."
+      },
+      {
+        "field": "per_input_hashes",
+        "value": null,
+        "evidence": "All 72 checksum_if_available fields are empty; other target/BTC/ETH files have no candidate manifest entries."
+      }
+    ]
+  },
+  "retained_schema_sufficiency": [
+    {
+      "capability": "stable event identity",
+      "exists": false,
+      "source": "ephemeral symbol|side|EventTimeMS duplicate key; no retained field",
+      "decision_time_available": "runtime_only",
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot prove event set or deduplicate across runs."
+    },
+    {
+      "capability": "input hashes",
+      "exists": false,
+      "source": null,
+      "decision_time_available": false,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot bind replay to immutable inputs."
+    },
+    {
+      "capability": "event timestamp",
+      "exists": false,
+      "source": "runtime features.Row.EventTimeMS / phase12DTMVREvent.EventTimeMS",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot replay decisions or reconstruct clusters."
+    },
+    {
+      "capability": "cluster timestamps and membership",
+      "exists": false,
+      "source": "runtime local eventTimes; retained count and cluster_key_version only",
+      "decision_time_available": "runtime_only",
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot audit spacing or build cross-symbol clusters."
+    },
+    {
+      "capability": "reference prices",
+      "exists": false,
+      "source": "runtime features.Row.Close / phase12DTMVREvent.EntryPrice",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot recompute entry or verify price selection."
+    },
+    {
+      "capability": "horizon returns",
+      "exists": false,
+      "source": "runtime ReturnsBps[240m]; aggregate gross/net/PF retained",
+      "decision_time_available": false,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot recompute event P&L or uncertainty."
+    },
+    {
+      "capability": "primary-symbol regime",
+      "exists": false,
+      "source": "runtime Close/EMA50/EMA200/TrendSlope20; retained diagnostic counts",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot verify event-level regime assignment."
+    },
+    {
+      "capability": "volatility bucket",
+      "exists": false,
+      "source": "runtime RealizedVol60 in [0.0015,0.006]; aggregate pass counts",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot verify MID classification or filter events."
+    },
+    {
+      "capability": "relief magnitude",
+      "exists": false,
+      "source": "named pullback gate hard-coded true",
+      "decision_time_available": "not_implemented",
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "No replayable relief field exists."
+    },
+    {
+      "capability": "BTC context",
+      "exists": false,
+      "source": "loader builds BTCReturn60 but signal does not consume it",
+      "decision_time_available": "runtime_only",
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Input dependency and context variants cannot be proven."
+    },
+    {
+      "capability": "ETH context",
+      "exists": false,
+      "source": "loader builds ETHReturn60 where target differs but signal does not consume it",
+      "decision_time_available": "runtime_only",
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Input dependency and context variants cannot be proven."
+    },
+    {
+      "capability": "trend state",
+      "exists": false,
+      "source": "runtime Close < EMA50 < EMA200 and TrendSlope20 < 0; aggregate counts",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot verify signal predicate per event."
+    },
+    {
+      "capability": "funding/basis context",
+      "exists": false,
+      "required_by_implemented_signal": false,
+      "source": "funding_primary_trigger=false; source consumes no funding/basis field",
+      "decision_time_available": "not_applicable",
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Not a blocker for the exact signal; unavailable for a new constraint."
+    },
+    {
+      "capability": "warm-up evidence",
+      "exists": false,
+      "source": "runtime features.Row.Warmup and two-month load extension; aggregate feature counts",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot prove per-event warm-up completeness or bind warm-up bytes."
+    },
+    {
+      "capability": "feature availability time",
+      "exists": false,
+      "source": "runtime AvailableAtMS; aggregate leakage_status only",
+      "decision_time_available": true,
+      "deterministic_replay": false,
+      "canonical_clustering": false,
+      "consequence": "Cannot independently audit PIT availability."
+    },
+    {
+      "capability": "aggregate symbol/month/cost statistics",
+      "exists": true,
+      "source": "retained_summaries[].symbol/month/quarter/stats.cost_stress[]",
+      "decision_time_available": false,
+      "deterministic_replay": "aggregate_only",
+      "canonical_clustering": false,
+      "consequence": "Supports legacy aggregate reaggregation only."
+    }
+  ],
+  "uncertainty_methodology_recovery": {
+    "searched": [
+      "runs/reports/pr4b0_candidate_inventory.json",
+      "runs/reports/pr4b0_candidate_inventory.md",
+      "runs/reports/pr4b0_candidate_qualification.json",
+      "runs/reports/pr4b0_candidate_qualification.md",
+      "internal/app/pr4b0_candidate_qualification.go",
+      "internal/app/pr4b0_candidate_qualification_test.go",
+      "internal/qualification/qualification.go",
+      "internal/qualification/qualification_test.go",
+      "internal/app/phase12_downtrend_midvol_relief.go",
+      "internal/app/phase12_downtrend_midvol_relief_test.go",
+      "runs/reports/phase12_3_downtrend_midvol_relief_eval.json",
+      "runs/reports/phase12_3_downtrend_midvol_relief_eval.md"
+    ],
+    "recovered_gate": "expectancy lower confidence bound > 0 bps",
+    "estimator": null,
+    "confidence_level": null,
+    "independent_resampling_unit": null,
+    "bootstrap_or_analytical_method": null,
+    "block_construction": null,
+    "seed": null,
+    "number_of_resamples": null,
+    "interval_rule": null,
+    "blocker": "ACCEPTED_UNCERTAINTY_METHODOLOGY_UNSPECIFIED",
+    "why_not_select_now": "Selecting any missing method element would add a substantive rule to an accepted gate and could change pass/fail behavior."
+  },
+  "qualification_gate_results": [
+    {"gate":"dataset ID","threshold":"exact immutable identity","scope":"all partitions","status":"FAIL","evidence":"no candidate dataset ID","contributes":false},
+    {"gate":"dataset version","threshold":"immutable version; no mutable alias","scope":"all partitions","status":"FAIL","evidence":"no candidate dataset version","contributes":false},
+    {"gate":"manifest ID/hash","threshold":"exact ID and canonical SHA-256 matching PIT evidence","scope":"all partitions","status":"FAIL","evidence":"no production manifest; zero local object checksums","contributes":false},
+    {"gate":"explicit non-overlapping partitions","threshold":"DEVELOPMENT, VALIDATION, FINAL_HOLDOUT","scope":"all qualification","status":"NOT RUN","evidence":"no legal boundaries created","contributes":false},
+    {"gate":"expected partitions/gap policy","threshold":"exact expected set; reject undeclared gaps","scope":"all inputs","status":"FAIL","evidence":"no expected set or candidate coverage policy","contributes":false},
+    {"gate":"minimum events","threshold":">=300","scope":"each legal evaluated scope","status":"NOT RUN","evidence":"329842 is an unpartitioned legacy aggregate","contributes":false},
+    {"gate":"minimum independent clusters","threshold":">=300","scope":"each legal evaluated scope","status":"BLOCKED","evidence":"13178 spacing sum lacks membership/P&L and cross-symbol clustering","contributes":false},
+    {"gate":"minimum trades/decisions","threshold":">=300","scope":"each legal evaluated scope","status":"BLOCKED","evidence":"event decisions not retained","contributes":false},
+    {"gate":"minimum symbols","threshold":">=4","scope":"qualification result","status":"NOT RUN","evidence":"legacy 8-symbol scope is not a legal result","contributes":false},
+    {"gate":"minimum months","threshold":">=12","scope":"qualification result","status":"NOT RUN","evidence":"legacy 24-month scope is not a legal result","contributes":false},
+    {"gate":"positive-regime coverage","threshold":">=1 positive regime","scope":"qualification result","status":"NOT RUN","evidence":"no legal event-level regime result","contributes":false},
+    {"gate":"negative-regime coverage","threshold":">=1 negative regime","scope":"qualification result","status":"NOT RUN","evidence":"no legal event-level regime result","contributes":false},
+    {"gate":"net expectancy","threshold":">=0.01 bps","scope":"development/validation/frozen result","status":"NOT RUN","evidence":"legacy aggregate is informational only","contributes":false},
+    {"gate":"profit factor","threshold":">=1.10 at 10 bps; explicit R1 floor controls","scope":"development/validation/frozen result","status":"NOT RUN","evidence":"legacy PF 1.115004 is not a legal result","contributes":false},
+    {"gate":"maximum drawdown","threshold":"<=2500 bps","scope":"each legal evaluated scope","status":"NOT RUN","evidence":"event/equity path unavailable","contributes":false},
+    {"gate":"expectancy lower confidence bound","threshold":">0","scope":"validation selection and qualification","status":"BLOCKED","evidence":"accepted uncertainty method unspecified","contributes":false},
+    {"gate":"downside tail","threshold":"worst decile/worst-symbol-month within drawdown budget","scope":"legal evaluated scopes","status":"NOT RUN","evidence":"event returns and partitions unavailable","contributes":false},
+    {"gate":"out-of-sample validation","threshold":"required","scope":"VALIDATION","status":"NOT RUN","evidence":"partition absent; zero reads","contributes":false},
+    {"gate":"walk-forward stability","threshold":"required","scope":"pre-holdout","status":"NOT RUN","evidence":"zero slices","contributes":false},
+    {"gate":"worst-period PF","threshold":">=0.95","scope":"legal evaluation periods","status":"NOT RUN","evidence":"legacy Q1 metric is not a legal result","contributes":false},
+    {"gate":"symbol concentration","threshold":"<=50%","scope":"legal evaluated scope","status":"NOT RUN","evidence":"no legal event/cluster P&L","contributes":false},
+    {"gate":"temporal concentration","threshold":"<=50%","scope":"legal evaluated scope","status":"NOT RUN","evidence":"legacy contribution is not a legal result","contributes":false},
+    {"gate":"regime concentration","threshold":"<=60%","scope":"legal evaluated scope","status":"NOT RUN","evidence":"no retained event-level regime P&L","contributes":false},
+    {"gate":"stable parameter neighbors","threshold":">=2","scope":"development then validation","status":"NOT RUN","evidence":"zero variants/neighbors","contributes":false},
+    {"gate":"cluster deduplication","threshold":"required","scope":"all performance/sample results","status":"BLOCKED","evidence":"no canonical clusters","contributes":false},
+    {"gate":"missing-context sensitivity","threshold":"required","scope":"development/validation","status":"BLOCKED","evidence":"context values and events absent","contributes":false},
+    {"gate":"fee cost","threshold":"5 bps","scope":"all net results","status":"NOT RUN","evidence":"assumption recovered; no legal result","contributes":false},
+    {"gate":"spread cost","threshold":"1 bps","scope":"all net results","status":"NOT RUN","evidence":"assumption recovered; no legal result","contributes":false},
+    {"gate":"slippage cost","threshold":"1 bps","scope":"all net results","status":"NOT RUN","evidence":"assumption recovered; no legal result","contributes":false},
+    {"gate":"funding cost","threshold":"1 bps","scope":"all net results","status":"NOT RUN","evidence":"assumption recovered; no legal result","contributes":false},
+    {"gate":"adverse-selection cost","threshold":"2 bps","scope":"all net results","status":"NOT RUN","evidence":"assumption recovered; no legal result","contributes":false},
+    {"gate":"total cost stress","threshold":"10 bps; PF >=1.10; expectancy >=0.01 bps","scope":"all legal results","status":"NOT RUN","evidence":"legacy stress cannot substitute","contributes":false},
+    {"gate":"reject future candles","threshold":"required","scope":"feature construction","status":"BLOCKED","evidence":"no retained event timing/input PIT evidence","contributes":false},
+    {"gate":"reject revised data unavailable at cutoff","threshold":"required","scope":"feature construction","status":"BLOCKED","evidence":"source available_at and cutoff absent","contributes":false},
+    {"gate":"reject final outcomes in features","threshold":"required","scope":"feature construction","status":"NOT RUN","evidence":"no canonical event replay","contributes":false},
+    {"gate":"reject holdout-derived feature selection","threshold":"required","scope":"search/selection","status":"PASS","evidence":"zero holdout reads and modified variants","contributes":true},
+    {"gate":"PIT-compatible source timing","threshold":"required","scope":"all inputs/features","status":"FAIL","evidence":"no PIT evidence/availability timestamps","contributes":false},
+    {"gate":"reject manifest/dataset mismatch","threshold":"exact match","scope":"all inputs","status":"FAIL","evidence":"identities absent","contributes":false},
+    {"gate":"simplicity","threshold":"simplest only after all gates pass","scope":"selection","status":"NOT RUN","evidence":"no variants/survivors","contributes":false},
+    {"gate":"finite search budget","threshold":"<=12; no expansion","scope":"development search","status":"PASS","evidence":"zero declared/executed modified variants","contributes":true},
+    {"gate":"implementation complete/identified","threshold":"exact source and behavior","scope":"pre-evaluation","status":"PASS","evidence":"source commit/path/hash and tests recovered","contributes":true},
+    {"gate":"Historian PIT evidence","threshold":"accepted exact evidence required","scope":"all qualification","status":"FAIL","evidence":"no production candidate manifest/envelope","contributes":false},
+    {"gate":"RIF-controlled holdout authorization","threshold":"one-time after frozen survivor","scope":"FINAL_HOLDOUT","status":"NOT RUN","evidence":"no survivor/freeze/registration","contributes":false}
+  ],
+  "research_integrity_boundaries": {
+    "declared_modified_variants": 0,
+    "executed_modified_variants": 0,
+    "development_reads": 0,
+    "validation_reads": 0,
+    "holdout_enumerations": 0,
+    "holdout_event_reads": 0,
+    "rif_exposure_reservations": 0,
+    "rif_exposure_consumptions": 0,
+    "paper_authority_artifacts": 0,
+    "trader_changes": 0,
+    "paper_evaluator_changes": 0,
+    "archive_coverage_inspection": "Manifest metadata and candle filenames were enumerated without reading candidate outcomes.",
+    "candidate_outcome_inspection": "The separate A1 readiness command calculated legacy unpartitioned aggregates before protocol freeze; those values are disclosed and excluded from legal qualification.",
+    "rif_authority_worktree_clean": true,
+    "ak_trader_worktree_clean": true,
+    "ak_trader_commit": "1727af8327f2fb6a51fa907e8fab83944a661696"
+  },
+  "verification": {
+    "status": "PASS_LOCAL_AND_FRESH_CLONE_WITH_MANDATED_EXACT_COMMAND_EXCEPTION",
+    "follow_up_commit": "RESOLVE_WITH_GIT_LOG_FOR_SUPPLEMENT",
+    "local": [
+      {"command":"GOWORK=off GOFLAGS=-buildvcs=false go mod tidy","exit_code":0},
+      {"command":"git diff --exit-code -- go.mod go.sum","exit_code":0},
+      {"command":"GOWORK=off GOFLAGS=-buildvcs=false go vet ./...","exit_code":0},
+      {"command":"GOWORK=off GOFLAGS=-buildvcs=false go test ./...","exit_code":0},
+      {"command":"GOWORK=off GOFLAGS=-buildvcs=false go test -race ./...","exit_code":0},
+      {"command":"GOWORK=off GOFLAGS=-buildvcs=false go build ./...","exit_code":0},
+      {"command":"GOWORK=off GOFLAGS=-buildvcs=false make verify","exit_code":0},
+      {"command":"JSON, protocol-hash, secret, private-key, sibling-import, Go-diff, qualified-artifact, and diff-check scans","exit_code":0},
+      {"command":"original absolute-host-path scan","exit_code":1,"status":"EXPECTED_MANDATED_EXACT_COMMAND_HITS","hit_count":2},
+      {"command":"absolute-host-path scan with exact-command-field allowlist","exit_code":0}
+    ],
+    "fresh_clone": {
+      "status": "PASS",
+      "commit": "RESOLVE_WITH_GIT_LOG_FOR_SUPPLEMENT",
+      "no_sibling_repositories": true,
+      "commands": [
+        "GOWORK=off go mod tidy",
+        "git diff --exit-code -- go.mod go.sum",
+        "GOWORK=off go vet ./...",
+        "GOWORK=off go test ./...",
+        "GOWORK=off go test -race ./...",
+        "GOWORK=off go build ./...",
+        "GOWORK=off make verify",
+        "JSON, protocol-hash, secret, private-key, sibling-import, Go-diff, qualified-artifact, diff-check, exact-command path allowlist, and clean-tree checks"
+      ]
+    }
+  },
+  "recommended_next_phase": "NONE"
+}
