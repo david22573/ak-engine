@@ -20,6 +20,7 @@
   "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
   "generated_at": "2026-07-13T08:00:00Z",
   "governance_requirement": "Explicit acceptance is required before a future PR4B0-R1 rerun.",
+  "historian_result_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
   "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
   "method": {
     "version": "ak.engine.uncertainty.cluster-bootstrap.v1",
@@ -38,6 +39,7 @@
   },
   "method_hash": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
   "real_candidate_observations_used": 0,
+  "rif_result_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
   "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
   "schema_version": "ak.engine.pr4b0-r1p-uncertainty-authority.v1"
 }

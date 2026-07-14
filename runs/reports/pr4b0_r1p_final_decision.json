@@ -5,7 +5,7 @@
     "accepted independence authority is not established",
     "uncertainty method remains PROPOSED_NOT_ACCEPTED",
     "no legal later validation/final-holdout coverage exists",
-    "RIF lacks reservation and pre-access authorization",
+    "two preserved exposure artifacts lack recoverable source commits",
     "one accidental legacy candidate-result literal exposure occurred during source inspection"
   ],
   "candidate_executed": false,
@@ -13,18 +13,20 @@
   "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
   "final_holdout_outcomes_inspected": false,
   "generated_at": "2026-07-13T08:00:00Z",
+  "historian_result_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
   "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
   "label": "PR4B0_R1P_PRECONDITIONS_PARTIALLY_RESTORED",
   "meaningful_infrastructure_completed": [
-    "hashed fail-closed Historian gap bundle",
-    "versioned retained-event schema",
+    "verified hashed fail-closed Historian gap bundle",
+    "versioned retained-event and independent-cluster schemas",
     "deterministic proposed independence policy",
     "deterministic proposed cluster-aware uncertainty method",
     "prior-exposure ledger",
     "structural partition policy",
-    "RIF compatibility preflight"
+    "RIF frozen-identity reserve/authorize/consume-before-access preflight"
   ],
-  "recommended_next_phase": "NARROW_REMEDIATION_ONLY: obtain source availability/event-schema authority, accept governance contracts, extend RIF pre-access reservation, and establish later unexposed all-symbol PIT coverage.",
+  "recommended_next_phase": "NARROW_REMEDIATION_ONLY: obtain source availability/event-schema authority, recover preserved-artifact provenance, accept governance contracts, and establish later unexposed all-symbol PIT coverage.",
+  "rif_result_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
   "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
   "schema_version": "ak.engine.pr4b0-r1p-final-decision.v1",
   "validation_outcomes_inspected": false,

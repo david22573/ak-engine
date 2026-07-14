@@ -10,6 +10,7 @@ import (
 
 const (
 	IndependencePolicyVersion       = "ak.engine.independence.downtrend-midvol-relief.v1"
+	IndependentClusterSchemaVersion = "ak.engine.independent-cluster.downtrend-midvol-relief.v1"
 	PolicyStatusProposedNotAccepted = "PROPOSED_NOT_ACCEPTED"
 )
 
@@ -27,6 +28,7 @@ type IndependencePolicy struct {
 }
 
 type IndependentCluster struct {
+	SchemaVersion               string            `json:"schema_version"`
 	PolicyVersion               string            `json:"policy_version"`
 	ClusterID                   string            `json:"cluster_id"`
 	Start                       time.Time         `json:"start"`
@@ -36,6 +38,17 @@ type IndependentCluster struct {
 	ClusterTimestamps           []time.Time       `json:"cluster_timestamps"`
 	SameSymbolOverlapIdentities map[string]string `json:"same_symbol_overlap_identities"`
 	CommonMarketClusterIdentity string            `json:"common_market_cluster_identity"`
+}
+
+func IndependentClusterSchemaDescriptor() SchemaDescriptor {
+	return SchemaDescriptor{IndependentClusterSchemaVersion, []string{
+		"schema_version", "policy_version", "cluster_id", "start", "end", "member_event_ids", "member_symbols",
+		"cluster_timestamps", "same_symbol_overlap_identities", "common_market_cluster_identity",
+	}}
+}
+
+func IndependentClusterSchemaHash() (string, error) {
+	return canonicalDigest(IndependentClusterSchemaDescriptor())
 }
 
 func DefaultIndependencePolicy() IndependencePolicy {
@@ -118,7 +131,7 @@ func ClusterEvents(events []RetainedEvent, policy IndependencePolicy) ([]Indepen
 			same[symbol] = "same-symbol:" + strings.TrimPrefix(symbolDigest, "sha256:")
 		}
 		clusters = append(clusters, IndependentCluster{
-			PolicyVersion: policy.Version, ClusterID: clusterID, Start: group.start, End: group.end,
+			SchemaVersion: IndependentClusterSchemaVersion, PolicyVersion: policy.Version, ClusterID: clusterID, Start: group.start, End: group.end,
 			MemberEventIDs: ids, MemberSymbols: symbols, ClusterTimestamps: timestamps,
 			SameSymbolOverlapIdentities: same, CommonMarketClusterIdentity: clusterID,
 		})
@@ -130,7 +143,7 @@ func ClusterConcentration(clusters []IndependentCluster) (float64, error) {
 	total, largest := 0, 0
 	seen := map[string]struct{}{}
 	for _, cluster := range clusters {
-		if cluster.ClusterID == "" {
+		if cluster.SchemaVersion != IndependentClusterSchemaVersion || cluster.PolicyVersion != IndependencePolicyVersion || cluster.ClusterID == "" {
 			return 0, errors.New("cluster ID is required")
 		}
 		if _, exists := seen[cluster.ClusterID]; exists {

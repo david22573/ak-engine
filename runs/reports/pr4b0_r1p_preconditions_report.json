@@ -84,9 +84,11 @@
     "independence_policy_hash": "sha256:68641244ae31bb47dd7752410763308bf8a88362660f9df347362f42fbbb339a",
     "independence_policy_status": "PROPOSED_NOT_ACCEPTED",
     "independence_policy_version": "ak.engine.independence.downtrend-midvol-relief.v1",
+    "independent_cluster_schema_hash": "sha256:dadf3f080ae76d95b16877fb60ea6f24815d35fa093aac94171e779c08202c16",
+    "independent_cluster_schema_version": "ak.engine.independent-cluster.downtrend-midvol-relief.v1",
     "partition_policy_hash": "sha256:be53d5206e089fc2e20f80a9084711df2878a3734b97ce276e4c725a559dcfcc",
     "partition_policy_version": "ak.engine.partition-eligibility.v1",
-    "retained_event_schema_hash": "sha256:ee51d9048888f2c9a88fe8b1a3a365c27977e3ae76f541017fa7ab2d7f1c0b76",
+    "retained_event_schema_hash": "sha256:d6dbf1c92a54eec1e40cafd85ffe96524bb0f95c2c5c5a2273b4b1fcc73b9d4b",
     "retained_event_schema_version": "ak.engine.retained-event.downtrend-midvol-relief.v1",
     "uncertainty_method_hash": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
     "uncertainty_method_status": "PROPOSED_NOT_ACCEPTED",
@@ -95,18 +97,18 @@
   "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
   "generated_at": "2026-07-13T08:00:00Z",
   "historian": {
-    "artifact_hash": "sha256:58bcfb303be4d8c02085c3816dcbbb8e02427c3a0ad59c7edca85441e25af061",
+    "artifact_hash": "sha256:8390ee15597143cd2d51cd8ef4edd1839d09e733b49f02e59478ebfa10e6779c",
     "availability_policy_version": "ak-historian.availability-policy.v1",
     "coverage_policy_version": "ak-historian.coverage-policy.v1",
     "dataset_id": "ak-historian-candles-futures-um-1m-pr4b0-r1p",
-    "dataset_version": "sha256:cdc39143d3b845f810a63e770eec4cd189f3fd0ed3c991618be12b45eb922d04",
+    "dataset_version": "sha256:afb3b656d6d97d61e8a10941e0553a90875c52dc8315b7e8e6f4de8ca6a725d2",
     "evaluation_cutoff": "2026-07-13T07:00:00Z",
     "event_schema_version": "legacy-unversioned",
     "expected_partition_count": 324,
     "hashed_snapshot_count": 324,
-    "historian_build": "source-parent-3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
+    "historian_build": "pr4b0-r1p-canonical-gap-builder-v1",
     "manifest_created_at": "2026-07-13T08:00:00Z",
-    "manifest_hash": "sha256:de7104452fb7e785032894922e2b4ebe80359bce08e44c157cab6047fb045eb6",
+    "manifest_hash": "sha256:2bdad377474ea79b830b54aab32df45d43f07070fbc4e8e4b39c41634b12e515",
     "manifest_id": "pr4b0-r1p-pit-gap-2023-2025-v1",
     "missing_evidence_count": 324,
     "missing_evidence_reasons": [
@@ -120,9 +122,10 @@
       "start": null,
       "end": null
     },
-    "snapshot_set_hash": "sha256:cdc39143d3b845f810a63e770eec4cd189f3fd0ed3c991618be12b45eb922d04",
+    "snapshot_set_hash": "sha256:afb3b656d6d97d61e8a10941e0553a90875c52dc8315b7e8e6f4de8ca6a725d2",
     "status": "PIT_EVIDENCE_INCOMPLETE"
   },
+  "historian_result_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
   "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
   "independence_authority_recovery": {
     "accepted_policy_recovered": false,
@@ -151,6 +154,7 @@
     "real_rif_reservations": 0,
     "validation_content_reads": 0
   },
+  "rif_result_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
   "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
   "schema_version": "ak.engine.pr4b0-r1p-preconditions-report.v1",
   "status": "PARTIALLY_RESTORED"

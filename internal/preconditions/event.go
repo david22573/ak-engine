@@ -227,11 +227,14 @@ type SchemaDescriptor struct {
 
 func RetainedEventSchemaDescriptor() SchemaDescriptor {
 	return SchemaDescriptor{RetainedEventSchemaVersion, []string{
-		"event_id", "candidate_family", "candidate_version", "implementation_hash", "primary_symbol", "event_timestamp", "decision_timestamp",
+		"schema_version", "event_id", "candidate_family", "candidate_version", "implementation_hash", "primary_symbol", "event_timestamp", "decision_timestamp",
 		"source_partition_id", "source_snapshot_id", "source_input_hash", "feature_schema_version", "trend_state", "primary_regime", "volatility_bucket",
 		"decision_features.close", "decision_features.ema_50", "decision_features.ema_200", "decision_features.trend_slope_20", "decision_features.realized_vol_60",
-		"btc_context", "eth_context", "reference_price", "evaluation_horizon", "evaluation_horizon_ms", "warmup_sufficient", "deterministic_exclusion_reason",
-		"cost_inputs", "attribution", "replay_input_hash",
+		"btc_context.symbol", "btc_context.snapshot_id", "btc_context.source_input_hash", "btc_context.available_at", "btc_context.return_60",
+		"eth_context.symbol", "eth_context.snapshot_id", "eth_context.source_input_hash", "eth_context.available_at", "eth_context.return_60",
+		"reference_price", "evaluation_horizon", "evaluation_horizon_ms", "warmup_sufficient", "deterministic_exclusion_reason",
+		"cost_inputs.fee_bps", "cost_inputs.spread_bps", "cost_inputs.slippage_bps", "cost_inputs.funding_bps", "cost_inputs.adverse_selection_bps",
+		"attribution.month", "attribution.quarter", "attribution.regime", "replay_input_hash",
 	}}
 }
 

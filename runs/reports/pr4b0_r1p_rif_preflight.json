@@ -10,48 +10,51 @@
       "result": "PASS"
     },
     {
-      "requirement": "frozen implementation/configuration/parameter identities",
-      "result": "PASS_WITH_LOCK_BINDING"
-    },
-    {
-      "requirement": "dedicated frozen capability hash",
-      "result": "FAIL_MISSING_DEDICATED_FIELD"
+      "requirement": "frozen implementation/configuration/parameter/capability/feature/research-lock identities",
+      "result": "PASS"
     },
     {
       "requirement": "one-time final-holdout reservation",
-      "result": "FAIL_NO_RESERVATION_PRIMITIVE"
+      "result": "PASS_SYNTHETIC"
     },
     {
       "requirement": "durable authorization before access",
-      "result": "FAIL_NO_PRE_ACCESS_AUTHORIZATION_GATE"
+      "result": "PASS_SYNTHETIC"
     },
     {
-      "requirement": "atomic exposure consumption",
-      "result": "PASS_AT_RECORD_EXPOSURE"
+      "requirement": "atomic exposure consumption before protected callback",
+      "result": "PASS_SYNTHETIC"
     },
     {
       "requirement": "replay/conflicting-evidence rejection",
       "result": "PASS"
     },
     {
-      "requirement": "no manual holdout bypass",
-      "result": "FAIL_NOT_PROVABLE_WITHOUT_ACCESS_GATEWAY"
+      "requirement": "no manual bypass through the RIF authority gateway",
+      "result": "PASS; FUTURE_DATA_OWNER_MUST_EXPOSE_CONTENT_ONLY_INSIDE_CALLBACK"
+    },
+    {
+      "requirement": "no real registration/reservation/authorization/exposure",
+      "result": "PASS"
     }
   ],
   "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
   "future_sequence": [
-    "accept and freeze all Engine/Historian identities",
-    "register exact candidate and research identity",
-    "durably reserve one holdout operation",
-    "authorize the exact operation before any access",
-    "atomically consume authorization with exposure",
-    "reject replay or conflicting evidence"
+    "register and advance the exact candidate version to VALIDATED using accepted evidence",
+    "construct the frozen identity from independently verified accepted artifacts",
+    "reserve once with a unique immutable operation ID and frozen final-holdout identity",
+    "have the authorized governance actor verify and authorize the exact reservation and frozen identity",
+    "consume authorization and exposure durably before protected access",
+    "let the final-holdout data owner open content only inside the post-consumption callback",
+    "bind consumed exposure evidence to any later lifecycle decision; reject all replay or conflict"
   ],
   "generated_at": "2026-07-13T08:00:00Z",
+  "historian_result_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
   "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
   "real_state_created": false,
-  "result": "INCOMPATIBLE_EXTENSION_REQUIRED",
-  "rif_commit": "29350344a57e46f064442eada26e9418515990be",
+  "result": "COMPATIBLE_SYNTHETIC_PREFLIGHT_PASS",
+  "rif_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
+  "rif_result_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
   "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
   "schema_version": "ak.engine.pr4b0-r1p-rif-preflight.v1",
   "synthetic_or_static_only": true
