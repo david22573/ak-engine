@@ -1,11 +1,16 @@
 package qualification
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
+
+const pendingR1P3IndependencePolicyHash = "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528"
 
 func TestSyntheticGovernanceHashesBindFrozenCandidateLifecycleV2(t *testing.T) {
 	descriptor := validFrozenDescriptor(t)
 	descriptor.SchemaVersion = FrozenDescriptorSchemaVersionV2
-	descriptor.IndependencePolicyHash = sha('a')
+	descriptor.IndependencePolicyHash = pendingR1P3IndependencePolicyHash
 	descriptor.UncertaintyMethodHash = sha('b')
 	descriptor.SourceSchemaHash = sha('c')
 	descriptor.ManifestContractHash = sha('d')
@@ -25,14 +30,14 @@ func TestSyntheticGovernanceHashesBindFrozenCandidateLifecycleV2(t *testing.T) {
 	request.ResearchIdentity.ManifestContractHash = descriptor.ManifestContractHash
 	request.ArtifactIntegrityHash = ""
 	request.ArtifactIntegrityHash = mustRegistrationHashV2(t, request)
-	if err := request.Verify(); err != nil {
-		t.Fatalf("V2 synthetic lifecycle request failed: %v", err)
+	if err := request.Verify(); err == nil || !strings.Contains(err.Error(), "accepted independence-policy hash") {
+		t.Fatalf("pending V2 lifecycle request did not fail closed: %v", err)
 	}
 
-	mutated := request
-	mutated.ResearchIdentity.ManifestContractHash = sha('e')
+	mutated := descriptor
+	mutated.ManifestContractHash = sha('e')
 	if err := mutated.Verify(); err == nil {
-		t.Fatal("governance identity mutation did not invalidate frozen lifecycle binding")
+		t.Fatal("governance identity mutation did not invalidate frozen descriptor binding")
 	}
 	missing := descriptor
 	missing.SourceSchemaHash = ""

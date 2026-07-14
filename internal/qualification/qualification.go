@@ -685,6 +685,9 @@ func (request CandidateRegistrationRequest) Verify() error {
 		if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersionV2 || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersionV2 {
 			return errors.New("V2 registration requires V2 frozen candidate and research identity")
 		}
+		if !acceptedIndependencePolicyHash(request.ResearchIdentity.IndependencePolicyHash) {
+			return errors.New("V2 registration requires an accepted independence-policy hash; no accepted hash is registered")
+		}
 	} else if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersion || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersion {
 		return errors.New("V1 registration cannot carry V2 frozen identity")
 	}
@@ -712,6 +715,16 @@ func (request CandidateRegistrationRequest) Verify() error {
 		return errors.New("artifact_integrity_hash mismatch")
 	}
 	return nil
+}
+
+func acceptedIndependencePolicyHash(hash string) bool {
+	// R1P3A recovered no complete concentration authority, so there is no
+	// accepted independence-policy hash to authorize a real V2 registration.
+	// A future governance decision must add an exact immutable hash here.
+	switch hash {
+	default:
+		return false
+	}
 }
 
 func validateResearchIdentity(identity ResearchIdentity) error {
