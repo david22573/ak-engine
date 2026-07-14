@@ -6,6 +6,11 @@
   },
   "alternatives": [
     {
+      "changes_or_replaces_earlier_gate": "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+      "clustering_risks": [
+        "inherits conservative under-clustering risk when distinct context provenance describes one common move",
+        "inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes"
+      ],
       "compatibility_with_minimum_300_independent_units": "compatible: the accepted uncertainty gate counts one accepted V2 independent cluster as one unit; N\u003e=300 remains mandatory and concentration is evaluated per required partition",
       "contract": {
         "metric_version": "ak.engine.concentration.alternative.cluster-count.v1",
@@ -35,22 +40,28 @@
         "rounding_rule": "compare unrounded numerators and denominators; report percentages rounded to six decimal places",
         "zero_denominator_rule": "fail closed; never default missing or zero-denominator concentration to zero"
       },
-      "effect_on_earlier_gate": "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+      "formulas": {
+        "aggregate_cluster": "deduplicated member-event count in five largest clusters / all deduplicated member-event count * 100",
+        "largest_cluster": "largest deduplicated member-event count / all deduplicated member-event count * 100",
+        "symbol": "max fractionally attributed independent-cluster count / independent-cluster count * 100",
+        "temporal": "max independent-cluster count assigned by earliest event to one UTC calendar month / independent-cluster count * 100"
+      },
       "hash": "sha256:a1fd4430d4d98378e8384784be9af38d6a11d95b2ff951b7ee8f21232693864b",
-      "over_under_clustering_risks": [
-        "inherits conservative under-clustering risk when distinct context provenance describes one common move",
-        "inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes"
-      ],
+      "over_conservatism_risk": "large multi-event clusters can fail member-share gates even when each event has small economic weight",
       "rationale": "uses accepted V2 clusters as the primary independence unit and member-event share only for within-cluster dominance, minimizing dependence on return scale",
-      "sensitivity": [
-        "sensitive to cluster splitting/merging and cluster member counts",
-        "insensitive to return magnitude",
-        "fractional multi-symbol attribution prevents one cluster from counting more than once"
-      ],
+      "sensitivity_to_cluster_size": "largest/top-five metrics change directly with deduplicated members per cluster; symbol/temporal metrics change with cluster splitting or merging",
+      "sensitivity_to_sample_size": "percentages are discrete at 1/N cluster increments; N\u003e=300 reduces but does not eliminate threshold granularity",
+      "sensitivity_to_symbol_count": "one cluster is fractionally divided across its distinct symbols, so attribution sums to one regardless of symbol count",
       "status": "UNACCEPTED_GOVERNANCE_ALTERNATIVE",
+      "under_conservatism_risk": "many singleton clusters can pass count-based gates while a small subset carries most economic return",
       "version": "ak.engine.concentration.alternative.cluster-count.v1"
     },
     {
+      "changes_or_replaces_earlier_gate": "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+      "clustering_risks": [
+        "inherits conservative under-clustering risk when distinct context provenance describes one common move",
+        "inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes"
+      ],
       "compatibility_with_minimum_300_independent_units": "compatible: the accepted uncertainty gate counts one accepted V2 independent cluster as one unit; N\u003e=300 remains mandatory and concentration is evaluated per required partition",
       "contract": {
         "metric_version": "ak.engine.concentration.alternative.positive-cluster-return.v1",
@@ -80,23 +91,24 @@
         "rounding_rule": "compare unrounded numerators and denominators; report percentages rounded to six decimal places",
         "zero_denominator_rule": "fail closed; never default missing or zero-denominator concentration to zero"
       },
-      "effect_on_earlier_gate": "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+      "formulas": {
+        "aggregate_cluster": "five largest positive mandatory-cost cluster net returns / total positive cluster net return * 100",
+        "largest_cluster": "largest positive mandatory-cost cluster net return / total positive cluster net return * 100",
+        "symbol": "max fractionally attributed positive mandatory-cost cluster net return / total positive cluster net return * 100",
+        "temporal": "max positive cluster net return assigned by earliest event to one UTC calendar month / total positive cluster net return * 100"
+      },
       "hash": "sha256:38df2191a6ae3c057e6431cf5ebeafdfa2567cd1ede307199ff1ca57903a633e",
-      "over_under_clustering_risks": [
-        "inherits conservative under-clustering risk when distinct context provenance describes one common move",
-        "inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes"
-      ],
+      "over_conservatism_risk": "one legitimately large profitable cluster can fail even when event/cluster counts are broadly diversified",
       "rationale": "measures concentration in the same positive mandatory-cost net-return mass that motivates economic qualification, while retaining accepted V2 clusters as the independent unit",
-      "sensitivity": [
-        "sensitive to cluster splitting/merging and realized positive net-return magnitude",
-        "non-positive clusters do not enter the positive-return denominator",
-        "fractional multi-symbol attribution conserves positive return mass"
-      ],
+      "sensitivity_to_cluster_size": "member count does not affect the metric directly, but cluster splitting/merging reallocates positive return mass",
+      "sensitivity_to_sample_size": "N\u003e=300 remains required, but effective denominator mass can still be concentrated in few positive-return clusters",
+      "sensitivity_to_symbol_count": "positive return is fractionally divided across distinct symbols, conserving return mass while diluting multi-symbol attribution",
       "status": "UNACCEPTED_GOVERNANCE_ALTERNATIVE",
+      "under_conservatism_risk": "excluding zero and negative clusters can hide concentration in gross exposure or loss-producing dependence",
       "version": "ak.engine.concentration.alternative.positive-cluster-return.v1"
     }
   ],
-  "artifact_hash": "sha256:9a97cb950c889213a55e53cb10d9df8dee66d4b753c08de03b226f0d88d0a2d9",
+  "artifact_hash": "sha256:ab69802a774321039b6ef7ac333132f9b248c804bf7b3d675248fee37af46aa0",
   "current_independence": {
     "hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
     "status": "REVISED_UNACCEPTED_PENDING_CONCENTRATION_GOVERNANCE",
@@ -149,7 +161,7 @@
   },
   "resulting_code_commits": {
     "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
-    "engine": "62841533502bd3b5788afa0d74f3cffffc87b87e",
+    "engine": "c20a3125bea7577c56b852a59aeafd88d9dc1f78",
     "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
     "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
   },

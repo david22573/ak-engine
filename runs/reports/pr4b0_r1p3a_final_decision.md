@@ -10,4 +10,4 @@ Next phase: **USER_CONCENTRATION_GOVERNANCE_DECISION_REQUIRED**.
 
 Verification: `PASS`
 
-Artifact hash: `sha256:c9962815b5193ead2753317aee621bfc89bf59dfdc4068f16d3f57ba363cab20`
+Artifact hash: `sha256:7035881f5c00fa5d206bc1aec6ce54b1689aeb9c674a27c05097c3276ab2dde5`

@@ -2,7 +2,7 @@
   "accepted_independence_hash": null,
   "accepted_independence_version": null,
   "accepted_uncertainty_hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
-  "artifact_hash": "sha256:c9962815b5193ead2753317aee621bfc89bf59dfdc4068f16d3f57ba363cab20",
+  "artifact_hash": "sha256:7035881f5c00fa5d206bc1aec6ce54b1689aeb9c674a27c05097c3276ab2dde5",
   "authority_result": "NO_COMPLETE_ACCEPTED_CONCENTRATION_CONTRACT",
   "candidate_rerun_authorized": false,
   "engine_qualification_boundary": "fail closed: no accepted independence-policy hash is registered for V2 candidate registration",
@@ -24,7 +24,7 @@
   },
   "resulting_code_commits": {
     "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
-    "engine": "62841533502bd3b5788afa0d74f3cffffc87b87e",
+    "engine": "c20a3125bea7577c56b852a59aeafd88d9dc1f78",
     "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
     "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
   },

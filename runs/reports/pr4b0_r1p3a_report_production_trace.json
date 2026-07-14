@@ -1,6 +1,6 @@
 {
   "accepted_report_commit": "205cf59555006ce23fc58bc2c73262660a894850",
-  "artifact_hash": "sha256:6f58db8dc16b94ae3122eb157eb70b78de9292d4b63842bdf87fca96b1f529bf",
+  "artifact_hash": "sha256:a889e2faa8ae4e421d03ef4e07ccc8ae2cd757f1777756c56a80bcb7bf515e8d",
   "classification_conclusion": "the accepted report displayed thresholds and copied historical statuses but did not numerically calculate or enforce any of the four metrics",
   "field_traces": [
     {
@@ -86,7 +86,7 @@
   },
   "resulting_code_commits": {
     "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
-    "engine": "62841533502bd3b5788afa0d74f3cffffc87b87e",
+    "engine": "c20a3125bea7577c56b852a59aeafd88d9dc1f78",
     "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
     "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
   },
