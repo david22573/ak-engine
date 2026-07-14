@@ -1,0 +1,58 @@
+{
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "checks": [
+    {
+      "requirement": "exact research identity matching",
+      "result": "PASS"
+    },
+    {
+      "requirement": "exact candidate identity matching",
+      "result": "PASS"
+    },
+    {
+      "requirement": "frozen implementation/configuration/parameter identities",
+      "result": "PASS_WITH_LOCK_BINDING"
+    },
+    {
+      "requirement": "dedicated frozen capability hash",
+      "result": "FAIL_MISSING_DEDICATED_FIELD"
+    },
+    {
+      "requirement": "one-time final-holdout reservation",
+      "result": "FAIL_NO_RESERVATION_PRIMITIVE"
+    },
+    {
+      "requirement": "durable authorization before access",
+      "result": "FAIL_NO_PRE_ACCESS_AUTHORIZATION_GATE"
+    },
+    {
+      "requirement": "atomic exposure consumption",
+      "result": "PASS_AT_RECORD_EXPOSURE"
+    },
+    {
+      "requirement": "replay/conflicting-evidence rejection",
+      "result": "PASS"
+    },
+    {
+      "requirement": "no manual holdout bypass",
+      "result": "FAIL_NOT_PROVABLE_WITHOUT_ACCESS_GATEWAY"
+    }
+  ],
+  "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
+  "future_sequence": [
+    "accept and freeze all Engine/Historian identities",
+    "register exact candidate and research identity",
+    "durably reserve one holdout operation",
+    "authorize the exact operation before any access",
+    "atomically consume authorization with exposure",
+    "reject replay or conflicting evidence"
+  ],
+  "generated_at": "2026-07-13T08:00:00Z",
+  "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
+  "real_state_created": false,
+  "result": "INCOMPATIBLE_EXTENSION_REQUIRED",
+  "rif_commit": "29350344a57e46f064442eada26e9418515990be",
+  "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
+  "schema_version": "ak.engine.pr4b0-r1p-rif-preflight.v1",
+  "synthetic_or_static_only": true
+}
