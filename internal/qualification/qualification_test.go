@@ -278,7 +278,7 @@ func TestFrozenDescriptorIdentityMutationInvalidatesHash(t *testing.T) {
 
 func TestFrozenDescriptorRejectsUnknownSchema(t *testing.T) {
 	descriptor := validFrozenDescriptor(t)
-	descriptor.SchemaVersion = "ak.engine.frozen_candidate.v2"
+	descriptor.SchemaVersion = "ak.engine.frozen_candidate.v999"
 	if err := descriptor.Verify(); err == nil || !strings.Contains(err.Error(), "unsupported") {
 		t.Fatalf("Verify() error = %v", err)
 	}

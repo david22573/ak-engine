@@ -15,13 +15,16 @@ import (
 )
 
 const (
-	InventorySchemaVersion           = "ak.engine.candidate_inventory.v1"
-	ProtocolSchemaVersion            = "ak.engine.candidate_qualification_protocol.v1"
-	QualificationReportSchemaVersion = "ak.engine.candidate_qualification.v1"
-	FrozenDescriptorSchemaVersion    = "ak.engine.frozen_candidate.v1"
-	RegistrationRequestSchemaVersion = "ak.engine.candidate_registration_request.v1"
-	ResearchIdentitySchemaVersion    = "ak.rif.research_identity.v1"
-	RegistrationRequestLabel         = "CANDIDATE_REGISTRATION_REQUEST"
+	InventorySchemaVersion             = "ak.engine.candidate_inventory.v1"
+	ProtocolSchemaVersion              = "ak.engine.candidate_qualification_protocol.v1"
+	QualificationReportSchemaVersion   = "ak.engine.candidate_qualification.v1"
+	FrozenDescriptorSchemaVersion      = "ak.engine.frozen_candidate.v1"
+	FrozenDescriptorSchemaVersionV2    = "ak.engine.frozen_candidate.v2"
+	RegistrationRequestSchemaVersion   = "ak.engine.candidate_registration_request.v1"
+	RegistrationRequestSchemaVersionV2 = "ak.engine.candidate_registration_request.v2"
+	ResearchIdentitySchemaVersion      = "ak.rif.research_identity.v1"
+	ResearchIdentitySchemaVersionV2    = "ak.rif.research_identity.v2"
+	RegistrationRequestLabel           = "CANDIDATE_REGISTRATION_REQUEST"
 )
 
 type EligibilityClassification string
@@ -554,6 +557,10 @@ type FrozenCandidateDescriptor struct {
 	ManifestHash              string    `json:"manifest_hash"`
 	CoveragePolicyVersion     string    `json:"coverage_policy_version"`
 	AvailabilityPolicyVersion string    `json:"availability_policy_version"`
+	IndependencePolicyHash    string    `json:"independence_policy_hash,omitempty"`
+	UncertaintyMethodHash     string    `json:"uncertainty_method_hash,omitempty"`
+	SourceSchemaHash          string    `json:"source_schema_hash,omitempty"`
+	ManifestContractHash      string    `json:"manifest_contract_hash,omitempty"`
 	QualificationReportID     string    `json:"qualification_report_id"`
 	QualificationReportHash   string    `json:"qualification_report_hash"`
 	FrozenAt                  time.Time `json:"frozen_at"`
@@ -565,7 +572,7 @@ func (descriptor FrozenCandidateDescriptor) CanonicalHash() (string, error) {
 }
 
 func (descriptor FrozenCandidateDescriptor) Verify() error {
-	if descriptor.SchemaVersion != FrozenDescriptorSchemaVersion {
+	if descriptor.SchemaVersion != FrozenDescriptorSchemaVersion && descriptor.SchemaVersion != FrozenDescriptorSchemaVersionV2 {
 		return fmt.Errorf("unsupported frozen descriptor schema_version %q", descriptor.SchemaVersion)
 	}
 	for name, value := range map[string]string{
@@ -581,6 +588,12 @@ func (descriptor FrozenCandidateDescriptor) Verify() error {
 		if strings.TrimSpace(value) == "" {
 			return fmt.Errorf("%s is required", name)
 		}
+	}
+	if err := validateGovernanceHashes(descriptor.SchemaVersion == FrozenDescriptorSchemaVersionV2, map[string]string{
+		"independence_policy_hash": descriptor.IndependencePolicyHash, "uncertainty_method_hash": descriptor.UncertaintyMethodHash,
+		"source_schema_hash": descriptor.SourceSchemaHash, "manifest_contract_hash": descriptor.ManifestContractHash,
+	}); err != nil {
+		return err
 	}
 	for name, value := range map[string]string{
 		"implementation_hash": descriptor.ImplementationHash, "configuration_hash": descriptor.ConfigurationHash,
@@ -616,6 +629,10 @@ type ResearchIdentity struct {
 	ManifestHash              string    `json:"manifest_hash"`
 	AvailabilityPolicyVersion string    `json:"availability_policy_version"`
 	CoveragePolicyVersion     string    `json:"coverage_policy_version"`
+	IndependencePolicyHash    string    `json:"independence_policy_hash,omitempty"`
+	UncertaintyMethodHash     string    `json:"uncertainty_method_hash,omitempty"`
+	SourceSchemaHash          string    `json:"source_schema_hash,omitempty"`
+	ManifestContractHash      string    `json:"manifest_contract_hash,omitempty"`
 }
 
 type CandidateImplementationIdentity struct {
@@ -646,7 +663,7 @@ func (request CandidateRegistrationRequest) CanonicalHash() (string, error) {
 }
 
 func (request CandidateRegistrationRequest) Verify() error {
-	if request.SchemaVersion != RegistrationRequestSchemaVersion {
+	if request.SchemaVersion != RegistrationRequestSchemaVersion && request.SchemaVersion != RegistrationRequestSchemaVersionV2 {
 		return fmt.Errorf("unsupported registration request schema_version %q", request.SchemaVersion)
 	}
 	if request.ArtifactLabel != RegistrationRequestLabel {
@@ -664,6 +681,13 @@ func (request CandidateRegistrationRequest) Verify() error {
 	if err := request.FrozenCandidate.Verify(); err != nil {
 		return fmt.Errorf("frozen candidate: %w", err)
 	}
+	if request.SchemaVersion == RegistrationRequestSchemaVersionV2 {
+		if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersionV2 || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersionV2 {
+			return errors.New("V2 registration requires V2 frozen candidate and research identity")
+		}
+	} else if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersion || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersion {
+		return errors.New("V1 registration cannot carry V2 frozen identity")
+	}
 	identity := request.CandidateImplementationIdentity
 	if identity.CandidateID != request.FrozenCandidate.CandidateID || identity.CandidateVersion != request.FrozenCandidate.CandidateVersion || identity.ImplementationHash != request.FrozenCandidate.ImplementationHash || identity.ConfigurationHash != request.FrozenCandidate.ConfigurationHash || identity.ParameterHash != request.FrozenCandidate.ParameterHash || identity.CapabilityHash != request.FrozenCandidate.CapabilityHash {
 		return errors.New("candidate implementation identity does not match frozen descriptor")
@@ -674,7 +698,7 @@ func (request CandidateRegistrationRequest) Verify() error {
 	if err := validateResearchIdentity(request.ResearchIdentity); err != nil {
 		return err
 	}
-	if request.ResearchIdentity.DatasetID != request.FrozenCandidate.DatasetID || request.ResearchIdentity.DatasetVersion != request.FrozenCandidate.DatasetVersion || request.ResearchIdentity.ManifestID != request.FrozenCandidate.ManifestID || request.ResearchIdentity.ManifestHash != request.FrozenCandidate.ManifestHash || request.ResearchIdentity.CoveragePolicyVersion != request.FrozenCandidate.CoveragePolicyVersion || request.ResearchIdentity.AvailabilityPolicyVersion != request.FrozenCandidate.AvailabilityPolicyVersion || !request.ResearchIdentity.ResearchWindowStart.Equal(request.FrozenCandidate.ResearchWindowStart) || !request.ResearchIdentity.ResearchWindowEnd.Equal(request.FrozenCandidate.ResearchWindowEnd) || !request.ResearchIdentity.EvaluationCutoff.Equal(request.FrozenCandidate.EvaluationCutoff) {
+	if request.ResearchIdentity.DatasetID != request.FrozenCandidate.DatasetID || request.ResearchIdentity.DatasetVersion != request.FrozenCandidate.DatasetVersion || request.ResearchIdentity.ManifestID != request.FrozenCandidate.ManifestID || request.ResearchIdentity.ManifestHash != request.FrozenCandidate.ManifestHash || request.ResearchIdentity.CoveragePolicyVersion != request.FrozenCandidate.CoveragePolicyVersion || request.ResearchIdentity.AvailabilityPolicyVersion != request.FrozenCandidate.AvailabilityPolicyVersion || request.ResearchIdentity.IndependencePolicyHash != request.FrozenCandidate.IndependencePolicyHash || request.ResearchIdentity.UncertaintyMethodHash != request.FrozenCandidate.UncertaintyMethodHash || request.ResearchIdentity.SourceSchemaHash != request.FrozenCandidate.SourceSchemaHash || request.ResearchIdentity.ManifestContractHash != request.FrozenCandidate.ManifestContractHash || !request.ResearchIdentity.ResearchWindowStart.Equal(request.FrozenCandidate.ResearchWindowStart) || !request.ResearchIdentity.ResearchWindowEnd.Equal(request.FrozenCandidate.ResearchWindowEnd) || !request.ResearchIdentity.EvaluationCutoff.Equal(request.FrozenCandidate.EvaluationCutoff) {
 		return errors.New("research identity does not match frozen descriptor")
 	}
 	if !validSHA256(request.ArtifactIntegrityHash) {
@@ -691,7 +715,7 @@ func (request CandidateRegistrationRequest) Verify() error {
 }
 
 func validateResearchIdentity(identity ResearchIdentity) error {
-	if identity.SchemaVersion != ResearchIdentitySchemaVersion {
+	if identity.SchemaVersion != ResearchIdentitySchemaVersion && identity.SchemaVersion != ResearchIdentitySchemaVersionV2 {
 		return fmt.Errorf("unsupported research identity schema_version %q", identity.SchemaVersion)
 	}
 	for name, value := range map[string]string{
@@ -706,8 +730,27 @@ func validateResearchIdentity(identity ResearchIdentity) error {
 	if !validSHA256(identity.ManifestHash) {
 		return errors.New("manifest_hash is invalid")
 	}
+	if err := validateGovernanceHashes(identity.SchemaVersion == ResearchIdentitySchemaVersionV2, map[string]string{
+		"independence_policy_hash": identity.IndependencePolicyHash, "uncertainty_method_hash": identity.UncertaintyMethodHash,
+		"source_schema_hash": identity.SourceSchemaHash, "manifest_contract_hash": identity.ManifestContractHash,
+	}); err != nil {
+		return err
+	}
 	if identity.ResearchWindowStart.IsZero() || !identity.ResearchWindowStart.Before(identity.ResearchWindowEnd) || identity.EvaluationCutoff.Before(identity.ResearchWindowEnd) {
 		return errors.New("research identity windows are invalid")
+	}
+	return nil
+}
+
+func validateGovernanceHashes(required bool, hashes map[string]string) error {
+	for name, value := range hashes {
+		if required {
+			if !validSHA256(value) {
+				return fmt.Errorf("%s is required and must be a lowercase SHA-256 digest", name)
+			}
+		} else if value != "" {
+			return fmt.Errorf("%s requires the V2 identity schema", name)
+		}
 	}
 	return nil
 }
