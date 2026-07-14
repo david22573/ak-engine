@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/david22573/ak-engine/internal/preconditions"
 )
 
 const (
@@ -20,10 +22,13 @@ const (
 	QualificationReportSchemaVersion   = "ak.engine.candidate_qualification.v1"
 	FrozenDescriptorSchemaVersion      = "ak.engine.frozen_candidate.v1"
 	FrozenDescriptorSchemaVersionV2    = "ak.engine.frozen_candidate.v2"
+	FrozenDescriptorSchemaVersionV3    = "ak.engine.frozen_candidate.v3"
 	RegistrationRequestSchemaVersion   = "ak.engine.candidate_registration_request.v1"
 	RegistrationRequestSchemaVersionV2 = "ak.engine.candidate_registration_request.v2"
+	RegistrationRequestSchemaVersionV3 = "ak.engine.candidate_registration_request.v3"
 	ResearchIdentitySchemaVersion      = "ak.rif.research_identity.v1"
 	ResearchIdentitySchemaVersionV2    = "ak.rif.research_identity.v2"
+	ResearchIdentitySchemaVersionV3    = "ak.rif.research_identity.v3"
 	RegistrationRequestLabel           = "CANDIDATE_REGISTRATION_REQUEST"
 )
 
@@ -479,30 +484,31 @@ func IndependentClusterCount(observations []EvaluationObservation) int {
 }
 
 type GateEvidence struct {
-	DataIntegrity             bool `json:"data_integrity"`
-	SampleSufficiency         bool `json:"sample_sufficiency"`
-	NetPerformance            bool `json:"net_performance"`
-	DownsideTail              bool `json:"downside_tail"`
-	UncertaintyBound          bool `json:"uncertainty_bound"`
-	OutOfSample               bool `json:"out_of_sample"`
-	WalkForward               bool `json:"walk_forward"`
-	WorstPeriod               bool `json:"worst_period"`
-	SymbolConcentration       bool `json:"symbol_concentration"`
-	TemporalConcentration     bool `json:"temporal_concentration"`
-	RegimeConcentration       bool `json:"regime_concentration"`
-	ParameterNeighborhood     bool `json:"parameter_neighborhood"`
-	ClusterDeduplication      bool `json:"cluster_deduplication"`
-	MissingContextSensitivity bool `json:"missing_context_sensitivity"`
-	CostStress                bool `json:"cost_stress"`
-	LeakageSafety             bool `json:"leakage_safety"`
-	Simplicity                bool `json:"simplicity"`
-	ImplementationComplete    bool `json:"implementation_complete"`
-	PITEvidence               bool `json:"pit_evidence"`
-	HoldoutAuthorized         bool `json:"holdout_authorized"`
+	DataIntegrity             bool                                  `json:"data_integrity"`
+	SampleSufficiency         bool                                  `json:"sample_sufficiency"`
+	NetPerformance            bool                                  `json:"net_performance"`
+	DownsideTail              bool                                  `json:"downside_tail"`
+	UncertaintyBound          bool                                  `json:"uncertainty_bound"`
+	OutOfSample               bool                                  `json:"out_of_sample"`
+	WalkForward               bool                                  `json:"walk_forward"`
+	WorstPeriod               bool                                  `json:"worst_period"`
+	SymbolConcentration       bool                                  `json:"symbol_concentration"`
+	TemporalConcentration     bool                                  `json:"temporal_concentration"`
+	RegimeConcentration       bool                                  `json:"regime_concentration"`
+	ParameterNeighborhood     bool                                  `json:"parameter_neighborhood"`
+	ClusterDeduplication      bool                                  `json:"cluster_deduplication"`
+	MissingContextSensitivity bool                                  `json:"missing_context_sensitivity"`
+	CostStress                bool                                  `json:"cost_stress"`
+	LeakageSafety             bool                                  `json:"leakage_safety"`
+	Simplicity                bool                                  `json:"simplicity"`
+	ImplementationComplete    bool                                  `json:"implementation_complete"`
+	PITEvidence               bool                                  `json:"pit_evidence"`
+	HoldoutAuthorized         bool                                  `json:"holdout_authorized"`
+	ConcentrationV3           *QualificationConcentrationEvidenceV3 `json:"concentration_v3,omitempty"`
 }
 
 func (e GateEvidence) AllPassed() bool {
-	return e.DataIntegrity && e.SampleSufficiency && e.NetPerformance && e.DownsideTail && e.UncertaintyBound && e.OutOfSample && e.WalkForward && e.WorstPeriod && e.SymbolConcentration && e.TemporalConcentration && e.RegimeConcentration && e.ParameterNeighborhood && e.ClusterDeduplication && e.MissingContextSensitivity && e.CostStress && e.LeakageSafety && e.Simplicity && e.ImplementationComplete && e.PITEvidence && e.HoldoutAuthorized
+	return e.DataIntegrity && e.SampleSufficiency && e.NetPerformance && e.DownsideTail && e.UncertaintyBound && e.OutOfSample && e.WalkForward && e.WorstPeriod && e.SymbolConcentration && e.TemporalConcentration && e.RegimeConcentration && e.ParameterNeighborhood && e.ClusterDeduplication && e.MissingContextSensitivity && e.CostStress && e.LeakageSafety && e.Simplicity && e.ImplementationComplete && e.PITEvidence && e.HoldoutAuthorized && EvaluateQualificationConcentrationV3(e.ConcentrationV3).Passed
 }
 
 func QualificationStatus(candidate CandidateRecord, evidence GateEvidence, strongest bool) FinalStatus {
@@ -529,6 +535,10 @@ func QualificationStatus(candidate CandidateRecord, evidence GateEvidence, stron
 	}
 	if !evidence.HoldoutAuthorized {
 		return StatusHoldoutNotAuthorized
+	}
+	concentrationDecision := EvaluateQualificationConcentrationV3(evidence.ConcentrationV3)
+	if concentrationAuthorityReason(concentrationDecision) {
+		return StatusConcentrationAuthorityMissing
 	}
 	if !evidence.AllPassed() {
 		return StatusRejected
@@ -565,6 +575,7 @@ type FrozenCandidateDescriptor struct {
 	UncertaintyMethodHash     string    `json:"uncertainty_method_hash,omitempty"`
 	SourceSchemaHash          string    `json:"source_schema_hash,omitempty"`
 	ManifestContractHash      string    `json:"manifest_contract_hash,omitempty"`
+	GovernanceDecisionHash    string    `json:"governance_decision_hash,omitempty"`
 	QualificationReportID     string    `json:"qualification_report_id"`
 	QualificationReportHash   string    `json:"qualification_report_hash"`
 	FrozenAt                  time.Time `json:"frozen_at"`
@@ -576,7 +587,7 @@ func (descriptor FrozenCandidateDescriptor) CanonicalHash() (string, error) {
 }
 
 func (descriptor FrozenCandidateDescriptor) Verify() error {
-	if descriptor.SchemaVersion != FrozenDescriptorSchemaVersion && descriptor.SchemaVersion != FrozenDescriptorSchemaVersionV2 {
+	if descriptor.SchemaVersion != FrozenDescriptorSchemaVersion && descriptor.SchemaVersion != FrozenDescriptorSchemaVersionV2 && descriptor.SchemaVersion != FrozenDescriptorSchemaVersionV3 {
 		return fmt.Errorf("unsupported frozen descriptor schema_version %q", descriptor.SchemaVersion)
 	}
 	for name, value := range map[string]string{
@@ -593,9 +604,10 @@ func (descriptor FrozenCandidateDescriptor) Verify() error {
 			return fmt.Errorf("%s is required", name)
 		}
 	}
-	if err := validateGovernanceHashes(descriptor.SchemaVersion == FrozenDescriptorSchemaVersionV2, map[string]string{
+	if err := validateGovernanceHashes(descriptor.SchemaVersion, FrozenDescriptorSchemaVersion, FrozenDescriptorSchemaVersionV2, FrozenDescriptorSchemaVersionV3, map[string]string{
 		"independence_policy_hash": descriptor.IndependencePolicyHash, "uncertainty_method_hash": descriptor.UncertaintyMethodHash,
 		"source_schema_hash": descriptor.SourceSchemaHash, "manifest_contract_hash": descriptor.ManifestContractHash,
+		"governance_decision_hash": descriptor.GovernanceDecisionHash,
 	}); err != nil {
 		return err
 	}
@@ -637,6 +649,7 @@ type ResearchIdentity struct {
 	UncertaintyMethodHash     string    `json:"uncertainty_method_hash,omitempty"`
 	SourceSchemaHash          string    `json:"source_schema_hash,omitempty"`
 	ManifestContractHash      string    `json:"manifest_contract_hash,omitempty"`
+	GovernanceDecisionHash    string    `json:"governance_decision_hash,omitempty"`
 }
 
 type CandidateImplementationIdentity struct {
@@ -667,7 +680,7 @@ func (request CandidateRegistrationRequest) CanonicalHash() (string, error) {
 }
 
 func (request CandidateRegistrationRequest) Verify() error {
-	if request.SchemaVersion != RegistrationRequestSchemaVersion && request.SchemaVersion != RegistrationRequestSchemaVersionV2 {
+	if request.SchemaVersion != RegistrationRequestSchemaVersion && request.SchemaVersion != RegistrationRequestSchemaVersionV2 && request.SchemaVersion != RegistrationRequestSchemaVersionV3 {
 		return fmt.Errorf("unsupported registration request schema_version %q", request.SchemaVersion)
 	}
 	if request.ArtifactLabel != RegistrationRequestLabel {
@@ -685,13 +698,22 @@ func (request CandidateRegistrationRequest) Verify() error {
 	if err := request.FrozenCandidate.Verify(); err != nil {
 		return fmt.Errorf("frozen candidate: %w", err)
 	}
-	if request.SchemaVersion == RegistrationRequestSchemaVersionV2 {
+	if request.SchemaVersion == RegistrationRequestSchemaVersionV3 {
+		if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersionV3 || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersionV3 {
+			return errors.New("V3 registration requires V3 frozen candidate and research identity")
+		}
+		if !acceptedIndependencePolicyHash(request.ResearchIdentity.IndependencePolicyHash) {
+			return errors.New("V3 registration requires the exact accepted independence-policy hash")
+		}
+		decision := preconditions.DefaultConcentrationGovernanceDecisionV3()
+		if request.ResearchIdentity.GovernanceDecisionHash != decision.CanonicalDecisionHash {
+			return errors.New("V3 registration requires the exact accepted governance-decision hash")
+		}
+	} else if request.SchemaVersion == RegistrationRequestSchemaVersionV2 {
 		if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersionV2 || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersionV2 {
 			return errors.New("V2 registration requires V2 frozen candidate and research identity")
 		}
-		if !acceptedIndependencePolicyHash(request.ResearchIdentity.IndependencePolicyHash) {
-			return errors.New("V2 registration requires an accepted independence-policy hash; no accepted hash is registered")
-		}
+		return errors.New("V2 registration requires an accepted independence-policy hash; V2 registration remains pending and cannot carry accepted V3 governance authority")
 	} else if request.FrozenCandidate.SchemaVersion != FrozenDescriptorSchemaVersion || request.ResearchIdentity.SchemaVersion != ResearchIdentitySchemaVersion {
 		return errors.New("V1 registration cannot carry V2 frozen identity")
 	}
@@ -705,7 +727,7 @@ func (request CandidateRegistrationRequest) Verify() error {
 	if err := validateResearchIdentity(request.ResearchIdentity); err != nil {
 		return err
 	}
-	if request.ResearchIdentity.DatasetID != request.FrozenCandidate.DatasetID || request.ResearchIdentity.DatasetVersion != request.FrozenCandidate.DatasetVersion || request.ResearchIdentity.ManifestID != request.FrozenCandidate.ManifestID || request.ResearchIdentity.ManifestHash != request.FrozenCandidate.ManifestHash || request.ResearchIdentity.CoveragePolicyVersion != request.FrozenCandidate.CoveragePolicyVersion || request.ResearchIdentity.AvailabilityPolicyVersion != request.FrozenCandidate.AvailabilityPolicyVersion || request.ResearchIdentity.IndependencePolicyHash != request.FrozenCandidate.IndependencePolicyHash || request.ResearchIdentity.UncertaintyMethodHash != request.FrozenCandidate.UncertaintyMethodHash || request.ResearchIdentity.SourceSchemaHash != request.FrozenCandidate.SourceSchemaHash || request.ResearchIdentity.ManifestContractHash != request.FrozenCandidate.ManifestContractHash || !request.ResearchIdentity.ResearchWindowStart.Equal(request.FrozenCandidate.ResearchWindowStart) || !request.ResearchIdentity.ResearchWindowEnd.Equal(request.FrozenCandidate.ResearchWindowEnd) || !request.ResearchIdentity.EvaluationCutoff.Equal(request.FrozenCandidate.EvaluationCutoff) {
+	if request.ResearchIdentity.DatasetID != request.FrozenCandidate.DatasetID || request.ResearchIdentity.DatasetVersion != request.FrozenCandidate.DatasetVersion || request.ResearchIdentity.ManifestID != request.FrozenCandidate.ManifestID || request.ResearchIdentity.ManifestHash != request.FrozenCandidate.ManifestHash || request.ResearchIdentity.CoveragePolicyVersion != request.FrozenCandidate.CoveragePolicyVersion || request.ResearchIdentity.AvailabilityPolicyVersion != request.FrozenCandidate.AvailabilityPolicyVersion || request.ResearchIdentity.IndependencePolicyHash != request.FrozenCandidate.IndependencePolicyHash || request.ResearchIdentity.UncertaintyMethodHash != request.FrozenCandidate.UncertaintyMethodHash || request.ResearchIdentity.SourceSchemaHash != request.FrozenCandidate.SourceSchemaHash || request.ResearchIdentity.ManifestContractHash != request.FrozenCandidate.ManifestContractHash || request.ResearchIdentity.GovernanceDecisionHash != request.FrozenCandidate.GovernanceDecisionHash || !request.ResearchIdentity.ResearchWindowStart.Equal(request.FrozenCandidate.ResearchWindowStart) || !request.ResearchIdentity.ResearchWindowEnd.Equal(request.FrozenCandidate.ResearchWindowEnd) || !request.ResearchIdentity.EvaluationCutoff.Equal(request.FrozenCandidate.EvaluationCutoff) {
 		return errors.New("research identity does not match frozen descriptor")
 	}
 	if !validSHA256(request.ArtifactIntegrityHash) {
@@ -735,13 +757,15 @@ func hasAcceptedIndependencePolicy() bool {
 }
 
 func acceptedIndependencePolicyHashes() []string {
-	// R1P3A recovered no complete concentration authority. A future immutable
-	// governance decision must add an exact accepted hash here.
-	return nil
+	hash, err := preconditions.AcceptedIndependencePolicyHashV3(preconditions.AcceptedIndependencePolicyV3Default())
+	if err != nil {
+		return nil
+	}
+	return []string{hash}
 }
 
 func validateResearchIdentity(identity ResearchIdentity) error {
-	if identity.SchemaVersion != ResearchIdentitySchemaVersion && identity.SchemaVersion != ResearchIdentitySchemaVersionV2 {
+	if identity.SchemaVersion != ResearchIdentitySchemaVersion && identity.SchemaVersion != ResearchIdentitySchemaVersionV2 && identity.SchemaVersion != ResearchIdentitySchemaVersionV3 {
 		return fmt.Errorf("unsupported research identity schema_version %q", identity.SchemaVersion)
 	}
 	for name, value := range map[string]string{
@@ -756,9 +780,10 @@ func validateResearchIdentity(identity ResearchIdentity) error {
 	if !validSHA256(identity.ManifestHash) {
 		return errors.New("manifest_hash is invalid")
 	}
-	if err := validateGovernanceHashes(identity.SchemaVersion == ResearchIdentitySchemaVersionV2, map[string]string{
+	if err := validateGovernanceHashes(identity.SchemaVersion, ResearchIdentitySchemaVersion, ResearchIdentitySchemaVersionV2, ResearchIdentitySchemaVersionV3, map[string]string{
 		"independence_policy_hash": identity.IndependencePolicyHash, "uncertainty_method_hash": identity.UncertaintyMethodHash,
 		"source_schema_hash": identity.SourceSchemaHash, "manifest_contract_hash": identity.ManifestContractHash,
+		"governance_decision_hash": identity.GovernanceDecisionHash,
 	}); err != nil {
 		return err
 	}
@@ -768,14 +793,17 @@ func validateResearchIdentity(identity ResearchIdentity) error {
 	return nil
 }
 
-func validateGovernanceHashes(required bool, hashes map[string]string) error {
+func validateGovernanceHashes(schema, v1, v2, v3 string, hashes map[string]string) error {
 	for name, value := range hashes {
-		if required {
-			if !validSHA256(value) {
-				return fmt.Errorf("%s is required and must be a lowercase SHA-256 digest", name)
+		required := schema == v3 || schema == v2 && name != "governance_decision_hash"
+		if required && !validSHA256(value) {
+			return fmt.Errorf("%s is required and must be a lowercase SHA-256 digest", name)
+		}
+		if !required && value != "" {
+			if schema == v1 {
+				return fmt.Errorf("%s requires a versioned governance identity schema", name)
 			}
-		} else if value != "" {
-			return fmt.Errorf("%s requires the V2 identity schema", name)
+			return fmt.Errorf("%s requires the V3 identity schema", name)
 		}
 	}
 	return nil
