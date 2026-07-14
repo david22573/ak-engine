@@ -1,0 +1,139 @@
+{
+  "alternatives_considered": [
+    "same-symbol-only overlap",
+    "one-hour legacy spacing",
+    "calendar-time blocks",
+    "dynamic correlation regimes"
+  ],
+  "contract": {
+    "version": "ak.engine.independence.downtrend-midvol-relief.v1",
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "minimum_spacing_ms": 14400000,
+    "overlap_horizon_ms": 14400000,
+    "same_symbol_overlap": "cluster when half-open decision horizons overlap",
+    "cross_symbol_common_market_overlap": "cluster overlapping events across symbols sharing the futures-um BTC/ETH market context",
+    "boundary_rule": "an event exactly at the active cluster end starts a new cluster",
+    "ordering_rule": "decision_timestamp ascending, then event_id ascending",
+    "duplicate_rule": "byte-equivalent event IDs are ignored; conflicting duplicate IDs fail",
+    "cluster_id_rule": "sha256(policy_hash, sorted member event IDs)"
+  },
+  "contract_hash": "sha256:68641244ae31bb47dd7752410763308bf8a88362660f9df347362f42fbbb339a",
+  "contract_status": "PROPOSED_NOT_ACCEPTED",
+  "governance_decision_requested": {
+    "allowed_decisions": [
+      "ACCEPT",
+      "REJECT",
+      "REVISE"
+    ],
+    "preselected_decision": null,
+    "unresolved_decisions": [
+      "accept four-hour minimum spacing",
+      "accept blanket cross-symbol BTC/ETH common-market clustering",
+      "accept half-open exact-boundary split",
+      "accept largest-cluster concentration definition"
+    ]
+  },
+  "known_limitations": [
+    "blanket BTC/ETH common-market grouping may over-cluster unrelated cross-symbol events",
+    "a fixed four-hour horizon may not capture slower common shocks",
+    "concentration is descriptive and has no accepted threshold",
+    "policy has not been run against real candidate events in this phase"
+  ],
+  "normative_specification": {
+    "cluster_id_construction": "sha256(policy_hash, sorted member event IDs)",
+    "concentration_calculation": "largest cluster member-event count divided by total member-event count; zero for an empty cluster set",
+    "cross_symbol_common_market_overlap_rule": "cluster overlapping events across symbols sharing the futures-um BTC/ETH market context",
+    "deterministic_ordering_and_tie_breaking": "decision_timestamp ascending, then event_id ascending",
+    "duplicate_handling": "byte-equivalent event IDs are ignored; conflicting duplicate IDs fail",
+    "event_cluster_algorithm": "validate and canonical-deduplicate retained events; sort by decision timestamp then event ID; sweep left-to-right; each event occupies [decision, decision+max(spacing,horizon)); merge transitively while next decision is strictly before active end",
+    "fail_closed_conditions": [
+      "invalid/missing retained-event authority",
+      "missing decision timestamp or required context",
+      "conflicting duplicate event ID",
+      "unsupported version/status",
+      "nonpositive spacing or horizon",
+      "invalid/duplicate cluster ID"
+    ],
+    "horizon_overlap_rule": "all 240-minute decision horizons are half-open and transitively merged",
+    "independent_sample_definition": "one complete cluster is one independent sample; member events never count independently",
+    "minimum_spacing_rule": "14400000 ms; equal to the 240-minute horizon",
+    "same_symbol_overlap_rule": "cluster when half-open decision horizons overlap",
+    "timestamp_boundary_semantics": "an event exactly at the active cluster end starts a new cluster",
+    "versioning_and_mutation_rules": "any normative field mutation creates a new hash/version and requires a fresh governance decision"
+  },
+  "packet_hash": "sha256:3104a1d8a5ed53ce7056f4d2dd280836618c3943c60d6f57dae63cad5d5bdf0f",
+  "rationale": "The four-hour rule groups overlapping outcome horizons and common-market shocks to avoid pseudoreplication; sample-count maximization is not an objective.",
+  "real_candidate_events_used": 0,
+  "schema_version": "ak.engine.independence-governance-packet.v1",
+  "synthetic_test_vectors": [
+    {
+      "expected_clusters": [
+        {
+          "cluster_id": "cluster:1c3f53336e4f5a69196b36691fe4c14e2b1164f17e05de7948b8908be7e2982f",
+          "end": "2030-01-01T07:01:00Z",
+          "member_event_ids": [
+            "event:34af359072c826d12c8d271b7f5ef5aa7fdb4bdd5f0c0d32d26bb1cb416ea223",
+            "event:5b4d4600d120588bdfdbc8f2043905771dacfe4406db54fba23b5df265aa1002",
+            "event:f667e9cc6dfb87722c4d6020f6833d802c597a39c1d89938482882d8b8105805"
+          ],
+          "member_symbols": [
+            "AAAUSDT",
+            "BBBUSDT"
+          ],
+          "start": "2030-01-01T00:01:00Z"
+        },
+        {
+          "cluster_id": "cluster:d1856cef5b6dda5d114c3e4108aac92a1078b1a6fe13579d97008e6c0d0d2172",
+          "end": "2030-01-01T11:01:00Z",
+          "member_event_ids": [
+            "event:15c2ae1732dc57e6a0613f5accebf4fd54fa7c433d39e13321eb6d8bff8cc108"
+          ],
+          "member_symbols": [
+            "AAAUSDT"
+          ],
+          "start": "2030-01-01T07:01:00Z"
+        },
+        {
+          "cluster_id": "cluster:10ba4e056d9d52c567d10e3bd3bd65b548978d13f206743096a9c0850158980d",
+          "end": "2030-01-01T15:01:00Z",
+          "member_event_ids": [
+            "event:01c894e4af49d0bb2708db1bc17d5d18c7a212ad8b680a8e0ec71c623eb76628"
+          ],
+          "member_symbols": [
+            "AAAUSDT"
+          ],
+          "start": "2030-01-01T11:01:00Z"
+        }
+      ],
+      "expected_concentration": 0.6,
+      "inputs": [
+        {
+          "decision_timestamp": "2030-01-01T00:01:00Z",
+          "event_id": "event:f667e9cc6dfb87722c4d6020f6833d802c597a39c1d89938482882d8b8105805",
+          "symbol": "AAAUSDT"
+        },
+        {
+          "decision_timestamp": "2030-01-01T02:01:00Z",
+          "event_id": "event:34af359072c826d12c8d271b7f5ef5aa7fdb4bdd5f0c0d32d26bb1cb416ea223",
+          "symbol": "AAAUSDT"
+        },
+        {
+          "decision_timestamp": "2030-01-01T03:01:00Z",
+          "event_id": "event:5b4d4600d120588bdfdbc8f2043905771dacfe4406db54fba23b5df265aa1002",
+          "symbol": "BBBUSDT"
+        },
+        {
+          "decision_timestamp": "2030-01-01T07:01:00Z",
+          "event_id": "event:15c2ae1732dc57e6a0613f5accebf4fd54fa7c433d39e13321eb6d8bff8cc108",
+          "symbol": "AAAUSDT"
+        },
+        {
+          "decision_timestamp": "2030-01-01T11:01:00Z",
+          "event_id": "event:01c894e4af49d0bb2708db1bc17d5d18c7a212ad8b680a8e0ec71c623eb76628",
+          "symbol": "AAAUSDT"
+        }
+      ],
+      "name": "transitive overlap, exact boundary, and input-order invariance"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "alternatives_considered": [
+    "analytical cluster-robust interval",
+    "studentized cluster bootstrap",
+    "BCa cluster bootstrap",
+    "moving-block bootstrap"
+  ],
+  "block_construction": "one complete independent cluster is one indivisible block",
+  "confidence_level": 0.95,
+  "contract": {
+    "version": "ak.engine.uncertainty.cluster-bootstrap.v1",
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "estimator": "arithmetic mean of one frozen-cost net observation per independent cluster",
+    "confidence_level": 0.95,
+    "sampling_unit": "independent cluster",
+    "resampling_method": "nonparametric cluster bootstrap with replacement",
+    "block_construction": "one complete independent cluster is one indivisible block",
+    "seed": 5787745930007687504,
+    "number_of_resamples": 4096,
+    "interval_type": "one-sided lower percentile bound",
+    "treatment_of_costs": "input observations must already apply the frozen declared cost vector",
+    "invalid_observation_rule": "missing IDs, non-finite values, and conflicting duplicate cluster IDs fail closed; exact duplicates are deduplicated",
+    "deterministic_output_rule": "sort by cluster ID; SplitMix64 PRNG; ascending replicate means; floor((1-confidence)*B) index"
+  },
+  "contract_hash": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
+  "contract_status": "PROPOSED_NOT_ACCEPTED",
+  "degenerate_samples": "fewer than two unique clusters fail; identical finite observations are valid and yield a degenerate point interval",
+  "deterministic_serialization": "canonical JSON field names plus sorted cluster IDs; result records method hash/status, cluster count, estimator, bound, confidence, seed, and B",
+  "estimand": "expected frozen-cost net basis-point outcome per independent cluster for the exact preregistered candidate and partition",
+  "expectancy_definition": "arithmetic mean of exactly one net observation per independent cluster",
+  "governance_decision_requested": {
+    "allowed_decisions": [
+      "ACCEPT",
+      "REJECT",
+      "REVISE"
+    ],
+    "preselected_decision": null,
+    "unresolved_decisions": [
+      "accept percentile rather than studentized/BCa interval",
+      "accept 4096 resamples",
+      "accept fixed seed",
+      "accept no stratification",
+      "accept minimum of two clusters"
+    ]
+  },
+  "hash_and_version_rules": "any normative mutation changes the contract hash and requires a new version/governance decision",
+  "interval_construction": "one-sided lower percentile at floor((1-confidence_level)*B), clamped to valid replicate indices",
+  "missing_or_invalid_records": "missing cluster IDs, non-finite values, or conflicting duplicate IDs fail closed; exact duplicates deduplicate",
+  "net_cost_treatment": "each input is net of the complete frozen fee/spread/slippage/funding/adverse-selection cost vector before resampling",
+  "number_of_resamples": 4096,
+  "packet_hash": "sha256:20b49127e87dd4c89ee6224de6e7d47dae5c1a803ee84e50c2a20d7e63d42703",
+  "procedure": "sort unique clusters by ID; for each replicate draw n cluster observations independently with replacement; compute replicate mean; sort all replicate means",
+  "real_candidate_observations_used": 0,
+  "relationship_to_independence_contract": "cluster IDs and membership must be produced by the exact accepted independence contract hash; events are never resampled directly",
+  "replacement_rules": "sampling is with replacement within every replicate; each replicate contains exactly n draws from n unique clusters",
+  "resampling_unit": "independent cluster",
+  "schema_version": "ak.engine.uncertainty-governance-packet.v1",
+  "seed_derivation": "fixed versioned uint64 constant 0x5052344230523150; any seed change mutates the contract hash",
+  "small_sample_limitations": [
+    "percentile coverage can be poor with few clusters",
+    "the empirical distribution is coarse",
+    "no studentization or bias correction",
+    "stratification is absent",
+    "results remain conditional on the accepted clustering and frozen cost model"
+  ],
+  "statistical_rationale": "cluster resampling preserves the declared dependence unit and provides a deterministic lower uncertainty bound without assuming event-level independence",
+  "stratification": "none",
+  "synthetic_test_vectors": [
+    {
+      "expected_output": {
+        "method_version": "ak.engine.uncertainty.cluster-bootstrap.v1",
+        "method_hash": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
+        "method_status": "PROPOSED_NOT_ACCEPTED",
+        "cluster_count": 5,
+        "estimator": 3,
+        "lower_bound": 2,
+        "confidence_level": 0.95,
+        "seed": 5787745930007687504,
+        "number_of_resamples": 4096
+      },
+      "inputs": [
+        {
+          "cluster_id": "synthetic-a",
+          "net_value": 1
+        },
+        {
+          "cluster_id": "synthetic-b",
+          "net_value": 2
+        },
+        {
+          "cluster_id": "synthetic-c",
+          "net_value": 3
+        },
+        {
+          "cluster_id": "synthetic-d",
+          "net_value": 4
+        },
+        {
+          "cluster_id": "synthetic-e",
+          "net_value": 5
+        }
+      ],
+      "name": "five positive synthetic clusters"
+    },
+    {
+      "expected": "FAIL_CLOSED",
+      "name": "conflicting duplicate"
+    },
+    {
+      "expected": "FAIL_CLOSED",
+      "name": "single cluster"
+    }
+  ]
+}

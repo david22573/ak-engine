@@ -1,0 +1,119 @@
+{
+  "availability_authority": {
+    "artifact_file_hash": "sha256:3bef189cdb93e14dee5b764e8d6301de7589e82455b7c997b62855dcb7fa2064",
+    "authority_hash": "sha256:2e6808b21aeedcb51a259600b13ab5284086c3a913430f724d9967ad27f471ce",
+    "gap_artifact_file_hash": "sha256:5a6bbbb8b0e9ae2bc3cec3ffb17b662bbd507eaf41d1aecd399f0abda524b888",
+    "gap_hash": "sha256:e9f80fb14679bc8078543efc43f5d2d4612d5f400dd28065527920e979f67f90",
+    "status_counts": {
+      "AVAILABILITY_AUTHORITY_CONFLICT": 0,
+      "AVAILABILITY_AUTHORITY_MISSING": 324,
+      "AVAILABILITY_AUTHORITY_PARTIAL": 0,
+      "AVAILABILITY_AUTHORITY_VERIFIED": 0
+    },
+    "timestamps_synthesized": 0
+  },
+  "candidate_executions": 0,
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "candidate_outcome_calculations": 0,
+  "engine_starting_commit": "0d70c068898c91521e391b65ee4299a53b9cf394",
+  "historian_starting_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
+  "holdout_content_reads": 0,
+  "identity_terminology_audit": {
+    "classification": "IMMUTABLE_PHYSICAL_ARCHIVE_GAP_IDENTITY",
+    "pit_valid_research_evidence": false,
+    "prior_reports_requiring_correction": [],
+    "prior_reports_reviewed": [
+      "pr4b0_r1p_preconditions_report",
+      "pr4b0_r1p_partition_eligibility",
+      "pr4b0_r1p_final_decision"
+    ],
+    "reason": "prior reports already state PIT evidence is incomplete; this packet adds the explicit non-PIT classification"
+  },
+  "physical_archive": {
+    "artifact_file_hash": "sha256:4fd1d345239e5d1929fa3477d219be9d2dc4a111bdd6a693a868ba7832ef87a2",
+    "classification": "IMMUTABLE_PHYSICAL_ARCHIVE_GAP_IDENTITY",
+    "dataset_id": "ak-historian-candles-futures-um-1m-pr4b0-r1p",
+    "dataset_version": "sha256:afb3b656d6d97d61e8a10941e0553a90875c52dc8315b7e8e6f4de8ca6a725d2",
+    "identity_hash": "sha256:24163d84065594fc9d6196f98b1053ea62d0d5e619fce037f6f466ed10169e1d",
+    "manifest_hash": "sha256:2bdad377474ea79b830b54aab32df45d43f07070fbc4e8e4b39c41634b12e515",
+    "manifest_id": "pr4b0-r1p-pit-gap-2023-2025-v1",
+    "provable_pit_coverage": false,
+    "snapshot_count": 324
+  },
+  "real_rif_state_created": false,
+  "report_hash": "sha256:def2e0913392636d1072e22d78199ef7145183d8dac422918aaeb144355bed23",
+  "rif_starting_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
+  "schema_version": "ak.engine.pr4b0-r1p2-authority-report.v1",
+  "source_schema_authority": {
+    "artifact_file_hash": "sha256:bad35d6fd8fc8245bb3efa1ff290960af8f50eb0af88c7af937f966e65b69be3",
+    "authority_hash": "sha256:4ff5ef49773e3d9a65d50e64d3a7d3ecc6a50d32699c8af1de41ed3518cc99c5",
+    "failed_count": 0,
+    "fingerprint": "sha256:eb5cc448b9333dd76a51fea226833f054d200c2c22a0b8ff3a4ba21905f7c1be",
+    "mixed_schema_versions": false,
+    "validated_count": 324,
+    "version": "ak-historian.source-candle.binance-futures-um-1m.v1"
+  },
+  "status": "AUTHORITY_AND_GOVERNANCE_PACKET_READY",
+  "symbol_universe": {
+    "authoritative_source": "accepted candidate inventory plus exact implementation source and Historian bound gap identity",
+    "capability_contract": {
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "candidate_version": "v1",
+      "context_symbols": [
+        "BTCUSDT",
+        "ETHUSDT"
+      ],
+      "evaluation_horizon": "240m",
+      "implementation_hash": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+      "input_interval": "1m",
+      "primary_symbols": [
+        "ADAUSDT",
+        "AVAXUSDT",
+        "BNBUSDT",
+        "DOGEUSDT",
+        "ETHUSDT",
+        "LINKUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+      ],
+      "required_decision_inputs": [
+        "RealizedVol60 mid bucket",
+        "downtrend classification",
+        "BTCUSDT 60-minute context return",
+        "ETHUSDT 60-minute context return"
+      ],
+      "schema_version": "ak.engine.capability.downtrend-midvol-relief.v1"
+    },
+    "capability_contract_hash": "sha256:cf3d0bd3773d03118b4a52083ae46e0043ca7140b75c893144c7c0ab0c7796d6",
+    "context_symbols": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "primary_context_overlap": [
+      "ETHUSDT"
+    ],
+    "primary_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ],
+    "unique_symbol_count": 9,
+    "unique_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "BTCUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ]
+  },
+  "validation_content_reads": 0
+}

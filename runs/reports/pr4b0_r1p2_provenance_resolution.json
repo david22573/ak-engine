@@ -1,0 +1,68 @@
+{
+  "schema_version": "ak.engine.pr4b0-r1p2-provenance-resolution.v1",
+  "entries": [
+    {
+      "artifact_path": "runs/reports/phase12_4_downtrend_midvol_relief_near_miss_audit.json",
+      "sha256": "sha256:df4857fa908d3ad044092c84c0d65474ab5b2f7d339a0e571ad4974d42b7a38b",
+      "git_blob_id": "6dd463f07e175f6c74ad4d0cbdac9c119e443fe3",
+      "source_commit": null,
+      "earliest_known_appearance": "2026-07-14T01:00:22.096Z",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "possible_exposure_ranges": [
+        {
+          "start": "2024-01-01T00:00:00Z",
+          "end": "2026-01-01T00:00:00Z"
+        }
+      ],
+      "information_categories": [
+        "aggregate outcome summaries",
+        "event/sample summaries",
+        "symbol/month/quarter breakdowns",
+        "worst-period and concentration summaries"
+      ],
+      "byte_identical_paths": [
+        "runs/reports/phase12_4_downtrend_midvol_relief_near_miss_audit.json"
+      ],
+      "provenance_edges": [
+        "prior exposure ledger -\u003e [2024-01-01,2026-01-01) DEVELOPMENT-only",
+        "runs/reports/phase12_4_downtrend_midvol_relief_near_miss_audit.json -\u003e sha256:df4857fa908d3ad044092c84c0d65474ab5b2f7d339a0e571ad4974d42b7a38b",
+        "sha256:df4857fa908d3ad044092c84c0d65474ab5b2f7d339a0e571ad4974d42b7a38b -\u003e prior exposure ledger"
+      ],
+      "resolution": "UNTRUSTED_PROVENANCE_TREATED_AS_EXPOSED",
+      "validation_eligible": false,
+      "holdout_eligible": false
+    },
+    {
+      "artifact_path": "runs/reports/phase12_5_candidate_risk_filter_design.json",
+      "sha256": "sha256:4c88c2bac766281a8f98b33e34e4a8ad3557dbb2f8730139ff56785056261596",
+      "git_blob_id": "f13cdd881f033ec7f552c1034bc8c72ea5348eb8",
+      "source_commit": null,
+      "earliest_known_appearance": "2026-07-14T01:00:22.096Z",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "possible_exposure_ranges": [
+        {
+          "start": "2024-01-01T00:00:00Z",
+          "end": "2026-01-01T00:00:00Z"
+        }
+      ],
+      "information_categories": [
+        "aggregate outcome summaries",
+        "parameter/filter comparisons",
+        "period behavior",
+        "variant exclusions"
+      ],
+      "byte_identical_paths": [
+        "runs/reports/phase12_5_candidate_risk_filter_design.json"
+      ],
+      "provenance_edges": [
+        "prior exposure ledger -\u003e [2024-01-01,2026-01-01) DEVELOPMENT-only",
+        "runs/reports/phase12_5_candidate_risk_filter_design.json -\u003e sha256:4c88c2bac766281a8f98b33e34e4a8ad3557dbb2f8730139ff56785056261596",
+        "sha256:4c88c2bac766281a8f98b33e34e4a8ad3557dbb2f8730139ff56785056261596 -\u003e prior exposure ledger"
+      ],
+      "resolution": "UNTRUSTED_PROVENANCE_TREATED_AS_EXPOSED",
+      "validation_eligible": false,
+      "holdout_eligible": false
+    }
+  ],
+  "resolution_hash": "sha256:099f40d80e4626bfadfa429fae49e1a5dde16409b43fe816f40273b2f4cd0bec"
+}
