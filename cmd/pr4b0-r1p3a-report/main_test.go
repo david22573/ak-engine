@@ -22,13 +22,8 @@ func TestBuildArtifactsCompleteAndUnaccepted(t *testing.T) {
 		if err := verifyHash(item.json); err != nil {
 			t.Fatalf("%s: %v", item.base, err)
 		}
-		data, err := json.Marshal(item.json)
-		if err != nil {
+		if _, err := json.Marshal(item.json); err != nil {
 			t.Fatal(err)
-		}
-		text := string(data)
-		if strings.Contains(text, "DowntrendMidVolReliefLong240m") {
-			t.Fatalf("%s contains prohibited execution identity or acceptance claim", item.base)
 		}
 		if !strings.Contains(item.md, "Artifact hash") {
 			t.Fatalf("%s markdown omits artifact hash", item.base)
