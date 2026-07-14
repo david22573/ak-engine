@@ -168,8 +168,8 @@ func TestQualificationRequiresEveryMandatoryGate(t *testing.T) {
 	candidate.EligibilityClassification = ClassificationQualificationCandidate
 	candidate.ImplementationReproducible = true
 	all := allGateEvidence()
-	if got := QualificationStatus(candidate, all, false); got != StatusQualified {
-		t.Fatalf("all gates status = %s", got)
+	if got := QualificationStatus(candidate, all, false); got != StatusConcentrationAuthorityMissing {
+		t.Fatalf("report-only all-pass evidence bypassed concentration authority: %s", got)
 	}
 	mutations := []struct {
 		name string

@@ -51,6 +51,7 @@ const (
 	StatusPITEvidenceMissing            FinalStatus = "PIT_EVIDENCE_MISSING"
 	StatusImplementationNotReproducible FinalStatus = "IMPLEMENTATION_NOT_REPRODUCIBLE"
 	StatusHoldoutNotAuthorized          FinalStatus = "HOLDOUT_NOT_AUTHORIZED"
+	StatusConcentrationAuthorityMissing FinalStatus = "CONCENTRATION_AUTHORITY_MISSING"
 )
 
 type EvidenceReference struct {
@@ -532,6 +533,9 @@ func QualificationStatus(candidate CandidateRecord, evidence GateEvidence, stron
 	if !evidence.AllPassed() {
 		return StatusRejected
 	}
+	if !hasAcceptedIndependencePolicy() {
+		return StatusConcentrationAuthorityMissing
+	}
 	return StatusQualified
 }
 
@@ -718,13 +722,22 @@ func (request CandidateRegistrationRequest) Verify() error {
 }
 
 func acceptedIndependencePolicyHash(hash string) bool {
-	// R1P3A recovered no complete concentration authority, so there is no
-	// accepted independence-policy hash to authorize a real V2 registration.
-	// A future governance decision must add an exact immutable hash here.
-	switch hash {
-	default:
-		return false
+	for _, accepted := range acceptedIndependencePolicyHashes() {
+		if hash == accepted {
+			return true
+		}
 	}
+	return false
+}
+
+func hasAcceptedIndependencePolicy() bool {
+	return len(acceptedIndependencePolicyHashes()) != 0
+}
+
+func acceptedIndependencePolicyHashes() []string {
+	// R1P3A recovered no complete concentration authority. A future immutable
+	// governance decision must add an exact accepted hash here.
+	return nil
 }
 
 func validateResearchIdentity(identity ResearchIdentity) error {

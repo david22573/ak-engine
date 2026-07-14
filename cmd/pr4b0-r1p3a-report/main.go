@@ -212,8 +212,15 @@ func buildArtifacts(verification, engineCommit, rifCommit string) ([]artifact, e
 	finalDecision["pending_independence_version"] = preconditions.RevisedIndependencePolicyVersion
 	finalDecision["pending_independence_hash"] = pendingIndependenceHash
 	finalDecision["accepted_uncertainty_hash"] = acceptedUncertaintyHash
-	finalDecision["engine_qualification_boundary"] = "fail closed: no accepted independence-policy hash is registered for V2 candidate registration"
+	finalDecision["engine_qualification_boundary"] = "fail closed: all-pass report booleans return CONCENTRATION_AUTHORITY_MISSING, and no accepted independence-policy hash is registered for V2 candidate registration"
 	finalDecision["rif_real_lifecycle_boundary"] = "fail closed: persistent V2 registration requires an explicitly configured governance verifier and rejects pending/unapproved identity without state mutation"
+	finalDecision["fail_closed_proofs"] = map[string]any{
+		"report_only_all_pass_cannot_qualify":                       "PASS",
+		"missing_or_zero_denominator_cannot_default_to_zero":        "PASS",
+		"missing_or_mutated_threshold_cannot_default_to_pass":       "PASS",
+		"legacy_rejected_near_miss_and_probe_labels_cannot_upgrade": "PASS",
+		"pending_v2_registration_cannot_reach_rif":                  "PASS",
+	}
 	finalDecision["prospective_collection_authorized"] = false
 	finalDecision["candidate_rerun_authorized"] = false
 	finalDecision["next_phase"] = "USER_CONCENTRATION_GOVERNANCE_DECISION_REQUIRED"
