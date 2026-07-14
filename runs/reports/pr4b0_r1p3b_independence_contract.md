@@ -1,7 +1,9 @@
 # PR4B0-R1P3B Independence Contract
 
-Identity: `ak.engine.independence.downtrend-midvol-relief.v3`  
-Status: **ACCEPTED**  
+Identity: `ak.engine.independence.downtrend-midvol-relief.v3`
+
+Status: **ACCEPTED**
+
 Hash: `sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f`
 
 V3 preserves the V2 240-minute half-open UTC interval, same-symbol transitive overlap, cross-symbol common-market episode rules, deterministic deduplication/order, and canonical cluster identity, then binds the accepted structural concentration authority.

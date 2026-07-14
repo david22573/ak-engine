@@ -1,6 +1,7 @@
 # PR4B0-R1P3B Qualification Enforcement
 
-Accepted policy: `ak.engine.independence.downtrend-midvol-relief.v3`  
+Accepted policy: `ak.engine.independence.downtrend-midvol-relief.v3`
+
 Hash: `sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f`
 
 All four numeric metrics, positive denominators, the accepted V3 version/hash, and the governance-decision hash are mandatory per DEVELOPMENT, VALIDATION, applicable mandatory walk-forward evaluation slice, and FINAL_HOLDOUT. Combined diagnostics cannot rescue a partition. Report-level booleans are non-authoritative; numeric shares are recomputed exactly.
