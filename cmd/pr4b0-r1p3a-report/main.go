@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -79,14 +80,19 @@ func buildArtifacts(verification, engineCommit, rifCommit string) ([]artifact, e
 		}
 		alternatives = append(alternatives, map[string]any{
 			"version": policy.MetricVersion, "hash": hash, "status": policy.Status, "contract": policy,
+			"formulas":  alternativeFormulas(policy.Basis),
 			"rationale": alternativeRationale(policy.Basis),
-			"over_under_clustering_risks": []string{
+			"clustering_risks": []string{
 				"inherits conservative under-clustering risk when distinct context provenance describes one common move",
 				"inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes",
 			},
-			"sensitivity": alternativeSensitivity(policy.Basis),
+			"over_conservatism_risk":                           alternativeRisk(policy.Basis, true),
+			"under_conservatism_risk":                          alternativeRisk(policy.Basis, false),
+			"sensitivity_to_cluster_size":                      alternativeSensitivity(policy.Basis)["cluster_size"],
+			"sensitivity_to_symbol_count":                      alternativeSensitivity(policy.Basis)["symbol_count"],
+			"sensitivity_to_sample_size":                       alternativeSensitivity(policy.Basis)["sample_size"],
 			"compatibility_with_minimum_300_independent_units": "compatible: the accepted uncertainty gate counts one accepted V2 independent cluster as one unit; N>=300 remains mandatory and concentration is evaluated per required partition",
-			"effect_on_earlier_gate":                           "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+			"changes_or_replaces_earlier_gate":                 "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
 		})
 	}
 
@@ -128,6 +134,11 @@ func buildArtifacts(verification, engineCommit, rifCommit string) ([]artifact, e
 		"archive_manifest_result":          "no Phase 10.3B, fragile-leads, concentration, or cluster report path",
 	}
 	archaeology["source_records"] = archaeologySourceRecords()
+	completeInventory, err := completeConcentrationPathInventory()
+	if err != nil {
+		return nil, err
+	}
+	archaeology["complete_path_inventory"] = completeInventory
 	archaeology["conclusion"] = "no complete accepted formula-plus-denominator authority exists for any of the four required metrics; Path 2 is mandatory"
 	if err := setHash(archaeology); err != nil {
 		return nil, err
@@ -249,22 +260,106 @@ func source(path, commit, blob, digest, relationship, metric, threshold, numerat
 	}
 }
 
+func completeConcentrationPathInventory() ([]map[string]any, error) {
+	paths := []string{
+		"cmd/pr4b0-r1p-report/main.go",
+		"cmd/pr4b0-r1p2-report/main.go",
+		"cmd/pr4b0-r1p2-report/main_test.go",
+		"cmd/pr4b0-r1p3-report/main.go",
+		"internal/app/analyze_compact_robustness.go",
+		"internal/app/analyze_compact_robustness_test.go",
+		"internal/app/analyze_fragile_leads.go",
+		"internal/app/evaluate_alpha_baselines_multisymbol_test.go",
+		"internal/app/evaluate_funding_candidate_deep.go",
+		"internal/app/funding_aggregation.go",
+		"internal/app/pr4b0_candidate_qualification.go",
+		"internal/app/testdata/phase10_4_price_regime_branch_closure.json",
+		"internal/app/testdata/phase10_4_research_guardrails.md",
+		"internal/preconditions/clustering.go",
+		"internal/preconditions/independence_v2.go",
+		"internal/preconditions/independence_v2_test.go",
+		"internal/preconditions/preconditions_test.go",
+		"internal/qualification/qualification.go",
+		"internal/qualification/qualification_test.go",
+		"progress.md",
+		"runs/reports/pr4b0_candidate_inventory.json",
+		"runs/reports/pr4b0_candidate_inventory.md",
+		"runs/reports/pr4b0_candidate_qualification.json",
+		"runs/reports/pr4b0_candidate_qualification.md",
+		"runs/reports/pr4b0_r1_evidence_supplement.json",
+		"runs/reports/pr4b0_r1_evidence_supplement.md",
+		"runs/reports/pr4b0_r1_final_decision.json",
+		"runs/reports/pr4b0_r1_final_decision.md",
+		"runs/reports/pr4b0_r1_research_protocol.json",
+		"runs/reports/pr4b0_r1_research_protocol.md",
+		"runs/reports/pr4b0_r1_variant_results.json",
+		"runs/reports/pr4b0_r1_variant_results.md",
+		"runs/reports/pr4b0_r1p2_independence_governance_packet.json",
+		"runs/reports/pr4b0_r1p2_independence_governance_packet.md",
+		"runs/reports/pr4b0_r1p2_provenance_resolution.json",
+		"runs/reports/pr4b0_r1p3_final_decision.json",
+		"runs/reports/pr4b0_r1p3_final_decision.md",
+		"runs/reports/pr4b0_r1p3_governance_report.json",
+		"runs/reports/pr4b0_r1p3_governance_report.md",
+		"runs/reports/pr4b0_r1p3_independence_decision.json",
+		"runs/reports/pr4b0_r1p3_independence_decision.md",
+		"runs/reports/pr4b0_r1p_prior_exposure_ledger.json",
+	}
+	records := make([]map[string]any, 0, len(paths))
+	for _, path := range paths {
+		blob, digest, err := gitObjectIdentity(engineStart, path)
+		if err != nil {
+			return nil, err
+		}
+		records = append(records, source(path, engineStart, blob, digest,
+			"complete concentration-bearing path inventory at the accepted Engine starting commit; primary semantic records control authority classification",
+			"concentration-related support, mirror, test, generator, protocol, or report", "NO_INDEPENDENT_THRESHOLD_INFERENCE",
+			"SEE_PRIMARY_SEMANTIC_RECORD_IF_APPLICABLE", "SEE_PRIMARY_SEMANTIC_RECORD_IF_APPLICABLE",
+			"PATH_SPECIFIC", "accepted start snapshot", "no authority inferred from path membership alone", false,
+			"HISTORICAL_SUPPORT_ONLY", "THRESHOLD_NOT_RECOVERABLE"))
+	}
+	return records, nil
+}
+
+func gitObjectIdentity(commit, path string) (string, string, error) {
+	blobBytes, err := exec.Command("git", "rev-parse", commit+":"+path).Output()
+	if err != nil {
+		return "", "", fmt.Errorf("resolve Git blob for %s: %w", path, err)
+	}
+	content, err := exec.Command("git", "show", commit+":"+path).Output()
+	if err != nil {
+		return "", "", fmt.Errorf("read Git blob for %s: %w", path, err)
+	}
+	digest := sha256.Sum256(content)
+	return strings.TrimSpace(string(blobBytes)), "sha256:" + hex.EncodeToString(digest[:]), nil
+}
+
 func authorityRows() []map[string]any {
 	return []map[string]any{
-		metricRow("symbol_concentration", "ACCEPTED_AUTHORITY_PARTIAL", "50% maximum with <= pass", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "generic required boolean only", "NOT_RECOVERED", []string{"numerator", "denominator", "aggregation unit", "symbol attribution", "deduplication/clustering stage", "rounding", "partition/combined scope"}),
-		metricRow("temporal_concentration", "ACCEPTED_AUTHORITY_PARTIAL", "50% maximum with <= pass", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "generic required boolean only", "NOT_RECOVERED", []string{"numerator", "denominator", "aggregation unit", "bucket type", "timezone", "empty bucket handling", "deduplication/clustering stage", "rounding", "partition/combined scope"}),
-		metricRow("largest_cluster_concentration", "NO_AUTHORITY_FOUND", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "not an accepted report gate", "NOT_RECOVERED", []string{"formula", "numerator", "denominator", "unit", "cluster identity binding", "threshold", "operator", "rounding", "failure semantics", "scope"}),
-		metricRow("aggregate_cluster_concentration", "NO_AUTHORITY_FOUND", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED", "not an accepted report gate", "NOT_RECOVERED", []string{"formula", "top-N definition", "tie handling", "numerator", "denominator", "unit", "cluster identity binding", "threshold", "operator", "rounding", "failure semantics", "scope"}),
+		metricRow("symbol_concentration", "ACCEPTED_AUTHORITY_PARTIAL", "50%", "<=", "generic required boolean only", []string{"numerator", "denominator", "counting unit", "symbol attribution", "deduplication/clustering stage", "rounding", "partition/combined scope"}),
+		metricRow("temporal_concentration", "ACCEPTED_AUTHORITY_PARTIAL", "50%", "<=", "generic required boolean only", []string{"numerator", "denominator", "counting unit", "bucket type", "timezone", "empty bucket handling", "deduplication/clustering stage", "rounding", "partition/combined scope"}),
+		metricRow("largest_cluster_concentration", "NO_AUTHORITY_FOUND", "NOT_RECOVERED", "NOT_RECOVERED", "not an accepted report gate", []string{"formula", "numerator", "denominator", "counting unit", "cluster identity binding", "threshold", "operator", "rounding", "failure semantics", "scope"}),
+		metricRow("aggregate_cluster_concentration", "NO_AUTHORITY_FOUND", "NOT_RECOVERED", "NOT_RECOVERED", "not an accepted report gate", []string{"formula", "top-N definition", "tie handling", "numerator", "denominator", "counting unit", "cluster identity binding", "threshold", "operator", "rounding", "failure semantics", "scope"}),
 	}
 }
 
-func metricRow(metric, classification, threshold, numerator, denominator, unit, bucket, timezone, empty, stage, failure, scope string, missing []string) map[string]any {
+func metricRow(metric, status, threshold, operator, failure string, missing []string) map[string]any {
+	sourceCommit := acceptedGeneratorCommit
+	sourcePath := "internal/app/pr4b0_candidate_qualification.go"
+	sourceHash := "sha256:e04b57f560aa4ac1c693dccbc95b30a1e9df06a2ae97d53cafcc5abea6d12f23"
+	if status == "NO_AUTHORITY_FOUND" {
+		sourceCommit, sourcePath, sourceHash = "NOT_RECOVERED", "NOT_RECOVERED", "NOT_RECOVERED"
+	}
 	return map[string]any{
-		"metric": metric, "authority_classification": classification, "threshold_and_operator": threshold,
-		"numerator_definition": numerator, "denominator_definition": denominator, "aggregation_unit": unit,
-		"bucket_type": bucket, "timezone": timezone, "empty_bucket_handling": empty,
-		"deduplication_and_clustering_stage": stage, "rounding_rule": "NOT_RECOVERED",
-		"failure_semantics": failure, "partition_and_combined_scope": scope, "missing_authority": missing,
+		"metric_id": metric, "metric_version": "NOT_RECOVERED", "numerator_definition": "NOT_RECOVERED",
+		"denominator_definition": "NOT_RECOVERED", "counting_unit": "NOT_RECOVERED",
+		"deduplication_stage": "NOT_RECOVERED", "clustering_stage": "NOT_RECOVERED",
+		"partition_scope": "NOT_RECOVERED", "combined_scope": "NOT_RECOVERED",
+		"time_bucket": "NOT_RECOVERED", "timezone": "NOT_RECOVERED", "empty_bucket_handling": "NOT_RECOVERED",
+		"symbol_attribution": "NOT_RECOVERED", "threshold": threshold, "comparison_operator": operator,
+		"rounding_rule": "NOT_RECOVERED", "failure_code": failure,
+		"authority_source_commit": sourceCommit, "authority_source_path": sourcePath,
+		"authority_source_hash": sourceHash, "authority_status": status, "missing_authority": missing,
 	}
 }
 
@@ -295,11 +390,49 @@ func alternativeRationale(basis preconditions.ConcentrationBasis) string {
 	return "measures concentration in the same positive mandatory-cost net-return mass that motivates economic qualification, while retaining accepted V2 clusters as the independent unit"
 }
 
-func alternativeSensitivity(basis preconditions.ConcentrationBasis) []string {
+func alternativeFormulas(basis preconditions.ConcentrationBasis) map[string]any {
 	if basis == preconditions.ConcentrationBasisClusterCount {
-		return []string{"sensitive to cluster splitting/merging and cluster member counts", "insensitive to return magnitude", "fractional multi-symbol attribution prevents one cluster from counting more than once"}
+		return map[string]any{
+			"symbol":            "max fractionally attributed independent-cluster count / independent-cluster count * 100",
+			"temporal":          "max independent-cluster count assigned by earliest event to one UTC calendar month / independent-cluster count * 100",
+			"largest_cluster":   "largest deduplicated member-event count / all deduplicated member-event count * 100",
+			"aggregate_cluster": "deduplicated member-event count in five largest clusters / all deduplicated member-event count * 100",
+		}
 	}
-	return []string{"sensitive to cluster splitting/merging and realized positive net-return magnitude", "non-positive clusters do not enter the positive-return denominator", "fractional multi-symbol attribution conserves positive return mass"}
+	return map[string]any{
+		"symbol":            "max fractionally attributed positive mandatory-cost cluster net return / total positive cluster net return * 100",
+		"temporal":          "max positive cluster net return assigned by earliest event to one UTC calendar month / total positive cluster net return * 100",
+		"largest_cluster":   "largest positive mandatory-cost cluster net return / total positive cluster net return * 100",
+		"aggregate_cluster": "five largest positive mandatory-cost cluster net returns / total positive cluster net return * 100",
+	}
+}
+
+func alternativeRisk(basis preconditions.ConcentrationBasis, over bool) string {
+	if basis == preconditions.ConcentrationBasisClusterCount {
+		if over {
+			return "large multi-event clusters can fail member-share gates even when each event has small economic weight"
+		}
+		return "many singleton clusters can pass count-based gates while a small subset carries most economic return"
+	}
+	if over {
+		return "one legitimately large profitable cluster can fail even when event/cluster counts are broadly diversified"
+	}
+	return "excluding zero and negative clusters can hide concentration in gross exposure or loss-producing dependence"
+}
+
+func alternativeSensitivity(basis preconditions.ConcentrationBasis) map[string]string {
+	if basis == preconditions.ConcentrationBasisClusterCount {
+		return map[string]string{
+			"cluster_size": "largest/top-five metrics change directly with deduplicated members per cluster; symbol/temporal metrics change with cluster splitting or merging",
+			"symbol_count": "one cluster is fractionally divided across its distinct symbols, so attribution sums to one regardless of symbol count",
+			"sample_size":  "percentages are discrete at 1/N cluster increments; N>=300 reduces but does not eliminate threshold granularity",
+		}
+	}
+	return map[string]string{
+		"cluster_size": "member count does not affect the metric directly, but cluster splitting/merging reallocates positive return mass",
+		"symbol_count": "positive return is fractionally divided across distinct symbols, conserving return mass while diluting multi-symbol attribution",
+		"sample_size":  "N>=300 remains required, but effective denominator mass can still be concentrated in few positive-return clusters",
+	}
 }
 
 func verificationResults(status string) map[string]any {

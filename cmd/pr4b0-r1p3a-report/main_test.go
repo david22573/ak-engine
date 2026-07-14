@@ -52,11 +52,11 @@ func TestAuthorityMatrixHasFourExplicitRows(t *testing.T) {
 	if len(rows) != 4 {
 		t.Fatalf("rows=%d, want 4", len(rows))
 	}
-	if rows[0]["authority_classification"] != "ACCEPTED_AUTHORITY_PARTIAL" || rows[2]["authority_classification"] != "NO_AUTHORITY_FOUND" {
+	if rows[0]["authority_status"] != "ACCEPTED_AUTHORITY_PARTIAL" || rows[2]["authority_status"] != "NO_AUTHORITY_FOUND" {
 		t.Fatalf("unexpected authority classifications: %#v", rows)
 	}
 	for _, row := range rows {
-		for _, field := range []string{"numerator_definition", "denominator_definition", "aggregation_unit", "bucket_type", "timezone", "empty_bucket_handling", "deduplication_and_clustering_stage", "rounding_rule", "failure_semantics", "partition_and_combined_scope"} {
+		for _, field := range []string{"metric_id", "metric_version", "numerator_definition", "denominator_definition", "counting_unit", "deduplication_stage", "clustering_stage", "partition_scope", "combined_scope", "time_bucket", "symbol_attribution", "threshold", "comparison_operator", "rounding_rule", "failure_code", "authority_source_commit", "authority_source_path", "authority_source_hash", "authority_status"} {
 			if _, ok := row[field]; !ok {
 				t.Fatalf("%s missing %s", row["metric"], field)
 			}
