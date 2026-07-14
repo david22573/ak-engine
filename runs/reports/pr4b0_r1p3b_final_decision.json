@@ -1,0 +1,33 @@
+{
+  "accepted_independence_hash": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f",
+  "accepted_independence_version": "ak.engine.independence.downtrend-midvol-relief.v3",
+  "artifact_hash": "sha256:f2108b526c912da44b16a91c1b3914d69bbc15de48412c92ad9b40bf9362cf4d",
+  "engine_start_commit": "da034953de936de11b3f8cab21d41c3104685ead",
+  "executive_verdict": "The exact prospective human governance decision is sealed; accepted V3 preserves V2 clustering semantics and numerically enforces all four exact structural concentration gates fail closed in every applicable partition; Engine and RIF synthetic compatibility and all required verification completed without real candidate or prospective data access.",
+  "final_label": "PR4B0_R1P3B_INDEPENDENCE_CONTRACT_ACCEPTED",
+  "fresh_clone_verification": "PASS",
+  "generated_artifacts": [
+    "runs/reports/pr4b0_r1p3b_concentration_governance_decision.md",
+    "runs/reports/pr4b0_r1p3b_concentration_governance_decision.json",
+    "runs/reports/pr4b0_r1p3b_independence_contract.md",
+    "runs/reports/pr4b0_r1p3b_independence_contract.json",
+    "runs/reports/pr4b0_r1p3b_qualification_enforcement.md",
+    "runs/reports/pr4b0_r1p3b_qualification_enforcement.json",
+    "runs/reports/pr4b0_r1p3b_final_decision.md",
+    "runs/reports/pr4b0_r1p3b_final_decision.json"
+  ],
+  "governance_decision_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+  "historian_unchanged_commit": "cd848370a04f274531fea55a7370509466b6e7bd",
+  "next_phase_started": false,
+  "pending_v2_rejected": true,
+  "phase": "PR4B0-R1P3B",
+  "prospective_record_collection_or_inspection_count": 0,
+  "real_candidate_execution_count": 0,
+  "real_candidate_outcome_calculation_count": 0,
+  "real_rif_state_created": false,
+  "recommended_next_phase": "PR4B0-R1P4 — Prospective PIT Collection Activation",
+  "rif_start_commit": "0e91122e898be2e8fb4862110acc24f2d5421245",
+  "schema_version": "ak.engine.pr4b0-r1p3b.final-decision.v1",
+  "v1_rejected": true,
+  "verification_complete": true
+}

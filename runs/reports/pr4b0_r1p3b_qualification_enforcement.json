@@ -1,0 +1,61 @@
+{
+  "artifact_hash": "sha256:4c484d5faf685bc8882f6e67db3d85f06cce633978d232bc2347ff69f31aeca9",
+  "combined_metrics_can_override_partition_failure": false,
+  "exact_arithmetic": "reduce integer and fractional cluster mass with exact rational arithmetic; compare by exact cross multiplication only",
+  "governance_decision_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+  "partition_scope": {
+    "combined_scope_rule": "combined development-and-validation diagnostics may be reported but can never rescue or override a partition-level failure",
+    "partition_isolation_rule": "calculate all four metrics separately for every qualification partition; any partition failure fails qualification and FINAL_HOLDOUT cannot be averaged with earlier partitions",
+    "required_partition_classes": [
+      "DEVELOPMENT",
+      "VALIDATION",
+      "MANDATORY_WALK_FORWARD_EVALUATION_SLICE",
+      "FINAL_HOLDOUT"
+    ],
+    "walk_forward_rule": "evaluate every mandatory walk-forward evaluation slice for which the accepted gate matrix requires concentration checks"
+  },
+  "phase": "PR4B0-R1P3B",
+  "policy_hash": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f",
+  "policy_version": "ak.engine.independence.downtrend-midvol-relief.v3",
+  "prior_rejected_or_near_miss_can_upgrade": false,
+  "reason_codes": [
+    "CONCENTRATION_POLICY_VERSION_MISSING",
+    "CONCENTRATION_POLICY_VERSION_UNKNOWN",
+    "CONCENTRATION_POLICY_V2_PENDING",
+    "CONCENTRATION_POLICY_HASH_MISMATCH",
+    "CONCENTRATION_GOVERNANCE_HASH_MISMATCH",
+    "CONCENTRATION_PARTITION_MISSING",
+    "CONCENTRATION_PARTITION_DUPLICATE",
+    "CONCENTRATION_PARTITION_UNEXPECTED",
+    "CONCENTRATION_METRIC_MISSING",
+    "CONCENTRATION_DENOMINATOR_INVALID",
+    "CONCENTRATION_NUMERIC_INVALID",
+    "CONCENTRATION_SYMBOL_EXCEEDED",
+    "CONCENTRATION_TEMPORAL_EXCEEDED",
+    "CONCENTRATION_LARGEST_CLUSTER_EXCEEDED",
+    "CONCENTRATION_TOP_FIVE_CLUSTER_EXCEEDED"
+  ],
+  "report_booleans_authoritative": false,
+  "required_numeric_metrics": [
+    "symbol_concentration",
+    "temporal_concentration",
+    "largest_cluster_concentration",
+    "top_five_cluster_concentration"
+  ],
+  "rounding": "never round for qualification; decimal strings are non-authoritative diagnostics only and no value above a threshold can round into a pass",
+  "schema_version": "ak.engine.pr4b0-r1p3b.qualification-enforcement.v1",
+  "synthetic_tests": {
+    "largest_cluster": "PASS",
+    "qualification": "PASS",
+    "symbol": "PASS",
+    "temporal": "PASS",
+    "top_five": "PASS"
+  },
+  "thresholds": {
+    "largest_cluster_concentration": "\u003c= 1/2",
+    "symbol_concentration": "\u003c= 1/2",
+    "temporal_concentration": "\u003c= 1/2",
+    "top_five_cluster_concentration": "\u003c= 7/10"
+  },
+  "zero_denominator": "missing, empty, malformed, or nonpositive denominators fail closed"
+}

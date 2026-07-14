@@ -1,0 +1,127 @@
+{
+  "accepted_uncertainty_hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+  "accepted_uncertainty_version": "ak.engine.uncertainty.cluster-bootstrap.v2",
+  "artifact_hash": "sha256:dd8dcc4b3101649abcd6ac7a47b4757affd02a6d2fb1f1a1ed3ead9cc7d8cb88",
+  "contract": {
+    "candidate_family": "phase12/DowntrendMidVolReliefLong240m",
+    "clustering": {
+      "cluster_id_rule": "sha256 canonical JSON binding accepted V3 policy version/hash, sorted member event IDs, earliest normalized event timestamp, latest exposure endpoint, sorted unique primary symbols, and sorted applicable common-market episode identities",
+      "common_market_episode_rule": "sha256 canonical JSON of BTCUSDT and ETHUSDT context symbol, snapshot_id, source_input_hash, and UTC available_at; decision-time provenance only; primary-symbol state and all outcomes are excluded",
+      "cross_symbol_rule": "different primary symbols form an edge only when exposure intervals overlap and their deterministic common-market episode identities are equal",
+      "duplicate_rule": "byte-equivalent duplicate event identities are one member; conflicting duplicates fail closed",
+      "exposure_horizon_minutes": 240,
+      "exposure_interval_rule": "each event occupies the half-open UTC interval [event_timestamp,event_timestamp+240m); a timestamp strictly before the endpoint overlaps and a timestamp exactly at the endpoint does not",
+      "independent_sample_rule": "one independent cluster is exactly one qualification decision; raw events never substitute for clusters",
+      "missing_episode_rule": "missing or invalid decision-time common-context provenance fails closed; never substitute a blanket market identity",
+      "ordering_rule": "deduplicate by canonical event identity, sort components by earliest event time then cluster ID, and sort all member and identity lists lexically",
+      "same_symbol_rule": "overlapping exposure intervals for the same primary symbol form an edge; connected components apply transitive overlap",
+      "source_policy_hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+      "source_policy_version": "ak.engine.independence.downtrend-midvol-relief.v2",
+      "timestamp_normalization_rule": "compare instants after UTC normalization and serialize with RFC3339Nano so equivalent offsets and subsecond representations normalize identically",
+      "transitivity_rule": "an independent cluster is one connected component of the permitted same-symbol and cross-symbol overlap edges"
+    },
+    "concentration_authorities": [
+      {
+        "comparison_operator": "\u003c=",
+        "definition": "maximum exact symbol share after each independent cluster contributes total mass one split equally across its sorted unique primary symbols",
+        "denominator": "number of valid independent clusters in the partition",
+        "failure_code": "CONCENTRATION_SYMBOL_EXCEEDED",
+        "metric_id": "symbol_concentration",
+        "numerator": "sum of exact fractional independent-cluster mass attributed to the symbol",
+        "threshold_denominator": "2",
+        "threshold_numerator": "1"
+      },
+      {
+        "comparison_operator": "\u003c=",
+        "definition": "maximum share of independent clusters assigned to one UTC calendar month by earliest normalized member event timestamp using half-open UTC month intervals",
+        "denominator": "number of valid independent clusters in the partition; empty months omitted",
+        "failure_code": "CONCENTRATION_TEMPORAL_EXCEEDED",
+        "metric_id": "temporal_concentration",
+        "numerator": "number of independent clusters assigned to the UTC calendar month",
+        "threshold_denominator": "2",
+        "threshold_numerator": "1"
+      },
+      {
+        "comparison_operator": "\u003c=",
+        "definition": "largest unique member-event count in one independent cluster divided by all unique member events represented by valid clusters",
+        "denominator": "sum of unique member event ID counts across all valid independent clusters",
+        "failure_code": "CONCENTRATION_LARGEST_CLUSTER_EXCEEDED",
+        "metric_id": "largest_cluster_concentration",
+        "numerator": "maximum unique deduplicated member event ID count in one cluster",
+        "threshold_denominator": "2",
+        "threshold_numerator": "1"
+      },
+      {
+        "comparison_operator": "\u003c=",
+        "definition": "exact share of unique member events in up to five largest clusters ordered by descending member count then ascending canonical cluster ID",
+        "denominator": "sum of unique member event ID counts across all valid independent clusters",
+        "failure_code": "CONCENTRATION_TOP_FIVE_CLUSTER_EXCEEDED",
+        "metric_id": "top_five_cluster_concentration",
+        "numerator": "sum of unique member-event counts in the first five deterministically ordered clusters, or all clusters when fewer than five exist",
+        "threshold_denominator": "10",
+        "threshold_numerator": "7"
+      }
+    ],
+    "exact_arithmetic_rule": "reduce integer and fractional cluster mass with exact rational arithmetic; compare by exact cross multiplication only",
+    "failure_reason_codes": [
+      "CONCENTRATION_POLICY_VERSION_MISSING",
+      "CONCENTRATION_POLICY_VERSION_UNKNOWN",
+      "CONCENTRATION_POLICY_V2_PENDING",
+      "CONCENTRATION_POLICY_HASH_MISMATCH",
+      "CONCENTRATION_GOVERNANCE_HASH_MISMATCH",
+      "CONCENTRATION_PARTITION_MISSING",
+      "CONCENTRATION_PARTITION_DUPLICATE",
+      "CONCENTRATION_PARTITION_UNEXPECTED",
+      "CONCENTRATION_METRIC_MISSING",
+      "CONCENTRATION_DENOMINATOR_INVALID",
+      "CONCENTRATION_NUMERIC_INVALID",
+      "CONCENTRATION_SYMBOL_EXCEEDED",
+      "CONCENTRATION_TEMPORAL_EXCEEDED",
+      "CONCENTRATION_LARGEST_CLUSTER_EXCEEDED",
+      "CONCENTRATION_TOP_FIVE_CLUSTER_EXCEEDED"
+    ],
+    "governance_decision_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+    "governance_decision_id": "pr4b0-r1p3b-structural-count-based-concentration",
+    "known_limitations": [
+      "exact context-snapshot identity deliberately under-clusters common episodes when authoritative collectors issue distinct provenance identities for the same market move",
+      "same-symbol transitive bridges can place more than one common-market episode identity in one connected component",
+      "the rule captures declared BTCUSDT/ETHUSDT context provenance only and does not infer latent dependence from future volatility, returns, or retrospective behavior"
+    ],
+    "missing_evidence_rule": "all four numeric metrics and the exact accepted V3 version, policy hash, and governance decision hash are mandatory for every applicable partition",
+    "qualification_gate_scope": {
+      "combined_scope_rule": "combined development-and-validation diagnostics may be reported but can never rescue or override a partition-level failure",
+      "partition_isolation_rule": "calculate all four metrics separately for every qualification partition; any partition failure fails qualification and FINAL_HOLDOUT cannot be averaged with earlier partitions",
+      "required_partition_classes": [
+        "DEVELOPMENT",
+        "VALIDATION",
+        "MANDATORY_WALK_FORWARD_EVALUATION_SLICE",
+        "FINAL_HOLDOUT"
+      ],
+      "walk_forward_rule": "evaluate every mandatory walk-forward evaluation slice for which the accepted gate matrix requires concentration checks"
+    },
+    "rejected_outcome_contribution": "raw-event, winning-event, positive-return, signed-return, and gross-profit contribution are excluded from mandatory concentration qualification",
+    "rounding_rule": "never round for qualification; decimal strings are non-authoritative diagnostics only and no value above a threshold can round into a pass",
+    "status": "ACCEPTED",
+    "supersedes": [
+      "ak.engine.independence.downtrend-midvol-relief.v1:REJECTED_FOR_FUTURE_PR4B0_R1",
+      "ak.engine.independence.downtrend-midvol-relief.v2:REVISED_PENDING_CONCENTRATION_AUTHORITY_REJECTED_FOR_QUALIFICATION"
+    ],
+    "version": "ak.engine.independence.downtrend-midvol-relief.v3",
+    "zero_denominator_rule": "missing, empty, malformed, or nonpositive denominators fail closed"
+  },
+  "contract_hash": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f",
+  "contract_status": "ACCEPTED",
+  "contract_version": "ak.engine.independence.downtrend-midvol-relief.v3",
+  "governance_decision_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+  "governance_decision_id": "pr4b0-r1p3b-structural-count-based-concentration",
+  "pending_v2": {
+    "hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+    "qualification_accepted": false,
+    "status": "REVISED_PENDING_CONCENTRATION_AUTHORITY",
+    "version": "ak.engine.independence.downtrend-midvol-relief.v2"
+  },
+  "phase": "PR4B0-R1P3B",
+  "schema_version": "ak.engine.pr4b0-r1p3b.independence-contract.v1",
+  "synthetic_fixtures_only": true,
+  "v1_qualification_accepted": false
+}
