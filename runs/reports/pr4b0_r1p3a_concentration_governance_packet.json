@@ -1,0 +1,217 @@
+{
+  "accepted_contract_created": false,
+  "accepted_uncertainty": {
+    "hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+    "minimum_independent_units": 300
+  },
+  "alternatives": [
+    {
+      "compatibility_with_minimum_300_independent_units": "compatible: the accepted uncertainty gate counts one accepted V2 independent cluster as one unit; N\u003e=300 remains mandatory and concentration is evaluated per required partition",
+      "contract": {
+        "metric_version": "ak.engine.concentration.alternative.cluster-count.v1",
+        "status": "UNACCEPTED_GOVERNANCE_ALTERNATIVE",
+        "basis": "INDEPENDENT_CLUSTER_COUNT",
+        "symbol_numerator_definition": "fractional count of independent clusters attributed to the most represented symbol",
+        "symbol_denominator_definition": "count of independent clusters in the partition",
+        "symbol_attribution": "each independent cluster contributes 1/N to each of its N distinct primary symbols; attribution sums to one cluster",
+        "temporal_numerator_definition": "maximum value attributed to one UTC calendar month by cluster earliest_event_time",
+        "temporal_denominator_definition": "count of independent clusters in the partition",
+        "time_bucket": "UTC calendar month of earliest_event_time; [month start,next month start)",
+        "empty_bucket_rule": "empty calendar months do not enter the maximum and do not change the denominator",
+        "largest_cluster_numerator_definition": "deduplicated member-event count in the largest independent cluster",
+        "largest_cluster_denominator_definition": "deduplicated member-event count across all independent clusters in the partition",
+        "aggregate_cluster_numerator_definition": "deduplicated member-event count in the five largest independent clusters; include all selected values after deterministic descending size then cluster-ID ordering",
+        "aggregate_cluster_denominator_definition": "deduplicated member-event count across all independent clusters in the partition",
+        "aggregate_top_n": 5,
+        "symbol_threshold_percent": 50,
+        "temporal_threshold_percent": 50,
+        "largest_cluster_threshold_percent": 50,
+        "aggregate_threshold_percent": 70,
+        "comparison_operator": "\u003c=",
+        "partition_scope": "evaluate every required partition independently; any partition failure fails the evidence",
+        "combined_scope": "no combined-partition substitution; a combined scope requires its own explicitly named partition",
+        "deduplication_stage": "canonical retained-event deduplication before accepted V2 clustering",
+        "clustering_stage": "after accepted V2 connected-component clustering; raw events never substitute for symbol or temporal cluster units",
+        "rounding_rule": "compare unrounded numerators and denominators; report percentages rounded to six decimal places",
+        "zero_denominator_rule": "fail closed; never default missing or zero-denominator concentration to zero"
+      },
+      "effect_on_earlier_gate": "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+      "hash": "sha256:a1fd4430d4d98378e8384784be9af38d6a11d95b2ff951b7ee8f21232693864b",
+      "over_under_clustering_risks": [
+        "inherits conservative under-clustering risk when distinct context provenance describes one common move",
+        "inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes"
+      ],
+      "rationale": "uses accepted V2 clusters as the primary independence unit and member-event share only for within-cluster dominance, minimizing dependence on return scale",
+      "sensitivity": [
+        "sensitive to cluster splitting/merging and cluster member counts",
+        "insensitive to return magnitude",
+        "fractional multi-symbol attribution prevents one cluster from counting more than once"
+      ],
+      "status": "UNACCEPTED_GOVERNANCE_ALTERNATIVE",
+      "version": "ak.engine.concentration.alternative.cluster-count.v1"
+    },
+    {
+      "compatibility_with_minimum_300_independent_units": "compatible: the accepted uncertainty gate counts one accepted V2 independent cluster as one unit; N\u003e=300 remains mandatory and concentration is evaluated per required partition",
+      "contract": {
+        "metric_version": "ak.engine.concentration.alternative.positive-cluster-return.v1",
+        "status": "UNACCEPTED_GOVERNANCE_ALTERNATIVE",
+        "basis": "POSITIVE_CLUSTER_NET_RETURN",
+        "symbol_numerator_definition": "positive mandatory-cost cluster net return fractionally attributed to the highest-contributing symbol",
+        "symbol_denominator_definition": "sum of positive mandatory-cost cluster net returns in the partition",
+        "symbol_attribution": "each independent cluster contributes 1/N to each of its N distinct primary symbols; attribution sums to one cluster",
+        "temporal_numerator_definition": "maximum value attributed to one UTC calendar month by cluster earliest_event_time",
+        "temporal_denominator_definition": "sum of positive mandatory-cost cluster net returns in the partition",
+        "time_bucket": "UTC calendar month of earliest_event_time; [month start,next month start)",
+        "empty_bucket_rule": "empty calendar months do not enter the maximum and do not change the denominator",
+        "largest_cluster_numerator_definition": "largest positive mandatory-cost net return of one independent cluster",
+        "largest_cluster_denominator_definition": "sum of positive mandatory-cost cluster net returns in the partition",
+        "aggregate_cluster_numerator_definition": "sum of the five largest positive mandatory-cost independent-cluster net returns; descending return then cluster-ID ordering",
+        "aggregate_cluster_denominator_definition": "sum of positive mandatory-cost cluster net returns in the partition",
+        "aggregate_top_n": 5,
+        "symbol_threshold_percent": 50,
+        "temporal_threshold_percent": 50,
+        "largest_cluster_threshold_percent": 50,
+        "aggregate_threshold_percent": 70,
+        "comparison_operator": "\u003c=",
+        "partition_scope": "evaluate every required partition independently; any partition failure fails the evidence",
+        "combined_scope": "no combined-partition substitution; a combined scope requires its own explicitly named partition",
+        "deduplication_stage": "canonical retained-event deduplication before accepted V2 clustering",
+        "clustering_stage": "after accepted V2 connected-component clustering; raw events never substitute for symbol or temporal cluster units",
+        "rounding_rule": "compare unrounded numerators and denominators; report percentages rounded to six decimal places",
+        "zero_denominator_rule": "fail closed; never default missing or zero-denominator concentration to zero"
+      },
+      "effect_on_earlier_gate": "turns the accepted display-only 50% symbol/temporal limits into fully specified numeric gates and adds explicit 50% largest-cluster and 70% top-five-cluster gates; this is a governance change, not recovered accepted behavior",
+      "hash": "sha256:38df2191a6ae3c057e6431cf5ebeafdfa2567cd1ede307199ff1ca57903a633e",
+      "over_under_clustering_risks": [
+        "inherits conservative under-clustering risk when distinct context provenance describes one common move",
+        "inherits transitive over-clustering risk when same-symbol overlap bridges otherwise distinct context episodes"
+      ],
+      "rationale": "measures concentration in the same positive mandatory-cost net-return mass that motivates economic qualification, while retaining accepted V2 clusters as the independent unit",
+      "sensitivity": [
+        "sensitive to cluster splitting/merging and realized positive net-return magnitude",
+        "non-positive clusters do not enter the positive-return denominator",
+        "fractional multi-symbol attribution conserves positive return mass"
+      ],
+      "status": "UNACCEPTED_GOVERNANCE_ALTERNATIVE",
+      "version": "ak.engine.concentration.alternative.positive-cluster-return.v1"
+    }
+  ],
+  "artifact_hash": "sha256:9a97cb950c889213a55e53cb10d9df8dee66d4b753c08de03b226f0d88d0a2d9",
+  "current_independence": {
+    "hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+    "status": "REVISED_UNACCEPTED_PENDING_CONCENTRATION_GOVERNANCE",
+    "version": "ak.engine.independence.downtrend-midvol-relief.v2"
+  },
+  "final_label": "PR4B0_R1P3A_CONCENTRATION_GOVERNANCE_PACKET_READY",
+  "metric_decision_scope": [
+    {
+      "choices": [
+        "ak.engine.concentration.alternative.cluster-count.v1",
+        "ak.engine.concentration.alternative.positive-cluster-return.v1"
+      ],
+      "metric": "symbol_concentration",
+      "unresolved_authority": "numerator, denominator, unit, attribution, stage, rounding, scope"
+    },
+    {
+      "choices": [
+        "ak.engine.concentration.alternative.cluster-count.v1",
+        "ak.engine.concentration.alternative.positive-cluster-return.v1"
+      ],
+      "metric": "temporal_concentration",
+      "unresolved_authority": "numerator, denominator, unit, bucket/timezone, empty periods, stage, rounding, scope"
+    },
+    {
+      "choices": [
+        "ak.engine.concentration.alternative.cluster-count.v1",
+        "ak.engine.concentration.alternative.positive-cluster-return.v1"
+      ],
+      "metric": "largest_cluster_concentration",
+      "unresolved_authority": "complete accepted metric and threshold authority absent"
+    },
+    {
+      "choices": [
+        "ak.engine.concentration.alternative.cluster-count.v1",
+        "ak.engine.concentration.alternative.positive-cluster-return.v1"
+      ],
+      "metric": "aggregate_cluster_concentration",
+      "unresolved_authority": "complete accepted top-five metric and threshold authority absent"
+    }
+  ],
+  "packet_status": "DECISION_READY_UNACCEPTED",
+  "phase": "PR4B0-R1P3A",
+  "research_boundary": {
+    "fixtures": "synthetic only",
+    "new_candidate_outcome_calculations": 0,
+    "prospective_validation_or_holdout_content_inspections": 0,
+    "real_candidate_executions": 0,
+    "real_prospective_records_collected": 0,
+    "real_rif_state_reads_or_mutations": 0
+  },
+  "resulting_code_commits": {
+    "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
+    "engine": "62841533502bd3b5788afa0d74f3cffffc87b87e",
+    "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
+  },
+  "reviewer_decision_request": {
+    "accept_requirement": "identify exactly one complete alternative version/hash; partial or mixed acceptance requires a revised versioned contract",
+    "allowed_decisions": [
+      "ACCEPT_ALTERNATIVE",
+      "REJECT_ALL",
+      "REVISE"
+    ],
+    "preselected_decision": null,
+    "revise_requirement": "supply exact formula, numerator, denominator, unit, temporal bucket/timezone, symbol attribution, dedup/clustering stage, threshold/operator, rounding, zero-denominator rule, failure semantics, and partition scope"
+  },
+  "schema_version": "ak.engine.pr4b0-r1p3a.concentration-governance-packet.v1",
+  "starting_commits": {
+    "engine": "4973a36a8d7a9f236011a4936dbf8229a6e41160",
+    "historian": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "e22357692e5b0e837451805f61c6ec3fb2fd6529"
+  },
+  "verification_results": {
+    "artifacts": {
+      "embedded_hashes": "PASS",
+      "generator_verify_only": "PASS",
+      "git_blob_ids": "PASS",
+      "json_parse": "PASS",
+      "recorded_sha256": "PASS"
+    },
+    "engine": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS",
+      "standalone_fresh_clone": "PASS"
+    },
+    "historian": {
+      "clean_worktree": "PASS",
+      "unchanged": "PASS"
+    },
+    "rif": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS",
+      "standalone_fresh_clone": "PASS"
+    },
+    "scans": {
+      "absolute_paths": "PASS",
+      "network_dependencies": "PASS",
+      "prohibited_real_candidate_identity": "PASS",
+      "secrets_credentials": "PASS",
+      "sibling_dependencies": "PASS",
+      "trader_imports": "PASS"
+    },
+    "zero_prospective_work": "PASS"
+  },
+  "verification_status": "PASS"
+}
