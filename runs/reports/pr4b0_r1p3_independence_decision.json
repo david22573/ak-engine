@@ -1,0 +1,111 @@
+{
+  "accepted_replacement": null,
+  "accepted_without_candidate_performance_results": true,
+  "artifact_hash": "sha256:121b09cdf9e8567147295c61955a0293821041cdc216ecce44d8fc56558bcf43",
+  "contract_kind": "independence",
+  "decision_record_hash": "sha256:a8accf33d27193a2c3b29bedfd10da3afa1e34656385cfda7af53b3067b388bf",
+  "decision_timestamp": "2026-07-13T19:00:00Z",
+  "effective_scope": "future prospective PR4B0-R1 only after a later accepted concentration-complete replacement; synthetic fixtures in R1P3",
+  "exact_normative_decisions": [
+    "event exposure is [event_timestamp,event_timestamp+240m) after UTC RFC3339Nano normalization",
+    "same-symbol overlapping exposures form transitive connected components",
+    "cross-symbol edges require overlapping exposures and identical exact BTC/ETH decision-time context-provenance episode hashes",
+    "missing common-context provenance fails closed and blanket market grouping is prohibited",
+    "canonical cluster SHA-256 binds policy, normalized membership, exposure endpoints, symbols, and applicable episode identities",
+    "one cluster is one qualification decision and later cluster net return is a deterministic sum of exactly one mandatory-cost net member return"
+  ],
+  "governance_decision": "REVISE",
+  "mutation_policy": "any normative mutation changes the contract hash, requires a new version, and requires a new governance decision",
+  "performance_results_inspected": false,
+  "proposal_contract": {
+    "hash": "sha256:68641244ae31bb47dd7752410763308bf8a88362660f9df347362f42fbbb339a",
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "version": "ak.engine.independence.downtrend-midvol-relief.v1"
+  },
+  "replacement_contract": {
+    "version": "ak.engine.independence.downtrend-midvol-relief.v2",
+    "status": "REVISED_PENDING_CONCENTRATION_AUTHORITY",
+    "exposure_horizon_minutes": 240,
+    "exposure_interval_rule": "each event occupies the half-open UTC interval [event_timestamp,event_timestamp+240m); a timestamp strictly before the endpoint overlaps and a timestamp exactly at the endpoint does not",
+    "timestamp_normalization_rule": "compare instants after UTC normalization and serialize with RFC3339Nano so equivalent offsets and subsecond representations normalize identically",
+    "same_symbol_rule": "overlapping exposure intervals for the same primary symbol form an edge; connected components apply transitive overlap",
+    "cross_symbol_rule": "different primary symbols form an edge only when exposure intervals overlap and their deterministic common-market episode identities are equal",
+    "common_market_episode_rule": "sha256 canonical JSON of BTCUSDT and ETHUSDT context symbol, snapshot_id, source_input_hash, and UTC available_at; decision-time provenance only; primary-symbol state and all outcomes are excluded",
+    "missing_episode_rule": "missing or invalid decision-time common-context provenance fails closed; never substitute a blanket market identity",
+    "transitivity_rule": "an independent cluster is one connected component of the permitted same-symbol and cross-symbol overlap edges",
+    "ordering_rule": "deduplicate by canonical event identity, sort components by earliest event time then cluster ID, and sort all member and identity lists lexically",
+    "duplicate_rule": "byte-equivalent duplicate event identities are one member; conflicting duplicates fail closed",
+    "cluster_id_rule": "sha256 canonical JSON binding policy version/hash, sorted member event IDs, earliest event time, latest exposure endpoint, sorted primary symbols, and sorted applicable common-market episode identities",
+    "independent_sample_rule": "one independent cluster is exactly one qualification decision; raw events never substitute for clusters",
+    "cluster_net_return_rule": "later, sort member event IDs and sum exactly one finite mandatory-cost net return for every member in that order; missing, extra, or duplicate members fail closed; this phase uses synthetic values only",
+    "concentration_authorities": [
+      {
+        "name": "largest-cluster concentration",
+        "definition": "",
+        "threshold": "",
+        "comparison_operator": "",
+        "denominator": "",
+        "failure_semantics": "fail closed; independence policy cannot be accepted",
+        "source_report": "",
+        "source_commit": "",
+        "authority_status": "UNRESOLVED_NO_ACCEPTED_SOURCE_REPORT"
+      },
+      {
+        "name": "cluster concentration",
+        "definition": "",
+        "threshold": "",
+        "comparison_operator": "",
+        "denominator": "",
+        "failure_semantics": "fail closed; independence policy cannot be accepted",
+        "source_report": "",
+        "source_commit": "",
+        "authority_status": "UNRESOLVED_NO_ACCEPTED_SOURCE_REPORT"
+      },
+      {
+        "name": "symbol concentration",
+        "definition": "maximum symbol contribution in a legal evaluated scope",
+        "threshold": "50%",
+        "comparison_operator": "\u003c=",
+        "denominator": "not normatively specified by the accepted source report",
+        "failure_semantics": "values greater than 50% fail; missing denominator authority fails closed",
+        "source_report": "runs/reports/pr4b0_candidate_qualification.json",
+        "source_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+        "authority_status": "THRESHOLD_RECOVERED_DEFINITION_INCOMPLETE"
+      },
+      {
+        "name": "temporal concentration",
+        "definition": "maximum temporal contribution in a legal evaluated scope",
+        "threshold": "50%",
+        "comparison_operator": "\u003c=",
+        "denominator": "not normatively specified by the accepted source report",
+        "failure_semantics": "values greater than 50% fail; missing denominator authority fails closed",
+        "source_report": "runs/reports/pr4b0_candidate_qualification.json",
+        "source_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+        "authority_status": "THRESHOLD_RECOVERED_DEFINITION_INCOMPLETE"
+      }
+    ],
+    "unresolved_items": [
+      "accepted source report, threshold, operator, denominator, and failure semantics for largest-cluster concentration",
+      "accepted source report, threshold, operator, denominator, and failure semantics for aggregate cluster concentration",
+      "accepted denominator definitions for symbol and temporal contribution percentages"
+    ],
+    "known_limitations": [
+      "exact context-snapshot identity deliberately under-clusters common episodes when authoritative collectors issue distinct provenance identities for the same market move",
+      "same-symbol transitive bridges can place more than one common-market episode identity in one connected component",
+      "the rule captures declared BTCUSDT/ETHUSDT context provenance only and does not infer latent dependence from future volatility, returns, or retrospective behavior"
+    ]
+  },
+  "reviewer_authority": "PR4B0-R1 governance authority acting under the R1P3 objective and accepted PR4B0 qualification record",
+  "revised_replacement": {
+    "hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+    "status": "REVISED_PENDING_CONCENTRATION_AUTHORITY",
+    "version": "ak.engine.independence.downtrend-midvol-relief.v2"
+  },
+  "schema_version": "ak.engine.governance-decision.independence.v1",
+  "supersession_rules": "V1 remains PROPOSED_NOT_ACCEPTED; V2 is revised but unaccepted and supersedes no accepted policy",
+  "unresolved_items": [
+    "accepted source report, threshold, operator, denominator, and failure semantics for largest-cluster concentration",
+    "accepted source report, threshold, operator, denominator, and failure semantics for aggregate cluster concentration",
+    "accepted denominator definitions for symbol and temporal contribution percentages"
+  ]
+}

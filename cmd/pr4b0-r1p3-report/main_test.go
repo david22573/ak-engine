@@ -78,6 +78,9 @@ func TestWriteShapeUsesEightRequiredFiles(t *testing.T) {
 	if err != nil || len(entries) != 8 {
 		t.Fatalf("required files=%d err=%v", len(entries), err)
 	}
+	if err := verifyArtifacts(dir, artifacts); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestSortedKeysDeterministic(t *testing.T) {

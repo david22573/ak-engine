@@ -1,0 +1,53 @@
+{
+  "accepted_replacement": {
+    "hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+    "status": "ACCEPTED",
+    "version": "ak.engine.uncertainty.cluster-bootstrap.v2"
+  },
+  "accepted_without_candidate_performance_results": true,
+  "artifact_hash": "sha256:634f6ccd30cac3f1cb0912cfac17f1df7956476174306c0853373fa1935b101d",
+  "contract_kind": "uncertainty",
+  "decision_record_hash": "sha256:a321aea5beec64394466a539e9a0bbf454df3f7e2fc23b27b414829e49d0c670",
+  "decision_timestamp": "2026-07-13T19:00:00Z",
+  "effective_scope": "future prospective PR4B0-R1 qualification after an independence contract is accepted; synthetic fixtures in R1P3",
+  "exact_normative_decisions": [
+    "estimand is mean mandatory-cost net expectancy per accepted independent cluster",
+    "primary statistic is a one-sided 95% lower percentile bound and qualification requires lower bound \u003e 0",
+    "draw N clusters with replacement for each of exactly 10000 unstratified replicates",
+    "sort means ascending and use nearest-rank fifth percentile at zero-based ceil(0.05*10000)-1 = 499 without interpolation",
+    "derive SplitMix64 seed from canonical contract, candidate, dataset, manifest, partition, and cost identities",
+    "N\u003c30 not reportable; 30\u003c=N\u003c300 reportable but sample gate fails; N\u003e=300 qualification eligible",
+    "all invalid identity, duplicate, nonfinite, serialization, version, and hash conditions fail closed"
+  ],
+  "governance_decision": "REVISE",
+  "mutation_policy": "any normative mutation changes the method hash, requires a new version, and requires a new governance decision",
+  "performance_results_inspected": false,
+  "proposal_contract": {
+    "hash": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "version": "ak.engine.uncertainty.cluster-bootstrap.v1"
+  },
+  "replacement_contract": {
+    "version": "ak.engine.uncertainty.cluster-bootstrap.v2",
+    "status": "ACCEPTED",
+    "estimand": "mean mandatory-cost net expectancy per accepted independent cluster",
+    "primary_statistic": "one-sided 95% lower confidence bound for mean net expectancy",
+    "qualification_rule": "qualification requires an eligible sample and lower confidence bound strictly greater than zero",
+    "confidence_level": 0.95,
+    "lower_percentile": 0.05,
+    "sampling_unit": "one deterministic net-return observation per accepted independent cluster; raw events are prohibited",
+    "resampling_method": "nonparametric percentile cluster bootstrap with replacement",
+    "number_of_resamples": 10000,
+    "draw_count_rule": "for N observations, every replicate draws exactly N clusters independently with replacement and calculates their arithmetic mean",
+    "quantile_index_rule": "sort replicate means by deterministic numeric ascending order; nearest-rank fifth percentile uses zero-based index ceil(0.05*B)-1 with no interpolation; B=10000 gives index 499",
+    "stratification_rule": "none: no symbol, month, quarter, regime, or performance stratification or rebalancing",
+    "seed_derivation_rule": "SHA-256 canonical JSON of contract hashes plus frozen candidate, dataset, manifest, partition, and cost-model identity/hash bindings; first eight digest bytes big-endian seed SplitMix64",
+    "minimum_sample_rule": "N\u003c30 not reportable; 30\u003c=N\u003c300 reportable but sample gate fails; N\u003e=300 qualification eligible",
+    "invalid_data_rule": "empty input, duplicate cluster IDs, non-finite returns, missing identities, identity/hash mismatch, malformed canonical serialization, contract/hash mismatch, and unsupported versions fail closed; never silently drop observations",
+    "deterministic_output_rule": "sort observations by cluster ID, use SplitMix64 and explicit quantile indexing, and hash canonical result bytes; equal complete input produces byte-equivalent output"
+  },
+  "reviewer_authority": "PR4B0-R1 governance authority acting under the normative R1P3 bootstrap decisions",
+  "schema_version": "ak.engine.governance-decision.uncertainty.v1",
+  "supersession_rules": "V1 remains PROPOSED_NOT_ACCEPTED; accepted V2 replaces the proposal for future authorized use",
+  "unresolved_items": []
+}

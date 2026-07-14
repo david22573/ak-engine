@@ -34,6 +34,7 @@ type artifact struct {
 func main() {
 	out := flag.String("out", "runs/reports", "artifact output directory")
 	verification := flag.String("verification-status", "PENDING", "PENDING or PASS")
+	verifyOnly := flag.Bool("verify-only", false, "verify existing artifacts without writing")
 	flag.Parse()
 	if *verification != "PENDING" && *verification != "PASS" {
 		fatal(errors.New("verification-status must be PENDING or PASS"))
@@ -41,6 +42,12 @@ func main() {
 	artifacts, err := buildArtifacts(*verification)
 	if err != nil {
 		fatal(err)
+	}
+	if *verifyOnly {
+		if err := verifyArtifacts(*out, artifacts); err != nil {
+			fatal(err)
+		}
+		return
 	}
 	if err := os.MkdirAll(*out, 0o755); err != nil {
 		fatal(err)
@@ -58,6 +65,48 @@ func main() {
 			fatal(err)
 		}
 	}
+}
+
+func verifyArtifacts(dir string, artifacts []artifact) error {
+	for _, expected := range artifacts {
+		jsonPath := filepath.Join(dir, expected.base+".json")
+		data, err := os.ReadFile(jsonPath)
+		if err != nil {
+			return err
+		}
+		var actual map[string]any
+		if err := json.Unmarshal(data, &actual); err != nil {
+			return fmt.Errorf("%s: %w", jsonPath, err)
+		}
+		if err := verifyHash(actual, "artifact_hash"); err != nil {
+			return fmt.Errorf("%s: %w", jsonPath, err)
+		}
+		if _, decision := actual["decision_record_hash"]; decision {
+			if err := verifyHash(actual, "decision_record_hash"); err != nil {
+				return fmt.Errorf("%s: %w", jsonPath, err)
+			}
+		}
+		expectedJSON, err := canonicalMapBytes(expected.json)
+		if err != nil {
+			return err
+		}
+		actualJSON, err := canonicalMapBytes(actual)
+		if err != nil {
+			return err
+		}
+		if string(expectedJSON) != string(actualJSON) {
+			return fmt.Errorf("%s does not match the canonical generated contract", jsonPath)
+		}
+		markdownPath := filepath.Join(dir, expected.base+".md")
+		markdown, err := os.ReadFile(markdownPath)
+		if err != nil {
+			return err
+		}
+		if string(markdown) != expected.md {
+			return fmt.Errorf("%s does not match the canonical generated report", markdownPath)
+		}
+	}
+	return nil
 }
 
 func buildArtifacts(verification string) ([]artifact, error) {
@@ -152,6 +201,12 @@ func buildArtifacts(verification string) ([]artifact, error) {
 		"phase":            "PR4B0-R1P3",
 		"final_label":      partialLabel,
 		"starting_commits": map[string]any{"engine": engineStart, "historian": historianStart, "rif": rifStart},
+		"resulting_code_commits": map[string]any{
+			"engine_contract_implementation": "2426acb4060618b485cde88eb149de07f68d3198",
+			"historian_unchanged":            historianStart,
+			"rif_governance_binding":         "e22357692e5b0e837451805f61c6ec3fb2fd6529",
+			"engine_artifact_container":      "the later commit containing this self-referentially immutable report is recorded in the final response",
+		},
 		"contract_hashes": map[string]any{
 			"independence_v1_proposal":            proposalIndependenceHash,
 			"independence_v2_revised_unaccepted":  revisedIndependenceHash,
@@ -164,6 +219,7 @@ func buildArtifacts(verification string) ([]artifact, error) {
 			"real_candidate_executions": 0, "real_candidate_outcome_calculations": 0, "real_prospective_records_collected": 0,
 			"real_rif_state_reads_or_mutations": 0, "fixtures": "synthetic only",
 		},
+		"verification_results": verificationResults(verification),
 	}
 
 	governance := cloneMap(common)
@@ -199,6 +255,7 @@ func buildArtifacts(verification string) ([]artifact, error) {
 	finalDecision["accepted_uncertainty_version"] = acceptedUncertainty.Version
 	finalDecision["accepted_uncertainty_hash"] = acceptedUncertaintyHash
 	finalDecision["verification_status"] = verification
+	finalDecision["verification_results"] = verificationResults(verification)
 	finalDecision["remaining_blockers"] = revisedIndependence.UnresolvedItems
 	finalDecision["next_phase"] = "GOVERNANCE_REMEDIATION_REQUIRED; PR4B0-R1P4 NOT AUTHORIZED"
 	finalDecision["decision_timestamp"] = decisionTimestamp
@@ -215,7 +272,7 @@ func buildArtifacts(verification string) ([]artifact, error) {
 }
 
 func independenceMarkdown(record map[string]any, hash string) string {
-	return fmt.Sprintf("# PR4B0-R1P3 Independence Decision\n\nDecision: **REVISE**. The V1 proposal remains unaccepted.\n\nRevised V2: `%s`\n\nRevised contract hash: `%s`\n\nV2 implements half-open 240-minute UTC exposure, transitive same-symbol overlap, exact episode-qualified cross-symbol overlap, deterministic canonical cluster IDs, deduplication, and one-cluster/one-decision semantics. It is **not accepted** because no accepted source report supplies exact largest-cluster or aggregate cluster-concentration thresholds and denominators. Symbol and temporal `<=50%%` thresholds were recovered from `runs/reports/pr4b0_candidate_qualification.json` at commit `205cf59555006ce23fc58bc2c73262660a894850`, but their denominator definitions are incomplete. No threshold was invented.\n\nAcceptance was decided without inspecting candidate-performance results.\n\nDecision-record hash: `%v`\nArtifact hash: `%v`\n", preconditions.RevisedIndependencePolicyVersion, hash, record["decision_record_hash"], record["artifact_hash"])
+	return fmt.Sprintf("# PR4B0-R1P3 Independence Decision\n\nDecision: **REVISE**. The V1 proposal remains unaccepted.\n\nRevised V2: `%s`\n\nRevised contract hash: `%s`\n\nV2 implements half-open 240-minute UTC exposure, transitive same-symbol overlap, exact episode-qualified cross-symbol overlap, deterministic canonical cluster IDs, deduplication, and one-cluster/one-decision semantics. It is **not accepted** because no accepted source report supplies exact largest-cluster or aggregate cluster-concentration thresholds and denominators. Symbol and temporal `<=50%%` thresholds were recovered from `runs/reports/pr4b0_candidate_qualification.json` at commit `205cf59555006ce23fc58bc2c73262660a894850`, but their denominator definitions are incomplete. No threshold was invented.\n\nCommon-market episode identity is the canonical SHA-256 of exact BTCUSDT/ETHUSDT context symbols, snapshot IDs, source hashes, and UTC availability instants. This conservative rule can under-cluster when distinct provenance records describe one move; same-symbol bridges can join multiple episode identities; and it intentionally does not infer latent dependence from future or retrospective values.\n\nAcceptance was decided without inspecting candidate-performance results.\n\nDecision-record hash: `%v`\nArtifact hash: `%v`\n", preconditions.RevisedIndependencePolicyVersion, hash, record["decision_record_hash"], record["artifact_hash"])
 }
 
 func uncertaintyMarkdown(record map[string]any, hash string) string {
@@ -238,10 +295,20 @@ func cloneMap(input map[string]any) map[string]any {
 	return output
 }
 
+func verificationResults(status string) map[string]any {
+	result := map[string]any{
+		"engine":                     map[string]any{"gofmt": status, "go_mod_tidy_diff": status, "go_vet": status, "go_test": status, "go_test_race": status, "go_build": status, "make_verify": status, "git_diff_check": status},
+		"rif":                        map[string]any{"gofmt": status, "go_mod_tidy_diff": status, "go_vet": status, "go_test": status, "go_test_race": status, "go_build": status, "make_verify": status, "git_diff_check": status},
+		"scans":                      map[string]any{"secret_credentials": status, "absolute_paths": status, "sibling_dependencies": status, "trader_imports": status, "network_dependencies": status},
+		"json_validation":            status,
+		"recorded_sha256_validation": status,
+		"fresh_clone":                map[string]any{"engine": status, "rif": status, "no_sibling_ak_repositories": status, "clean_worktrees": status},
+	}
+	return result
+}
+
 func setHash(object map[string]any, field string) error {
-	copyObject := cloneMap(object)
-	delete(copyObject, field)
-	data, err := json.Marshal(copyObject)
+	data, err := canonicalMapBytesWithout(object, field)
 	if err != nil {
 		return err
 	}
@@ -255,12 +322,11 @@ func verifyHash(object map[string]any, field string) error {
 	if !ok || recorded == "" {
 		return fmt.Errorf("%s is missing", field)
 	}
-	copyObject := cloneMap(object)
-	delete(copyObject, field)
+	excluded := []string{field}
 	if field == "decision_record_hash" {
-		delete(copyObject, "artifact_hash")
+		excluded = append(excluded, "artifact_hash")
 	}
-	data, err := json.Marshal(copyObject)
+	data, err := canonicalMapBytesWithout(object, excluded...)
 	if err != nil {
 		return err
 	}
@@ -270,6 +336,27 @@ func verifyHash(object map[string]any, field string) error {
 		return fmt.Errorf("%s mismatch", field)
 	}
 	return nil
+}
+
+func canonicalMapBytes(object map[string]any) ([]byte, error) {
+	return canonicalMapBytesWithout(object)
+}
+
+func canonicalMapBytesWithout(object map[string]any, excluded ...string) ([]byte, error) {
+	data, err := json.Marshal(object)
+	if err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(strings.NewReader(string(data)))
+	decoder.UseNumber()
+	var normalized map[string]any
+	if err := decoder.Decode(&normalized); err != nil {
+		return nil, err
+	}
+	for _, field := range excluded {
+		delete(normalized, field)
+	}
+	return json.Marshal(normalized)
 }
 
 func sortedKeys(object map[string]any) []string {
