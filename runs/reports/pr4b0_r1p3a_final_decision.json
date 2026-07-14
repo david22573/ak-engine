@@ -2,11 +2,18 @@
   "accepted_independence_hash": null,
   "accepted_independence_version": null,
   "accepted_uncertainty_hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
-  "artifact_hash": "sha256:7035881f5c00fa5d206bc1aec6ce54b1689aeb9c674a27c05097c3276ab2dde5",
+  "artifact_hash": "sha256:99ba67b340019cb1ba8692e1254a7206503c28bff942b225d6bf114d402018a9",
   "authority_result": "NO_COMPLETE_ACCEPTED_CONCENTRATION_CONTRACT",
   "candidate_rerun_authorized": false,
-  "engine_qualification_boundary": "fail closed: no accepted independence-policy hash is registered for V2 candidate registration",
+  "engine_qualification_boundary": "fail closed: all-pass report booleans return CONCENTRATION_AUTHORITY_MISSING, and no accepted independence-policy hash is registered for V2 candidate registration",
   "executive_verdict": "The accepted report provenance is fully reconstructed, but accepted denominator authority is incomplete for symbol/temporal concentration and absent for largest/top-five cluster concentration. A decision-ready two-alternative packet is ready; no alternative is accepted.",
+  "fail_closed_proofs": {
+    "legacy_rejected_near_miss_and_probe_labels_cannot_upgrade": "PASS",
+    "missing_or_mutated_threshold_cannot_default_to_pass": "PASS",
+    "missing_or_zero_denominator_cannot_default_to_zero": "PASS",
+    "pending_v2_registration_cannot_reach_rif": "PASS",
+    "report_only_all_pass_cannot_qualify": "PASS"
+  },
   "final_label": "PR4B0_R1P3A_CONCENTRATION_GOVERNANCE_PACKET_READY",
   "governance_packet_status": "READY_FOR_USER_DECISION",
   "next_phase": "USER_CONCENTRATION_GOVERNANCE_DECISION_REQUIRED",
@@ -24,7 +31,7 @@
   },
   "resulting_code_commits": {
     "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
-    "engine": "c20a3125bea7577c56b852a59aeafd88d9dc1f78",
+    "engine": "0226b8731badb74becb3e02c1454b948c5239e24",
     "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
     "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
   },

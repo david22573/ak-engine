@@ -11,4 +11,4 @@ Decision path: **PATH_2_GOVERNANCE_PACKET_REQUIRED**. No accepted contract or in
 
 Verification: `PASS`
 
-Artifact hash: `sha256:74961a50e7676f4f29ce5972a92953daa169c34b8e4d532fee0a55e1bda69b8a`
+Artifact hash: `sha256:b410cef03eefc92ba643f7650cc7e38e9e0d820ccc6270bdc4af6d233e7bc112`

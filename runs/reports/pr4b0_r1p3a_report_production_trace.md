@@ -8,4 +8,4 @@ Producing source commit: `25efa97ca89f8dcb724f9872e798bc789123caac`
 
 Verification: `PASS`
 
-Artifact hash: `sha256:a889e2faa8ae4e421d03ef4e07ccc8ae2cd757f1777756c56a80bcb7bf515e8d`
+Artifact hash: `sha256:c5fef46b2c4f8bf0369440b8a6a772ba623e3d0af4f68d41b7f3868ffcb55f64`

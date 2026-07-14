@@ -6,7 +6,7 @@
     "json_artifact_sha256": "sha256:1caac0af112610905229f2c620919508ac9db3a4fe98d1a9640696c066c52765",
     "producing_source_commit": "25efa97ca89f8dcb724f9872e798bc789123caac"
   },
-  "artifact_hash": "sha256:c85a855baae9ed54c5097ae6f1e16bbd0c2ea785b11167c2ea7bb6cdaa589ff4",
+  "artifact_hash": "sha256:a9b86ec8b0a7214d4d189be719154e0c31328c3399650bf29fccac3e9950c2f1",
   "complete_path_inventory": [
     {
       "aggregation_unit": "PATH_SPECIFIC",
@@ -833,7 +833,7 @@
   },
   "resulting_code_commits": {
     "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
-    "engine": "c20a3125bea7577c56b852a59aeafd88d9dc1f78",
+    "engine": "0226b8731badb74becb3e02c1454b948c5239e24",
     "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
     "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
   },
