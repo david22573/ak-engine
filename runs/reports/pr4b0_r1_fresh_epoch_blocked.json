@@ -1,0 +1,366 @@
+{
+  "schema_version": "ak.engine.pr4b0-r1.fresh-epoch-blocked.v1",
+  "artifact_hash": "sha256:5b3e0c857f8286762e44ff503e390d5dc2dff96a141c52b626dfa210a0b3de36",
+  "final_label": "PR4B0_R1_RESEARCH_BLOCKED",
+  "executive_verdict": "Stage A failed closed before protocol registration because the accepted RIF baseline cannot create a pre-DEVELOPMENT closed FINAL_HOLDOUT reservation and cannot bind the complete mandated fresh-epoch identity. No candidate outcome was produced or read.",
+  "research_boundary": {
+    "protocol_created": false,
+    "protocol_commit": null,
+    "candidate_outcome_commands": 0,
+    "development_opened": false,
+    "validation_opened": false,
+    "candidate_frozen": false,
+    "final_holdout_authorizations": 0,
+    "final_holdout_evaluations": 0,
+    "real_rif_state_created": false,
+    "paper_or_trading_paths_entered": false,
+    "ak_trader_modified": false
+  },
+  "repository_preflight": {
+    "engine": {
+      "repository": "ak-engine",
+      "worktree": "/home/davidmiguel22573/Github/pr4b0-r1-ak-engine",
+      "starting_commit": "1d575f4b5331a640b1dc4fa46a2c281aa6a2487a",
+      "initial_head": "1d575f4b5331a640b1dc4fa46a2c281aa6a2487a",
+      "initial_status": "CLEAN",
+      "resulting_commit": "SELF_COMMIT_CONTAINING_THIS_REPORT"
+    },
+    "historian": {
+      "repository": "ak-historian",
+      "worktree": "/home/davidmiguel22573/Github/pr1-clean-ak-historian",
+      "starting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+      "initial_head": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+      "initial_status": "CLEAN",
+      "resulting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e"
+    },
+    "rif": {
+      "repository": "ak-rif",
+      "worktree": "/home/davidmiguel22573/Github/pr4a0-ak-rif",
+      "starting_commit": "c5823e88d0f1fd8f25a93ee70c5a3490fc12dbcb",
+      "initial_head": "c5823e88d0f1fd8f25a93ee70c5a3490fc12dbcb",
+      "initial_status": "CLEAN",
+      "resulting_commit": "c5823e88d0f1fd8f25a93ee70c5a3490fc12dbcb"
+    }
+  },
+  "historian_ancestry": {
+    "starting_commit": "3864a0c4066b7859b821b534b79a9cc3ae012fa2",
+    "repair_implementation": "fba40dc23a24afdc2ac03b76e5a2609df4b6116d",
+    "authoritative_source_seal": "a81d343b3ae20c45c6d78f45f53cec67f8777442",
+    "final_checkpoint_evidence": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+    "all_objects_are_commits": true,
+    "ordered_ancestor_checks_passed": true
+  },
+  "accepted_predecessor_result": "PR4B0_R1P5R_SOURCE_REPAIRED_AND_COVERAGE_REACQUIRED",
+  "authority_verification": {
+    "independence": {
+      "authority": "ak.engine.independence.downtrend-midvol-relief.v3",
+      "repository_relative_path": "internal/preconditions/independence_v3.go",
+      "computed_hash": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f",
+      "status": "BYTE_DERIVED_CANONICAL_MATCH"
+    },
+    "uncertainty": {
+      "authority": "ak.engine.uncertainty.cluster-bootstrap.v2",
+      "repository_relative_path": "internal/preconditions/uncertainty_v2.go",
+      "computed_hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+      "status": "BYTE_DERIVED_CANONICAL_MATCH"
+    },
+    "concentration_governance": {
+      "authority": "ak.engine.governance.concentration-decision.v1",
+      "repository_relative_paths": [
+        "internal/preconditions/independence_v3.go",
+        "runs/reports/pr4b0_r1p3b_concentration_governance_decision.json"
+      ],
+      "computed_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+      "status": "BYTE_DERIVED_CANONICAL_MATCH"
+    },
+    "active_evaluation_call_graph": {
+      "concentration_identity_enforced_by": "internal/qualification/concentration_v3.go",
+      "candidate_runner_invokes_independence_v3": false,
+      "candidate_runner_invokes_uncertainty_v2": false,
+      "status": "INCOMPLETE_BASELINE_RUNNER_PLUMBING_NOT_EXECUTED"
+    }
+  },
+  "checkpoint_verification": {
+    "checkpoint_id": "r1p5r-checkpoint-20260717T073628Z",
+    "checkpoint_path": "/home/davidmiguel22573/.local/state/ak-historian/backfill/pr4b0-r1p5r/manifests/checkpoints/r1p5r-checkpoint-20260717T073628Z.json",
+    "checkpoint_raw_file_sha256": "sha256:5cf2a16be6484cd114cea48a5e7c5bc9e3db2063e2101f24d0d67fca1b7bcf66",
+    "checkpoint_canonical_sha256": "sha256:bef53d11aa9ce9a6dad61b89ef7ace063b6da812ff92208d463c6ecfbfe8f29c",
+    "eligible_interval_start": "2026-01-01T00:00:00Z",
+    "eligible_interval_end": "2026-07-17T00:00:00Z",
+    "complete_utc_days": 197,
+    "required_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "BTCUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ],
+    "daily_partition_manifests": 1773,
+    "gaps": 0,
+    "duplicates": 0,
+    "conflicts": 0,
+    "schema_failures": 0,
+    "evidence_gaps": 0,
+    "clock_errors": 0,
+    "sealed_readiness_scan": "PASS",
+    "sealed_readiness_label": "PR4B0_R1P5R_SOURCE_REPAIRED_AND_COVERAGE_REACQUIRED"
+  },
+  "source_chain_verification": {
+    "reacquisition_protocol": {
+      "identity": "ak-historian.pr4b0-r1p5r.reacquisition-protocol.v1",
+      "path": "authority/pr4b0_r1p5r_reacquisition_protocol.json",
+      "raw_file_sha256": "sha256:aa80e9a65f4df52837026d513887443ca0f63a0f5bd82c481847315aa645597e",
+      "canonical_sha256": "sha256:7fd6c667d97a0ff3387e352d8c8e9b25ef5a744d641147ed66b98df75dcc0e1a"
+    },
+    "source_identity": {
+      "identity": "ak-historian.pr4b0-r1p5r.source-identity.v1",
+      "path": "authority/pr4b0_r1p5r_source_identity.json",
+      "raw_file_sha256": "sha256:0e024ae69bc7aa6ef562ae576a79b0451bd8506a72bba03dfcdfddb900b4459b",
+      "canonical_sha256": "sha256:d99a88a72b4bfe84c2ae43a4a477724b95fde2b45b381f7b75fc4c107d2a161a"
+    },
+    "preacquisition_seal": {
+      "identity": "ak-historian.pr4b0-r1p5r.preacquisition-seal.v1",
+      "path": "authority/pr4b0_r1p5r_preacquisition_seal.json",
+      "raw_file_sha256": "sha256:95b425488f2864a1d90771045459e8b550b147f6687ab88cf25bbd582b056ddd",
+      "canonical_sha256": "sha256:8046a306c80c127bd631df6eb4ae07ef587c350d4ac3a5f3be33f84a0f4681c9"
+    },
+    "sealed_binary": {
+      "path": "/home/davidmiguel22573/r1p5r-seal2-parent-klBouQlX/source/bin/ak-historian-r1p5r",
+      "size_bytes": 18434779,
+      "computed_sha256": "sha256:c10fdf10255a8c88c817d5189b20ca7411be1fcd2ae64df8c07e2d1934054ae6",
+      "second_original_build_matches": true,
+      "independent_rebuild_matches": true
+    },
+    "abandoned_evidence_registry": {
+      "identity": "ak-historian.pr4b0-r1p5r.abandoned-evidence-registry.v1",
+      "path": "authority/pr4b0_r1p5r_abandoned_evidence_registry.json",
+      "raw_file_sha256": "sha256:99a501dda9c1fc0abb0e91582107515e7e7a9ce634791165d9da0eef93515e3f",
+      "canonical_sha256": "sha256:f8a47626a234544f34ae59846c330682e78943add69edb171c558287b35417ca"
+    }
+  },
+  "post_closeout_reverification": {
+    "scope": "No evaluation occurred; immutable inputs were rehashed after the fail-closed decision and before evidence commit.",
+    "checkpoint_raw_file_sha256": "sha256:5cf2a16be6484cd114cea48a5e7c5bc9e3db2063e2101f24d0d67fca1b7bcf66",
+    "reacquisition_protocol_raw_file_sha256": "sha256:aa80e9a65f4df52837026d513887443ca0f63a0f5bd82c481847315aa645597e",
+    "source_identity_raw_file_sha256": "sha256:0e024ae69bc7aa6ef562ae576a79b0451bd8506a72bba03dfcdfddb900b4459b",
+    "preacquisition_seal_raw_file_sha256": "sha256:95b425488f2864a1d90771045459e8b550b147f6687ab88cf25bbd582b056ddd",
+    "abandoned_evidence_registry_raw_file_sha256": "sha256:99a501dda9c1fc0abb0e91582107515e7e7a9ce634791165d9da0eef93515e3f",
+    "sealed_binary_sha256": "sha256:c10fdf10255a8c88c817d5189b20ca7411be1fcd2ae64df8c07e2d1934054ae6",
+    "all_raw_hashes_unchanged": true
+  },
+  "availability_cutoff_derivation": {
+    "source_identity_created_at_utc": "2026-07-17T06:12:54Z",
+    "source_seal_verification_completed_at_utc": "2026-07-17T06:46:35Z",
+    "final_receipt_durable_completion_utc": "2026-07-17T07:30:04.462275936Z",
+    "final_receipt_cutoff_floor_utc": "2026-07-17T07:30:04.462275937Z",
+    "checkpoint_created_at_utc": "2026-07-17T07:36:28.276810652Z",
+    "latest_durable_evidence_utc": "2026-07-17T07:36:28.276810652Z",
+    "derived_evaluation_availability_cutoff_utc": "2026-07-17T07:36:29Z",
+    "protocol_registered_after_cutoff": false,
+    "protocol_registration_status": "NOT_ATTEMPTED_BECAUSE_STAGE_A_BLOCKED"
+  },
+  "partitions": {
+    "development": {
+      "start": "2026-01-01T00:00:00Z",
+      "end": "2026-04-10T00:00:00Z",
+      "complete_utc_days": 99,
+      "opened": false
+    },
+    "validation": {
+      "start": "2026-04-10T00:00:00Z",
+      "end": "2026-05-29T00:00:00Z",
+      "complete_utc_days": 49,
+      "opened": false
+    },
+    "final_holdout": {
+      "start": "2026-05-29T00:00:00Z",
+      "end": "2026-07-17T00:00:00Z",
+      "complete_utc_days": 49,
+      "opened": false
+    }
+  },
+  "v00_baseline_audit": {
+    "candidate_family": "phase12/DowntrendMidVolReliefLong240m",
+    "engine_starting_tree_contains_candidate_source": false,
+    "referenced_executable_commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+    "referenced_source_path": "internal/app/phase12_downtrend_midvol_relief.go",
+    "referenced_source_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "fixed_side": "long",
+    "fixed_horizon": "240m",
+    "signal_semantics": "close < EMA50 < EMA200, TrendSlope20 < 0, and 0.0015 <= RealizedVol60 <= 0.006",
+    "context_behavior": "BTCUSDT and ETHUSDT candles are loaded but no configurable context-agreement gate is applied",
+    "event_quality_controls": [],
+    "cooldown_or_independence_controls": [],
+    "raw_event_detail_retained": false,
+    "barred_warmup_risk": "the referenced loader requests two months before the selected first month",
+    "status": "NOT_REGISTERED_AND_NOT_EXECUTED"
+  },
+  "variant_ledger": {
+    "registered_variant_count": 0,
+    "v00_registered": false,
+    "nominee": null,
+    "reason": "Protocol construction was prohibited after the Stage A RIF integrity blocker was proven."
+  },
+  "accepted_gate_contract": {
+    "schema": "ak.engine.candidate_qualification_protocol.v1",
+    "minimum_events": 300,
+    "minimum_independent_clusters": 300,
+    "minimum_trades_or_decisions": 300,
+    "minimum_symbols": 4,
+    "minimum_months": 12,
+    "minimum_net_expectancy_bps": 0.01,
+    "minimum_profit_factor": 1.1,
+    "maximum_drawdown_bps": 2500,
+    "minimum_confidence_lower_bound_bps": 0,
+    "minimum_worst_period_profit_factor": 0.95,
+    "minimum_stable_neighbors": 2,
+    "cost_assumptions_bps": {
+      "fee": 5,
+      "spread": 1,
+      "slippage": 1,
+      "funding": 1,
+      "adverse_selection": 2,
+      "stress_total": 10
+    },
+    "minimum_stress_profit_factor": 1.01,
+    "minimum_stress_expectancy_bps": 0.01,
+    "concentration_thresholds": {
+      "symbol": "<=1/2",
+      "temporal": "<=1/2",
+      "largest_cluster": "<=1/2",
+      "top_five_clusters": "<=7/10"
+    },
+    "partition_gate_results": {
+      "development": "NOT_RUN",
+      "validation": "NOT_RUN",
+      "final_holdout": "NOT_RUN"
+    }
+  },
+  "rif_research_identity_audit": {
+    "accepted_schema": "ak.rif.research_identity.v3",
+    "registration_initial_state": "DISCOVERY",
+    "fields_present": [
+      "dataset_id",
+      "dataset_version",
+      "research_window_start",
+      "research_window_end",
+      "evaluation_cutoff",
+      "manifest_id",
+      "manifest_hash",
+      "availability_policy_version",
+      "coverage_policy_version",
+      "independence_policy_hash",
+      "uncertainty_method_hash",
+      "source_schema_hash",
+      "manifest_contract_hash",
+      "governance_decision_hash"
+    ],
+    "mandated_bindings_not_representable": [
+      "protocol_identity",
+      "protocol_hash",
+      "protocol_git_commit",
+      "engine_baseline",
+      "historian_checkpoint_commit",
+      "rif_baseline",
+      "source_identity_hash",
+      "variant_ledger",
+      "separate_development_boundary",
+      "separate_validation_boundary",
+      "separate_final_holdout_boundary",
+      "prohibited_prior_exposure_interval"
+    ],
+    "status": "MANDATORY_IDENTITY_BINDING_UNAVAILABLE"
+  },
+  "rif_holdout_reservation_audit": {
+    "accepted_contract": "ak.rif.frozen_holdout_access_identity.v1",
+    "only_reservation_api": "registry.HoldoutAccessAuthority.Reserve",
+    "required_lifecycle_state": "VALIDATED",
+    "required_lifecycle_epoch": "positive",
+    "candidate_state_must_match_frozen_identity": true,
+    "required_epoch_order": "reserve closed FINAL_HOLDOUT before DEVELOPMENT while candidate begins DISCOVERY",
+    "compatibility": false,
+    "status": "PRE_DEVELOPMENT_RESERVATION_IMPOSSIBLE_WITH_ACCEPTED_CONTRACT"
+  },
+  "prohibited_evidence_scan": {
+    "barred_interval": "[2024-01-01T00:00:00Z,2026-01-01T00:00:00Z)",
+    "legacy_reports_and_references_present_in_engine_baseline": true,
+    "legacy_outcomes_used_for_protocol_or_variants": false,
+    "quarantined_r1p5_data_root_used": false,
+    "new_checkpoint_substituted": false,
+    "new_data_fetched": false,
+    "symlink_dependencies_found": false,
+    "candidate_outcomes_read": false,
+    "status": "NO_PROHIBITED_DEPENDENCY; BASELINE LEGACY REFERENCES REMAIN QUARANTINED"
+  },
+  "stage_results": {
+    "stage_a": "BLOCKED_BEFORE_PROTOCOL_REGISTRATION",
+    "stage_b_development": "NOT_OPENED",
+    "stage_c_validation": "NOT_OPENED",
+    "stage_d_candidate_freeze": "NOT_REACHED",
+    "stage_e_final_holdout": "NOT_OPENED"
+  },
+  "qualification_results": {
+    "concentration": "NOT_RUN",
+    "independence_v3": "IDENTITY_VERIFIED; CANDIDATE_EVALUATION_NOT_RUN",
+    "uncertainty_v2": "IDENTITY_VERIFIED; CANDIDATE_EVALUATION_NOT_RUN",
+    "final_decision": "RESEARCH_INTEGRITY_BLOCKER"
+  },
+  "remaining_blockers": [
+    {
+      "code": "RIF_PRE_DEVELOPMENT_HOLDOUT_RESERVATION_UNAVAILABLE",
+      "evidence": "registry/holdout_access.go requires VALIDATED lifecycle state and matching positive epoch before Reserve, while lifecycle registration begins at DISCOVERY and the fresh-epoch protocol requires reservation before DEVELOPMENT.",
+      "resolution_policy": "Do not modify or substitute the accepted RIF contract inside this epoch. A future accepted governance contract and fresh epoch are required."
+    },
+    {
+      "code": "RIF_FRESH_EPOCH_IDENTITY_BINDINGS_UNAVAILABLE",
+      "evidence": "core.ResearchIdentity V3 cannot bind the full mandated protocol identity/commit, variant ledger, partition boundaries, source identity, repository baselines, and prohibited interval.",
+      "resolution_policy": "Do not encode missing identities through aliases or overloaded fields. A future accepted schema and fresh epoch are required."
+    },
+    {
+      "code": "BASELINE_CANDIDATE_RUNNER_AUTHORITY_CALL_GRAPH_INCOMPLETE",
+      "evidence": "The required Engine tree lacks the candidate source; the referenced runner retains summaries only and does not invoke independence V3 or uncertainty V2.",
+      "resolution_policy": "Do not restore or change candidate semantics after registration. Establish an accepted executable V00 runner before a future fresh protocol."
+    }
+  ],
+  "tests_run": [
+    {
+      "command": "GOWORK=off go test -overlay /home/davidmiguel22573/.planning/2026-07-17-pr4b0-r1-fresh-epoch/engine_overlay.json ./internal/preconditions -run '^TestPR4B0R1AuthorityAudit$' -count=1 -v",
+      "result": "PASS"
+    },
+    {
+      "command": "GOWORK=off go test -overlay /home/davidmiguel22573/.planning/2026-07-17-pr4b0-r1-fresh-epoch/historian_overlay.json ./internal/r1p5r -run '^(TestCommittedAuthorityHashesUseGoCanonicalJSON|TestPR4B0R1StructuralCheckpointAudit)$' -count=1 -v",
+      "result": "EXPECTED_FAIL_CLOSED_UNSEALED_TEST_EXECUTABLE; COMMITTED_AUTHORITY_BYTE_TEST_PASS"
+    },
+    {
+      "command": "/home/davidmiguel22573/r1p5r-seal2-parent-klBouQlX/source/bin/ak-historian-r1p5r r1p5r-readiness --repository-root /tmp/tmp.Ja1WnwpvRX --data-root /home/davidmiguel22573/.local/state/ak-historian/backfill/pr4b0-r1p5r --live-data-root /home/davidmiguel22573/.local/state/ak-historian/prospective/pr4b0-r1p4 --activation /home/davidmiguel22573/.local/state/ak-historian/prospective/pr4b0-r1p4/contracts/dataset_activation.json",
+      "result": "PASS"
+    },
+    {
+      "command": "GOWORK=off go test ./governance ./registry ./lifecycle -count=1",
+      "result": "PASS"
+    },
+    {
+      "command": "GOWORK=off go test ./internal/preconditions ./internal/qualification -count=1",
+      "result": "PASS"
+    },
+    {
+      "command": "GOWORK=off go vet ./internal/preconditions ./internal/qualification",
+      "result": "PASS"
+    }
+  ],
+  "exact_files_changed": [
+    "runs/reports/pr4b0_r1_fresh_epoch_blocked.json",
+    "runs/reports/pr4b0_r1_fresh_epoch_blocked.md"
+  ],
+  "commits_created": [
+    "SELF_COMMIT_CONTAINING_THIS_REPORT"
+  ],
+  "generated_report_paths": [
+    "runs/reports/pr4b0_r1_fresh_epoch_blocked.json",
+    "runs/reports/pr4b0_r1_fresh_epoch_blocked.md"
+  ]
+}
