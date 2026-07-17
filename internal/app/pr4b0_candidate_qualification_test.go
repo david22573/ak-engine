@@ -4,11 +4,20 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/david22573/ak-engine/internal/qualification"
 )
+
+func TestPR4B0GateReportUsesCanonicalAcceptedDeclaration(t *testing.T) {
+	got := pr4b0QualificationGatePolicy()
+	want := qualification.AcceptedPR4B0GateSet()
+	if got.PolicyStatus != want.PolicyStatus || !reflect.DeepEqual(got.DataIntegrity, want.DataIntegrity) || got.SampleSufficiency != want.Sample || got.Performance != want.Performance || got.Robustness != want.Robustness || got.CostStress != want.Cost || !reflect.DeepEqual(got.LeakageRules, want.LeakageRules) || got.SimplicityRule != want.SimplicityRule {
+		t.Fatal("existing PR4B0 gate declaration changed while canonicalizing its identity")
+	}
+}
 
 func TestPR4B0InventoryIsCompleteAndPreservesPriorLabels(t *testing.T) {
 	inventory, err := buildPR4B0Inventory()
