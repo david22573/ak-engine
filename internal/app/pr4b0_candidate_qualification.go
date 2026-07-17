@@ -589,21 +589,13 @@ func buildPR4B0QualificationReport(inventory qualification.CandidateInventory, r
 }
 
 func pr4b0QualificationGatePolicy() pr4b0GatePolicy {
+	accepted := qualification.AcceptedPR4B0GateSet()
 	return pr4b0GatePolicy{
-		PolicyStatus: "DECLARED_FOR_EXISTING_EVIDENCE_ASSESSMENT; NO_NEW_SEARCH_EXECUTED",
-		DataIntegrity: map[string]any{
-			"dataset_id":      "required exact immutable identity; none established for an Engine candidate",
-			"dataset_version": "required immutable version; mutable aliases prohibited", "manifest_id_and_hash": "required and must match accepted Historian PIT evidence",
-			"windows": "non-overlapping development, validation, and one-time final holdout", "required_symbols": []string{"ADAUSDT", "AVAXUSDT", "BNBUSDT", "DOGEUSDT", "ETHUSDT", "LINKUSDT", "SOLUSDT", "XRPUSDT"},
-			"required_context_symbols": []string{"BTCUSDT", "ETHUSDT where candidate capability requires them"}, "gap_policy": "reject undeclared internal gaps", "pit_policy": "source available_at must be no later than decision cutoff",
-		},
-		SampleSufficiency: qualification.SampleGates{MinimumEvents: 300, MinimumIndependentClusters: 300, MinimumTradesOrDecisions: 300, MinimumSymbols: 4, MinimumMonths: 12, MinimumPositiveRegimes: 1, MinimumNegativeRegimes: 1},
-		Performance:       qualification.PerformanceGates{MinimumNetExpectancyBPS: 0.01, MinimumProfitFactor: 1.10, MaximumDrawdownBPS: 2500, MinimumConfidenceLowerBoundBPS: 0.0, DownsideTailPolicy: "lower confidence bound must be positive and worst-decile/worst-symbol-month loss must fit declared drawdown budget"},
-		Robustness:        qualification.RobustnessGates{RequireOutOfSample: true, RequireWalkForward: true, MinimumWorstPeriodProfitFactor: 0.95, MaximumSymbolContributionPercent: 50, MaximumTemporalContributionPercent: 50, MaximumRegimeContributionPercent: 60, MinimumStableNeighbors: 2, RequireClusterDeduplication: true, RequireMissingContextSensitivity: true},
-		CostStress:        qualification.CostGates{FeeBPS: 5, SpreadBPS: 1, SlippageBPS: 1, FundingBPS: 1, AdverseSelectionBPS: 2, StressTotalBPS: 10, MinimumStressProfitFactor: 1.01, MinimumStressExpectancyBPS: 0.01},
-		LeakageRules:      []string{"reject future candles", "reject revised data unavailable at cutoff", "reject final outcomes in features", "reject holdout-derived feature selection", "require PIT-compatible source timing", "reject manifest/dataset mismatch"},
-		SimplicityRule:    "select the simplest candidate only after all mandatory gates pass; additional degrees of freedom require material validation improvement",
-		SearchPolicy:      map[string]any{"new_search_performed": false, "open_ended_tuning_allowed": false, "final_holdout_used_for_selection": false, "future_search_requires_separate_pre_registration": true},
+		PolicyStatus: accepted.PolicyStatus, DataIntegrity: accepted.DataIntegrity,
+		SampleSufficiency: accepted.Sample, Performance: accepted.Performance,
+		Robustness: accepted.Robustness, CostStress: accepted.Cost,
+		LeakageRules: accepted.LeakageRules, SimplicityRule: accepted.SimplicityRule,
+		SearchPolicy: map[string]any{"new_search_performed": false, "open_ended_tuning_allowed": false, "final_holdout_used_for_selection": false, "future_search_requires_separate_pre_registration": true},
 	}
 }
 
