@@ -1,0 +1,124 @@
+{
+  "schema_version": "ak.report.pr4b0_r1_fresh_epoch_restart_blocked.v1",
+  "artifact_id": "pr4b0_r1_fresh_epoch_restart_blocked",
+  "artifact_hash": "sha256:59d9687c155e4ffb6c9b7290c7411edeb141624c431d659db8358b3f1072489f",
+  "generated_at": "2026-07-18T10:19:00Z",
+  "verdict": "PR4B0_R1_RESEARCH_BLOCKED",
+  "accepted_starting_commits": {
+    "ak_engine": "2c210eb739596024aee4d411c1c2c3a85dfb0702",
+    "ak_rif": "50e07b55b88d2c9b98b34ee8d62fe32b4a39eb0a",
+    "ak_historian": "14e0b569cc41e3517d2393d87d39c00559ac408e"
+  },
+  "accepted_starting_trees": {
+    "ak_engine": "f11e7281880deabec026bb6e5ba474e5a1df0650",
+    "ak_rif": "68a8f2a49a2f27ad9c40107711243c4c2d405a18",
+    "ak_historian": "74182d50c8f6dc6639c68cd6af9a82656640701c"
+  },
+  "p6_prerequisite": {
+    "verdict": "PR4B0_R1P6_PREDEVELOPMENT_GOVERNANCE_AND_RUNNER_COMPLETE",
+    "rif_identity": "ak.rif.research_identity.v4",
+    "rif_store": "ak.rif.research_governance_store.v1",
+    "rif_envelope": "ak.rif.research_governance_envelope.v1",
+    "engine_runner": "pr4b0-r1-qualification-runner",
+    "qualification_gate_set": {
+      "id": "ak.engine.qualification-gates.pr4b0.v1",
+      "sha256": "sha256:647e5d0885dbe8b73df736762e2f998bfa88f54d9331ed6aa4604888ab982635"
+    },
+    "deterministic_runner_executable_sha256": "sha256:eefec664f453db2a19bc643263fdce56abc4dde63b1226bd746e77bdbf3e48fd"
+  },
+  "accepted_authorities": {
+    "independence": {
+      "id": "ak.engine.independence.downtrend-midvol-relief.v3",
+      "sha256": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f"
+    },
+    "uncertainty": {
+      "id": "ak.engine.uncertainty.cluster-bootstrap.v2",
+      "sha256": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb"
+    },
+    "concentration_governance_sha256": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5"
+  },
+  "accepted_checkpoint": {
+    "id": "r1p5r-checkpoint-20260717T073628Z",
+    "sha256": "sha256:bef53d11aa9ce9a6dad61b89ef7ace063b6da812ff92208d463c6ecfbfe8f29c",
+    "source_identity_sha256": "sha256:d99a88a72b4bfe84c2ae43a4a477724b95fde2b45b381f7b75fc4c107d2a161a",
+    "reacquisition_protocol_sha256": "sha256:7fd6c667d97a0ff3387e352d8c8e9b25ef5a744d641147ed66b98df75dcc0e1a",
+    "preacquisition_seal_sha256": "sha256:8046a306c80c127bd631df6eb4ae07ef587c350d4ac3a5f3be33f84a0f4681c9",
+    "sealed_binary_sha256": "sha256:c10fdf10255a8c88c817d5189b20ca7411be1fcd2ae64df8c07e2d1934054ae6",
+    "abandoned_evidence_registry_sha256": "sha256:f8a47626a234544f34ae59846c330682e78943add69edb171c558287b35417ca",
+    "verification": "PASS_USING_ACCEPTED_GO_CANONICAL_HASH_VERIFIER"
+  },
+  "registered_partitions": [
+    {"name": "DEVELOPMENT", "start_inclusive": "2026-01-01T00:00:00Z", "end_exclusive": "2026-04-10T00:00:00Z"},
+    {"name": "VALIDATION", "start_inclusive": "2026-04-10T00:00:00Z", "end_exclusive": "2026-05-29T00:00:00Z"},
+    {"name": "FINAL_HOLDOUT", "start_inclusive": "2026-05-29T00:00:00Z", "end_exclusive": "2026-07-17T00:00:00Z"}
+  ],
+  "permanently_barred_interval": {"start_inclusive": "2024-01-01T00:00:00Z", "end_exclusive": "2026-01-01T00:00:00Z"},
+  "blocking_findings": [
+    {
+      "id": "PRE_REGISTRATION_ARTIFACT_HASH_CIRCULARITY",
+      "severity": "INTEGRITY_BLOCKING",
+      "rif_evidence": "research/canonical.go requires a valid required_symbol_coverage_sha256 in every immutable partition before identity registration",
+      "engine_evidence": "internal/qualificationrunner/execution.go requires that registered value to equal the exact sealed Engine partition-artifact hash",
+      "conflict": "The Engine artifact contains partition feature rows and future_close_240m and can only be derived by opening protected partition data. No accepted checkpoint field supplies the Engine artifact hash. Deriving it before identity registration and holdout reservation would violate no-access ordering; deriving it after authorization cannot update the immutable registered identity.",
+      "safe_workaround_available": false
+    },
+    {
+      "id": "SINGLE_CONFIGURATION_PARTITION_LIFECYCLE",
+      "severity": "INTEGRITY_BLOCKING",
+      "rif_evidence": "research/authority.go exposes one HOLDOUT_RESERVED-to-DEVELOPMENT_AUTHORIZED transition and one DEVELOPMENT_SEALED-to-VALIDATION_AUTHORIZED transition; each authorization, access receipt, and seal binds exactly one variant and configuration",
+      "engine_evidence": "internal/qualificationrunner/runner.go rejects any execution request whose variant or configuration differs from that single RIF authorization binding",
+      "conflict": "The complete predeclared DEVELOPMENT ledger cannot be executed, and the nominee plus every mandatory registered VALIDATION stability neighbor cannot all be executed, through the accepted P6 lifecycle.",
+      "safe_workaround_available": false
+    },
+    {
+      "id": "STABILITY_PASS_NOT_EVIDENCED",
+      "severity": "INTEGRITY_BLOCKING",
+      "engine_evidence": "internal/qualificationrunner/execution.go sets stable_neighbors from the count of registered neighbor IDs and consumes no neighbor result artifacts",
+      "conflict": "Registration cannot prove that every mandatory stability neighbor passed; treating the count as passing evidence would bypass the explicit restart requirement.",
+      "safe_workaround_available": false
+    }
+  ],
+  "pre_outcome_sequence_status": {
+    "starting_commits_verified": true,
+    "p6_contract_and_identity_verified": true,
+    "checkpoint_and_authority_hashes_verified": true,
+    "canonical_protocol_created": false,
+    "protocol_only_engine_commit_created": false,
+    "rif_v4_identity_registered": false,
+    "final_holdout_reserved": false,
+    "partitions_opened": false,
+    "variant_ledger_registered": false,
+    "structural_dry_verification_run": false,
+    "development_authorized": false,
+    "reason_stopped": "Accepted P6 contracts cannot represent or execute the required epoch without preregistration data access or multi-variant authorization bypass. Stopping before protocol commitment avoids creating an unusable or knowingly false immutable research identity."
+  },
+  "research_boundary": {
+    "real_rif_state_created": false,
+    "development_partition_reads": 0,
+    "validation_partition_reads": 0,
+    "final_holdout_partition_reads": 0,
+    "candidate_configurations_executed": 0,
+    "candidate_events_produced": 0,
+    "candidate_outcomes_produced": 0,
+    "final_holdout_pre_freeze_reads": 0
+  },
+  "verification_commands": [
+    {"repository": "ak-engine", "command": "GOWORK=off go test ./internal/qualificationrunner ./internal/rifbridge ./internal/qualification ./internal/preconditions ./internal/app -count=1", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go vet ./internal/qualificationrunner ./internal/rifbridge ./internal/qualification", "result": "PASS"},
+    {"repository": "ak-engine", "command": "two GOWORK=off go build -trimpath -buildvcs=false ./cmd/ak-engine builds", "result": "BYTE_IDENTICAL_SHA256_EEFEC664F453DB2A19BC643263FDCE56ABC4DDE63B1226BD746E77BDBF3E48FD"},
+    {"repository": "ak-rif", "command": "GOWORK=off go test ./research -count=1 && GOWORK=off go test -race ./research -count=1 && GOWORK=off go vet ./research", "result": "PASS"},
+    {"repository": "ak-historian", "command": "GOWORK=off go test ./internal/r1p5r ./internal/prospective -count=1 && GOWORK=off go vet ./internal/r1p5r", "result": "PASS"},
+    {"repository": "ak-historian", "command": "accepted Go canonical hash verification for source identity, reacquisition protocol, pre-acquisition seal, abandoned-evidence registry, and checkpoint", "result": "PASS"}
+  ],
+  "scope_guard": {
+    "old_r1p5_source_or_receipt_chain_used": false,
+    "old_r1p5_checkpoint_used": false,
+    "validation_or_holdout_reopened": false,
+    "qualification_gates_modified": false,
+    "authority_implementations_modified": false,
+    "candidate_family_or_permitted_dimensions_modified": false,
+    "historian_modified": false,
+    "pr4b1_or_downstream_work_started": false
+  },
+  "final_verdict": "PR4B0_R1_RESEARCH_BLOCKED"
+}
