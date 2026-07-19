@@ -1,0 +1,263 @@
+{
+  "schema_version": "ak.report.pr4b0_r1p7.v1",
+  "artifact_id": "pr4b0_r1p7_artifact_identity_and_stage_authorization",
+  "artifact_hash": "sha256:b2647185c3f9ef64cf75b7c787e249b9d7ad48557d9c233af1f7de789c52546c",
+  "generated_at": "2026-07-19T10:27:14Z",
+  "verdict": "PR4B0_R1P7_ARTIFACT_IDENTITY_AND_STAGE_AUTHORIZATION_COMPLETE",
+  "scope_guard": [
+    "No real candidate configuration was executed.",
+    "No real DEVELOPMENT outcomes were produced.",
+    "No real VALIDATION outcomes were produced.",
+    "No real FINAL_HOLDOUT rows were accessed.",
+    "No paper evaluation was started."
+  ],
+  "repository_preflight": {
+    "isolated_clean_worktrees": true,
+    "dirty_original_checkouts_modified": false,
+    "engine": {
+      "worktree": "/home/davidmiguel22573/Github/pr4b0-r1p7-ak-engine",
+      "branch": "pr4b0-r1p7-stage-auth-engine",
+      "starting_commit": "2c210eb739596024aee4d411c1c2c3a85dfb0702",
+      "starting_tree": "f11e7281880deabec026bb6e5ba474e5a1df0650",
+      "resulting_source_commit": "83ecf47d765fc2941a8b36c0a465d10612653ad7",
+      "resulting_source_tree": "2658ba6971bee0d26101550837528026d02277f9"
+    },
+    "rif": {
+      "worktree": "/home/davidmiguel22573/Github/pr4b0-r1p7-ak-rif",
+      "branch": "pr4b0-r1p7-stage-auth-rif",
+      "starting_commit": "50e07b55b88d2c9b98b34ee8d62fe32b4a39eb0a",
+      "starting_tree": "68a8f2a49a2f27ad9c40107711243c4c2d405a18",
+      "resulting_source_commit": "6e8dca3aad579ae8e8c0b54a62a15156ec52ece0",
+      "resulting_source_tree": "81105bfd56a8d900e59ece81cd84796e95334d5a"
+    },
+    "historian": {
+      "worktree": "/home/davidmiguel22573/Github/pr4b0-r1p7-ak-historian",
+      "starting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+      "resulting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+      "starting_tree": "74182d50c8f6dc6639c68cd6af9a82656640701c",
+      "resulting_tree": "74182d50c8f6dc6639c68cd6af9a82656640701c",
+      "modified": false
+    }
+  },
+  "latest_blocked_evidence_verification": {
+    "commit": "3ac81aa1a44bbcac14317193215c016731a6d1c3",
+    "parent": "2c210eb739596024aee4d411c1c2c3a85dfb0702",
+    "directly_after_accepted_engine_start": true,
+    "files": [
+      "runs/reports/pr4b0_r1_fresh_epoch_restart_blocked.json",
+      "runs/reports/pr4b0_r1_fresh_epoch_restart_blocked.md"
+    ],
+    "reports_only": true,
+    "canonical_json_hash_reproduced": "sha256:59d9687c155e4ffb6c9b7290c7411edeb141624c431d659db8358b3f1072489f",
+    "semantic_baseline": false,
+    "cherry_picked": false
+  },
+  "artifact_identity_cycle_reproduction": {
+    "reproduced": true,
+    "old_contract": "The P6 single-run Engine path compared an opened post-access PartitionArtifact hash with the preregistered structural coverage identity while RIF required the executable/result binding before one authorization.",
+    "blocked_multi_variant_condition": "P6 RIF lifecycle authorized one configuration per DEVELOPMENT or VALIDATION state, while the protocol requires the complete ledger and then nominee plus every mandatory neighbor.",
+    "repair": "Authorization now binds pre-execution identities and a complete ordered stage plan only; actual result identity is computed after execution and is mandatory for sealing.",
+    "placeholder_hash_used": false,
+    "identity_comparison_disabled": false
+  },
+  "preexecution_identity_design": {
+    "runner_schema": "ak.rif.runner_implementation_identity.v1",
+    "registered_configuration_schema": "ak.rif.registered_configuration_identity.v1",
+    "stage_plan_schema": "ak.rif.stage_execution_plan.v1",
+    "known_before_access": [
+      "Engine source commit",
+      "canonical qualification-runner package identity",
+      "sorted deterministic build-input hash",
+      "compiler identity",
+      "canonical build-mode identity",
+      "runner binary SHA-256",
+      "full canonical configurations and hashes",
+      "protocol, dataset, partition, and checkpoint identities",
+      "seed/cost policies, authorities, and gate set"
+    ],
+    "result_artifact_hash_in_authorization": false,
+    "prebuild_data_loads": 0,
+    "prebuild_candidate_events": 0,
+    "prebuild_candidate_outcomes": 0,
+    "deterministic_engine_binary_sha256": "sha256:371153d611cebce5838caebf1a57346f15f566c7494042538758b133cd98faa7",
+    "deterministic_rif_research_test_binary_sha256": "sha256:ac761e3d05abe8453427236c217202a4ff633acdf822d11ce30ed00c3c9f839d"
+  },
+  "postexecution_result_sealing": {
+    "result_schema": "ak.rif.execution_result_envelope.v1",
+    "receipt_schema": "ak.rif.stage_execution_receipt.v1",
+    "canonical_result_rehashed_by_rif": true,
+    "caller_supplied_hash_trusted": false,
+    "missing_hash_rejected": true,
+    "all_zero_hash_rejected": true,
+    "wrong_hash_rejected": true,
+    "runner_or_build_substitution_rejected": true,
+    "configuration_or_protocol_substitution_rejected": true,
+    "partition_or_checkpoint_substitution_rejected": true,
+    "authority_or_gate_substitution_rejected": true,
+    "actual_authority_invocation_evidence_required": true,
+    "deterministic_run_identity_bound": true
+  },
+  "stage_execution_set_contract": {
+    "schema": "ak.rif.stage_execution_set.v1",
+    "store_extension": "ak.rif.research_governance_store.v2",
+    "envelope_extension": "ak.rif.research_governance_envelope.v2",
+    "complete_ordered_plan_required": true,
+    "per_variant_derived_authorization": true,
+    "unregistered_or_reordered_variants_rejected": true,
+    "successful_duplicate_rejected": true,
+    "stage_seal_requires_complete_manifest": true,
+    "final_holdout_execution_sets_permitted": false
+  },
+  "development_multivariant_behavior": {
+    "synthetic_registered_variants": ["V00", "V01", "V02", "V03"],
+    "supported_protocol_cardinality": "1 through 12",
+    "complete_ledger_authorized": true,
+    "unique_authorizations": true,
+    "ordering_rule": "NUMERIC_VARIANT_ID_ASCENDING",
+    "missing_extra_duplicate_reordered_mutated_rejected": true,
+    "incomplete_set_seal_rejected": true,
+    "complete_manifest_sealed": true,
+    "nominee_rule": "LOWEST_NUMERIC_VARIANT_ID_PASSING_ALL_MANDATORY_DEVELOPMENT_GATES",
+    "performance_ranking_used": false,
+    "synthetic_nominee": "V01"
+  },
+  "validation_nominee_and_neighborhood_behavior": {
+    "requires_sealed_development": true,
+    "synthetic_nominee": "V01",
+    "synthetic_exact_set": ["V00", "V01", "V02"],
+    "mandatory_neighbors": ["V00", "V02"],
+    "unrelated_variant_rejected": true,
+    "missing_neighbor_prevents_seal": true,
+    "better_performing_neighbor_cannot_replace_nominee": true,
+    "failed_neighbor_is_legitimate_negative_result": true,
+    "failed_required_member_disposition": "REJECTED/PERFORMANCE",
+    "holdout_accesses": 0
+  },
+  "final_holdout_single_candidate_preservation": {
+    "multi_variant": false,
+    "path": "unchanged V1 one-shot authorization and sealing path",
+    "exact_frozen_nominee_only": true,
+    "development_alternative_rejected": true,
+    "stability_neighbor_rejected": true,
+    "modified_nominee_rejected": true,
+    "second_access_rejected": true,
+    "synthetic_final_holdout_evaluations": 1,
+    "real_final_holdout_accesses": 0
+  },
+  "crash_and_restart_behavior": {
+    "progress_storage": "locked atomic self-hashed receipt chain plus completion manifest",
+    "filesystem_presence_alone_is_completion_proof": false,
+    "completed_variants_rerun": false,
+    "resume_at_next_incomplete_variant": true,
+    "indeterminate_access_attempt_rerun": false,
+    "zero_access_zero_outcome_retry_requires_exact_durable_rif_proof": true,
+    "tampered_progress_rejected": true,
+    "sealed_set_execution_rejected": true
+  },
+  "synthetic_integration_results": {
+    "fixture_label": "SYNTHETIC_NON_RESEARCH_EVIDENCE",
+    "rif_four_variant_development": "PASS",
+    "rif_nominee_plus_two_neighbor_validation": "PASS",
+    "rif_exact_frozen_nominee_final_holdout": "PASS",
+    "engine_actual_governed_multivariant_stage_execution": "PASS",
+    "accepted_independence_implementation_invoked": true,
+    "accepted_uncertainty_implementation_invoked": true,
+    "accepted_concentration_implementation_invoked": true,
+    "all_receipt_manifest_lifecycle_and_access_counts_verified": true,
+    "real_checkpoint_rows_used": false
+  },
+  "backward_compatibility_results": {
+    "identity_v4_rewritten": false,
+    "v1_store_and_envelope_remain_readable": true,
+    "v2_is_additive_and_explicit": true,
+    "existing_single_execution_tests": "PASS",
+    "existing_final_holdout_one_shot_tests": "PASS",
+    "accepted_gate_thresholds_or_comparisons_changed": false,
+    "accepted_authority_implementations_or_hashes_changed": false,
+    "gate_set": {
+      "id": "ak.engine.qualification-gates.pr4b0.v1",
+      "sha256": "sha256:647e5d0885dbe8b73df736762e2f998bfa88f54d9331ed6aa4604888ab982635"
+    },
+    "independence": {
+      "id": "ak.engine.independence.downtrend-midvol-relief.v3",
+      "sha256": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f"
+    },
+    "uncertainty": {
+      "id": "ak.engine.uncertainty.cluster-bootstrap.v2",
+      "sha256": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb"
+    },
+    "concentration_sha256": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5"
+  },
+  "dry_verification": {
+    "data_loads": 0,
+    "candidate_events": 0,
+    "candidate_outcomes": 0,
+    "labels": [
+      "NO_CANDIDATE_OUTCOMES_PRODUCED",
+      "NO_REAL_PARTITION_ACCESS",
+      "PREEXECUTION_IDENTITY_CYCLE_ABSENT",
+      "MULTIVARIANT_STAGE_AUTHORIZATION_AVAILABLE"
+    ],
+    "final_holdout_mode": "SINGLE_FROZEN_CANDIDATE_ONLY"
+  },
+  "verification": [
+    {"repository": "ak-rif", "command": "GOWORK=off go test ./... -count=1", "result": "PASS"},
+    {"repository": "ak-rif", "command": "GOWORK=off go vet ./...", "result": "PASS"},
+    {"repository": "ak-rif", "command": "GOWORK=off go test -race ./research -count=1", "result": "PASS"},
+    {"repository": "ak-rif", "command": "GOFLAGS=-buildvcs=false ./scripts/verify.sh", "result": "PASS"},
+    {"repository": "ak-rif", "command": "two GOWORK=off go test -c -trimpath -buildvcs=false ./research builds plus cmp", "result": "PASS; sha256:ac761e3d05abe8453427236c217202a4ff633acdf822d11ce30ed00c3c9f839d"},
+    {"repository": "ak-engine", "command": "GOWORK=off go test ./... -count=1", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go vet ./...", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go test -race ./internal/qualificationrunner ./internal/rifbridge -count=1", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOFLAGS=-buildvcs=false ./scripts/verify.sh", "result": "PASS"},
+    {"repository": "ak-engine", "command": "two GOWORK=off go build -trimpath -buildvcs=false ./cmd/ak-engine builds plus cmp", "result": "PASS; sha256:371153d611cebce5838caebf1a57346f15f566c7494042538758b133cd98faa7"},
+    {"repository": "both", "command": "gofmt -l, git diff --check, go mod verify, go list -deps, no-trader, secret, real-checkpoint, data/network/database-I/O, exact-diff, clean-worktree, and Historian audits", "result": "PASS"},
+    {"repository": "both", "command": "govulncheck, gosec, staticcheck", "result": "NOT_RUN; binaries unavailable"}
+  ],
+  "verification_incidents": [
+    {
+      "command": "GOWORK=off go list -deps ./...",
+      "repository": "ak-engine",
+      "result": "EXIT_1_TRANSITIVE_CACHE_VCS_STAMPING",
+      "resolution": "GOWORK=off go list -buildvcs=false -deps ./... passed for 343 packages; no ak-trader dependency found"
+    },
+    {
+      "command": "combined RIF and Engine go test -list launched from RIF worktree",
+      "repository": "operator audit",
+      "result": "ENGINE_PACKAGE_PATHS_NOT_FOUND",
+      "resolution": "Engine test listing rerun from Engine worktree and passed; no test execution failed"
+    }
+  ],
+  "exact_files_changed_by_source_commit": {
+    "f57184348986feed41c72ae75e11ddb2418dbba1": ["research/authority.go", "research/stage_execution.go", "research/store.go", "research/types.go"],
+    "b6e3b0c6376688129f31ddb1f9a292d61aef6428": ["research/stage_execution_test.go"],
+    "494120d690538795c18cda4d886594e5783df5e7": ["research/stage_execution.go"],
+    "6e8dca3aad579ae8e8c0b54a62a15156ec52ece0": ["research/stage_execution_test.go"],
+    "f8d224cdb21ab75f6c6174066666cabe020080ce": ["internal/qualificationrunner/execution.go", "internal/qualificationrunner/stage_plan.go", "internal/rifbridge/research_governance.go", "internal/rifbridge/stage_execution.go"],
+    "83ecf47d765fc2941a8b36c0a465d10612653ad7": ["internal/qualificationrunner/stage_plan_test.go"]
+  },
+  "resulting_commits": {
+    "rif_source": "6e8dca3aad579ae8e8c0b54a62a15156ec52ece0",
+    "engine_source": "83ecf47d765fc2941a8b36c0a465d10612653ad7",
+    "historian": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+    "report_commit_note": "Each report-only commit is recorded in the external closeout to avoid self-reference."
+  },
+  "no_real_partition_access_proof": {
+    "real_development_accesses": 0,
+    "real_validation_accesses": 0,
+    "real_final_holdout_accesses": 0,
+    "total_real_partition_accesses": 0
+  },
+  "no_real_candidate_outcome_proof": {
+    "real_candidate_configurations_executed": 0,
+    "real_development_outcomes": 0,
+    "real_validation_outcomes": 0,
+    "real_final_holdout_outcomes": 0,
+    "total_real_candidate_outcomes": 0,
+    "paper_evaluations_started": 0
+  },
+  "final_verdict": "COMPLETE",
+  "remaining_blockers": [],
+  "pr4b0_r1_may_now_restart": true,
+  "pr4b0_r1_restarted_by_this_task": false
+}
