@@ -14,12 +14,14 @@ import (
 )
 
 const (
-	ResearchGovernanceEnvelopeSchemaVersion = "ak.rif.research_governance_envelope.v1"
-	ResearchGovernanceStoreSchemaVersion    = "ak.rif.research_governance_store.v1"
-	ResearchLifecycleRecordSchemaVersion    = "ak.rif.research_lifecycle_record.v1"
-	PartitionAuthorizationSchemaVersion     = "ak.rif.partition_authorization.v1"
-	PartitionAccessReceiptSchemaVersion     = "ak.rif.partition_access_receipt.v1"
-	HoldoutReservationSchemaVersion         = "ak.rif.holdout_reservation.v1"
+	ResearchGovernanceEnvelopeSchemaVersion   = "ak.rif.research_governance_envelope.v1"
+	ResearchGovernanceEnvelopeSchemaVersionV2 = "ak.rif.research_governance_envelope.v2"
+	ResearchGovernanceStoreSchemaVersion      = "ak.rif.research_governance_store.v1"
+	ResearchGovernanceStoreSchemaVersionV2    = "ak.rif.research_governance_store.v2"
+	ResearchLifecycleRecordSchemaVersion      = "ak.rif.research_lifecycle_record.v1"
+	PartitionAuthorizationSchemaVersion       = "ak.rif.partition_authorization.v1"
+	PartitionAccessReceiptSchemaVersion       = "ak.rif.partition_access_receipt.v1"
+	HoldoutReservationSchemaVersion           = "ak.rif.holdout_reservation.v1"
 )
 
 type ResearchExecutionBinding struct {
@@ -112,18 +114,20 @@ type ResearchDisposition struct {
 }
 
 type ResearchGovernanceSnapshot struct {
-	SchemaVersion    string                    `json:"schema_version"`
-	Identity         json.RawMessage           `json:"research_identity,omitempty"`
-	IdentityHash     string                    `json:"research_identity_hash,omitempty"`
-	Reservation      *HoldoutReservation       `json:"holdout_reservation,omitempty"`
-	State            string                    `json:"lifecycle_state,omitempty"`
-	Sequence         uint64                    `json:"sequence"`
-	FrozenCandidate  *FrozenResearchCandidate  `json:"frozen_candidate,omitempty"`
-	Disposition      *ResearchDisposition      `json:"disposition,omitempty"`
-	Authorizations   []PartitionAuthorization  `json:"authorizations"`
-	AccessReceipts   []PartitionAccessReceipt  `json:"access_receipts"`
-	LifecycleHistory []ResearchLifecycleRecord `json:"lifecycle_history"`
-	IntegrityHash    string                    `json:"integrity_hash"`
+	SchemaVersion      string                    `json:"schema_version"`
+	Identity           json.RawMessage           `json:"research_identity,omitempty"`
+	IdentityHash       string                    `json:"research_identity_hash,omitempty"`
+	Reservation        *HoldoutReservation       `json:"holdout_reservation,omitempty"`
+	State              string                    `json:"lifecycle_state,omitempty"`
+	Sequence           uint64                    `json:"sequence"`
+	FrozenCandidate    *FrozenResearchCandidate  `json:"frozen_candidate,omitempty"`
+	Disposition        *ResearchDisposition      `json:"disposition,omitempty"`
+	Authorizations     []PartitionAuthorization  `json:"authorizations"`
+	AccessReceipts     []PartitionAccessReceipt  `json:"access_receipts"`
+	StageExecutionSets []StageExecutionSet       `json:"stage_execution_sets,omitempty"`
+	DevelopmentNominee *DevelopmentNominee       `json:"development_nominee,omitempty"`
+	LifecycleHistory   []ResearchLifecycleRecord `json:"lifecycle_history"`
+	IntegrityHash      string                    `json:"integrity_hash"`
 }
 
 type ResearchGovernanceEnvelope struct {
@@ -151,7 +155,7 @@ func ParseResearchGovernanceEnvelopeJSON(data []byte) (ResearchGovernanceEnvelop
 }
 
 func VerifyResearchGovernanceEnvelope(envelope ResearchGovernanceEnvelope) error {
-	if envelope.SchemaVersion != ResearchGovernanceEnvelopeSchemaVersion {
+	if (envelope.SchemaVersion != ResearchGovernanceEnvelopeSchemaVersion && envelope.SchemaVersion != ResearchGovernanceEnvelopeSchemaVersionV2) || (envelope.Snapshot.SchemaVersion == ResearchGovernanceStoreSchemaVersion && envelope.SchemaVersion != ResearchGovernanceEnvelopeSchemaVersion) || (envelope.Snapshot.SchemaVersion == ResearchGovernanceStoreSchemaVersionV2 && envelope.SchemaVersion != ResearchGovernanceEnvelopeSchemaVersionV2) {
 		return errors.New("unsupported RIF research governance envelope schema")
 	}
 	if err := verifyResearchSnapshot(envelope.Snapshot); err != nil {
@@ -180,7 +184,7 @@ func VerifyResearchGovernanceEnvelope(envelope ResearchGovernanceEnvelope) error
 }
 
 func verifyResearchSnapshot(snapshot ResearchGovernanceSnapshot) error {
-	if snapshot.SchemaVersion != ResearchGovernanceStoreSchemaVersion || len(snapshot.Identity) == 0 || !validSHA(snapshot.IdentityHash) || snapshot.State == "" || snapshot.Sequence == 0 {
+	if (snapshot.SchemaVersion != ResearchGovernanceStoreSchemaVersion && snapshot.SchemaVersion != ResearchGovernanceStoreSchemaVersionV2) || len(snapshot.Identity) == 0 || !validSHA(snapshot.IdentityHash) || snapshot.State == "" || snapshot.Sequence == 0 {
 		return errors.New("RIF research governance snapshot is incomplete")
 	}
 	previous := ""
@@ -232,6 +236,9 @@ func verifyResearchSnapshot(snapshot ResearchGovernanceSnapshot) error {
 		if err != nil || snapshot.FrozenCandidate.FrozenIdentityHash != wantFrozen {
 			return errors.New("RIF frozen candidate hash mismatch")
 		}
+	}
+	if err := verifyStageExecutionState(snapshot); err != nil {
+		return err
 	}
 	wantState, err := hashSnapshot(snapshot)
 	if err != nil || snapshot.IntegrityHash != wantState {

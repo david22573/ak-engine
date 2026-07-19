@@ -61,6 +61,11 @@ func Execute(request ExecutionRequest, artifactJSON []byte) (ResultArtifact, err
 	if err := validateArtifactBinding(verified, artifact); err != nil {
 		return ResultArtifact{}, err
 	}
+	return executeVerifiedArtifact(verified, artifact)
+}
+
+func executeVerifiedArtifact(verified VerifiedRequest, artifact PartitionArtifact) (ResultArtifact, error) {
+	request := verified.Request
 	events, netByEvent, err := executeVariant(verified, artifact)
 	if err != nil {
 		return ResultArtifact{}, err
@@ -152,11 +157,15 @@ func validateArtifactShape(artifact PartitionArtifact) error {
 }
 
 func validateArtifactBinding(verified VerifiedRequest, artifact PartitionArtifact) error {
+	return validateArtifactBindingWithPolicy(verified, artifact, true)
+}
+
+func validateArtifactBindingWithPolicy(verified VerifiedRequest, artifact PartitionArtifact, requireRegisteredArtifactHash bool) error {
 	if err := validateArtifactShape(artifact); err != nil {
 		return err
 	}
 	request := verified.Request
-	if artifact.CheckpointSHA256 != request.Dataset.Checkpoint.SHA256 || artifact.SourceIdentitySHA256 != request.Dataset.SourceIdentitySHA256 || artifact.SealedBinarySHA256 != request.Dataset.SealedBinarySHA256 || artifact.Partition != request.Partition.Name || artifact.ArtifactSHA256 != request.Partition.RequiredSymbolCoverageSHA256 {
+	if artifact.CheckpointSHA256 != request.Dataset.Checkpoint.SHA256 || artifact.SourceIdentitySHA256 != request.Dataset.SourceIdentitySHA256 || artifact.SealedBinarySHA256 != request.Dataset.SealedBinarySHA256 || artifact.Partition != request.Partition.Name || (requireRegisteredArtifactHash && artifact.ArtifactSHA256 != request.Partition.RequiredSymbolCoverageSHA256) {
 		return errors.New("checkpoint, source, sealed binary, partition, or registered artifact substitution")
 	}
 	if !reflect.DeepEqual(artifact.Symbols, request.Dataset.RequiredSymbols) {
