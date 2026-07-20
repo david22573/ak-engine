@@ -1,0 +1,333 @@
+{
+  "schema_version": "ak.engine.pr4b0-r1.fresh-epoch-post-p7.blocked.v1",
+  "artifact_id": "pr4b0_r1_post_p7_fresh_epoch_blocked",
+  "artifact_hash": "sha256:b8b1305372bc6cb07b3d4d7781a7e443cd01f794620e230f82de7b409e43e65c",
+  "generated_at_utc": "2026-07-20T20:22:28Z",
+  "executive_verdict": "The accepted P7 stage-set contracts verify, but the accepted production source contains no Historian-to-Engine partition-artifact preparation path and no production orchestration consumer for the P7 stage-set APIs. The runner accepts only precomputed feature and future-outcome rows; every constructor and end-to-end stage consumer is synthetic test code. Adding or reconstructing those paths now would be a prohibited infrastructure/runner/dataset-authority change. The epoch stopped before protocol registration, RIF mutation, partition access, or outcomes.",
+  "final_label": "PR4B0_R1_RESEARCH_BLOCKED",
+  "blocker_classification": "INTEGRITY_AND_EXECUTION_CONTROL_FAILURE",
+  "blockers": [
+    {
+      "id": "NO_ACCEPTED_HISTORIAN_TO_ENGINE_PARTITION_ARTIFACT_PATH",
+      "evidence": "Production qualificationrunner code validates and executes already-prepared PartitionArtifact bytes containing EMA50, EMA200, TrendSlope20, RealizedVol60, BTC/ETH context, and FutureClose240m. PartitionArtifact construction and FutureClose240m population occur only in synthetic tests.",
+      "prohibited_workaround": "A new converter, alternate dataset, caller-built feature/outcome artifact, or reconstructed equivalent would change the accepted execution/data authority and violate the task's no-infrastructure, no-runner-change, no-ad-hoc, and dataset-substitution rules."
+    },
+    {
+      "id": "NO_ACCEPTED_PRODUCTION_STAGE_SET_ORCHESTRATOR",
+      "evidence": "P7 Authorize/Consume/Record/Seal and Engine ExecuteStage/ExecuteAuthorizedVariant calls outside their definitions occur only in synthetic tests; no accepted production command binds durable RIF callbacks, artifact loading, Engine execution, result recording, and sealing.",
+      "prohibited_workaround": "Shell loops, temporary authorization files, a new command, or caller-trusted glue would be an unaccepted infrastructure phase."
+    },
+    {
+      "id": "V00_REQUIRED_SYMBOL_UNIVERSE_CONFLICT",
+      "evidence": "V00Configuration is frozen with eight configured symbols and omits BTCUSDT, while the authoritative checkpoint and task require all nine symbols and prohibit a narrower symbol whitelist.",
+      "prohibited_workaround": "Adding BTCUSDT would mutate V00; accepting the eight-symbol list would violate the explicit nine-symbol/no-narrower-whitelist rule."
+    }
+  ],
+  "repository_preflight": {
+    "engine": {
+      "starting_commit": "76b31415791cc98308bc3f0d4d23bec326cedd0b",
+      "starting_tree": "32941c8f51365b89ba78c85255c88cf77f13a71f",
+      "branch": "pr4b0-r1-post-p7-epoch-engine",
+      "starting_clean": true,
+      "semantic_source_commit": "83ecf47d765fc2941a8b36c0a465d10612653ad7",
+      "report_only_descendant": true,
+      "source_to_final_changes": [
+        "runs/reports/pr4b0_r1p7_artifact_identity_and_stage_authorization.json",
+        "runs/reports/pr4b0_r1p7_artifact_identity_and_stage_authorization.md"
+      ]
+    },
+    "rif": {
+      "starting_commit": "ed2cbc903e5b34052f4f9d63ad99d02101effb37",
+      "starting_tree": "67c2f8dc091960fc2a02bf5a04483a21659360b5",
+      "branch": "pr4b0-r1-post-p7-epoch-rif",
+      "starting_clean": true,
+      "semantic_source_commit": "6e8dca3aad579ae8e8c0b54a62a15156ec52ece0",
+      "report_only_descendant": true,
+      "source_to_final_changes": [
+        "runs/reports/pr4b0_r1p7_artifact_identity_and_stage_authorization.json",
+        "runs/reports/pr4b0_r1p7_artifact_identity_and_stage_authorization.md"
+      ]
+    },
+    "historian": {
+      "starting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+      "starting_tree": "74182d50c8f6dc6639c68cd6af9a82656640701c",
+      "branch": "pr4b0-r1-post-p7-readonly-historian",
+      "starting_clean": true,
+      "modified": false
+    },
+    "dirty_original_checkouts_untouched": true,
+    "prior_blocked_report_cherry_picked": false
+  },
+  "accepted_prerequisites": {
+    "p6": "PR4B0_R1P6_PREDEVELOPMENT_GOVERNANCE_AND_RUNNER_COMPLETE",
+    "p7": "PR4B0_R1P7_ARTIFACT_IDENTITY_AND_STAGE_AUTHORIZATION_COMPLETE",
+    "verified": true
+  },
+  "p7_contract_identity": {
+    "research_identity": "ak.rif.research_identity.v4",
+    "legacy_store": "ak.rif.research_governance_store.v1",
+    "legacy_envelope": "ak.rif.research_governance_envelope.v1",
+    "stage_store": "ak.rif.research_governance_store.v2",
+    "stage_envelope": "ak.rif.research_governance_envelope.v2",
+    "runner_implementation": "ak.rif.runner_implementation_identity.v1",
+    "registered_configuration": "ak.rif.registered_configuration_identity.v1",
+    "stage_execution_plan": "ak.rif.stage_execution_plan.v1",
+    "stage_execution_set": "ak.rif.stage_execution_set.v1",
+    "stage_variant_authorization": "ak.rif.stage_variant_authorization.v1",
+    "stage_variant_access_receipt": "ak.rif.stage_variant_access_receipt.v1",
+    "stage_execution_receipt": "ak.rif.stage_execution_receipt.v1",
+    "stage_completion_manifest": "ak.rif.stage_completion_manifest.v1",
+    "stage_execution_envelope": "ak.rif.stage_execution_envelope.v1",
+    "execution_result_envelope": "ak.rif.execution_result_envelope.v1",
+    "zero_access_retry_proof": "ak.rif.zero_access_retry_proof.v1",
+    "final_holdout_mode": "V1_SINGLE_FROZEN_CANDIDATE_ONE_SHOT"
+  },
+  "authoritative_source_locations": [
+    {"path": "ak-rif/research/stage_execution.go", "git_blob": "de6ae012f3b4f7261251eeb9a6864bf7ab3d8926"},
+    {"path": "ak-rif/research/types.go", "git_blob": "bb00fd1c8add8023a58bbb6bb9b01decd06f3815"},
+    {"path": "ak-rif/research/store.go", "git_blob": "d985cb292e56b159ad4de16354303cbb48250f2d"},
+    {"path": "ak-rif/research/authority.go", "git_blob": "9ec93a9c2af9d57b22d365d74880970e545e07ce"},
+    {"path": "ak-engine/internal/qualificationrunner/stage_plan.go", "git_blob": "bd7fe2b57f9216c5bebaef9afc4b3c112c3c360c"},
+    {"path": "ak-engine/internal/qualificationrunner/execution.go", "git_blob": "70bbd6e6054114ed224bfbd9558c79a6016d1437"},
+    {"path": "ak-engine/internal/rifbridge/stage_execution.go", "git_blob": "c0d00988b315df92245e0337d812b9934b921572"},
+    {"path": "ak-engine/internal/qualificationrunner/variants.go", "git_blob": "86435cd0f78c4cd6594d8d885f625802fa5df63b"},
+    {"path": "ak-engine/internal/qualificationrunner/contracts.go", "git_blob": "9d6e5fef924af3b39e42dbb424c65e94d41e73c7"},
+    {"path": "ak-engine/internal/preconditions/independence_v3.go", "git_blob": "60869b3f4dde3f2e2bd18fe8cac91d1d8fbb3302"},
+    {"path": "ak-engine/internal/preconditions/uncertainty_v2.go", "git_blob": "7eeb32b6045a6bc616c938aa667f89aa31b7f17c"},
+    {"path": "ak-engine/internal/qualification/gate_set.go", "git_blob": "dc067a5b8d967ea4372213b2545402de05a54546"}
+  ],
+  "runner_identity": {
+    "semantic_source_commit": "83ecf47d765fc2941a8b36c0a465d10612653ad7",
+    "schema": "ak.rif.runner_implementation_identity.v1",
+    "deterministic_engine_binary_sha256": "sha256:371153d611cebce5838caebf1a57346f15f566c7494042538758b133cd98faa7",
+    "two_builds_byte_identical": true,
+    "complete_epoch_runner_identity_created": false,
+    "reason": "Protocol and accepted real partition preparation path were unavailable; creating a caller-selected package/build-input identity for an unusable epoch was prohibited."
+  },
+  "checkpoint_verification": {
+    "id": "r1p5r-checkpoint-20260717T073628Z",
+    "sha256": "sha256:bef53d11aa9ce9a6dad61b89ef7ace063b6da812ff92208d463c6ecfbfe8f29c",
+    "source_identity_sha256": "sha256:d99a88a72b4bfe84c2ae43a4a477724b95fde2b45b381f7b75fc4c107d2a161a",
+    "reacquisition_protocol": {"id": "ak-historian.pr4b0-r1p5r.reacquisition-protocol.v1", "sha256": "sha256:7fd6c667d97a0ff3387e352d8c8e9b25ef5a744d641147ed66b98df75dcc0e1a"},
+    "pre_acquisition_seal_sha256": "sha256:8046a306c80c127bd631df6eb4ae07ef587c350d4ac3a5f3be33f84a0f4681c9",
+    "sealed_binary_sha256": "sha256:c10fdf10255a8c88c817d5189b20ca7411be1fcd2ae64df8c07e2d1934054ae6",
+    "abandoned_evidence_registry": {"id": "ak-historian.pr4b0-r1p5r.abandoned-evidence-registry.v1", "sha256": "sha256:f8a47626a234544f34ae59846c330682e78943add69edb171c558287b35417ca"},
+    "eligible_start": "2026-01-01T00:00:00Z",
+    "eligible_end": "2026-07-17T00:00:00Z",
+    "complete_all_symbol_days": 197,
+    "required_symbol_count": 9,
+    "bound_daily_partition_count": 1773,
+    "gaps": 0,
+    "duplicates": 0,
+    "conflicts": 0,
+    "schema_failures": 0,
+    "evidence_gaps": 0,
+    "clock_errors": 0,
+    "canonical_and_manifest_bindings_verified": true,
+    "durable_current_checkpoint_matches": true,
+    "mutated": false
+  },
+  "availability_cutoff": {
+    "last_acquisition_durable_floor_utc": "2026-07-17T07:30:04.462275937Z",
+    "checkpoint_created_at_utc": "2026-07-17T07:36:28.276810652Z",
+    "latest_durable_evidence_utc": "2026-07-17T07:36:28.276810652Z",
+    "evaluation_availability_cutoff_utc": "2026-07-17T07:36:29Z",
+    "derivation": "First whole UTC second strictly later than the maximum authoritative durable acquisition/checkpoint timestamp.",
+    "protocol_registration_after_cutoff": false,
+    "reason": "Protocol registration was not permitted after the preflight execution-control block."
+  },
+  "partitions": [
+    {"name": "DEVELOPMENT", "start_inclusive": "2026-01-01T00:00:00Z", "end_exclusive": "2026-04-10T00:00:00Z", "complete_utc_days": 99, "structural_coverage_verified": true},
+    {"name": "VALIDATION", "start_inclusive": "2026-04-10T00:00:00Z", "end_exclusive": "2026-05-29T00:00:00Z", "complete_utc_days": 49, "structural_coverage_verified": true},
+    {"name": "FINAL_HOLDOUT", "start_inclusive": "2026-05-29T00:00:00Z", "end_exclusive": "2026-07-17T00:00:00Z", "complete_utc_days": 49, "structural_coverage_verified": true}
+  ],
+  "authority_verification": {
+    "independence": {"id": "ak.engine.independence.downtrend-midvol-relief.v3", "sha256": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f", "source_verified": true, "executed_in_epoch": false},
+    "uncertainty": {"id": "ak.engine.uncertainty.cluster-bootstrap.v2", "sha256": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb", "source_verified": true, "executed_in_epoch": false},
+    "concentration": {"id": "ak.engine.governance.concentration-decision.v1", "sha256": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5", "source_verified": true, "executed_in_epoch": false},
+    "qualification_gate_set": {"id": "ak.engine.qualification-gates.pr4b0.v1", "sha256": "sha256:647e5d0885dbe8b73df736762e2f998bfa88f54d9331ed6aa4604888ab982635", "source_verified": true, "executed_in_epoch": false},
+    "weakened_or_substituted": false
+  },
+  "v00_identity": {
+    "candidate_family": "phase12/DowntrendMidVolReliefLong240m",
+    "source_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "canonical_configuration_sha256": "sha256:9a3b4d2797daedac643491b8b420b033d05ca46bf051f9fa42b656eb29ede4de",
+    "context_agreement": "REQUIRE_COMPLETE_BTC_ETH_CONTEXT",
+    "event_quality": "BASELINE_DECISION_CLOSE",
+    "cooldown_minutes": 0,
+    "transaction_cost_bps": 10,
+    "configured_symbols": ["ADAUSDT", "AVAXUSDT", "BNBUSDT", "DOGEUSDT", "ETHUSDT", "LINKUSDT", "SOLUSDT", "XRPUSDT"],
+    "required_checkpoint_symbols": ["ADAUSDT", "AVAXUSDT", "BNBUSDT", "BTCUSDT", "DOGEUSDT", "ETHUSDT", "LINKUSDT", "SOLUSDT", "XRPUSDT"],
+    "identity_verified": true,
+    "registrable_under_task_rules": false
+  },
+  "protocol_and_variant_status": {
+    "new_protocol_identity": null,
+    "canonical_protocol_sha256": null,
+    "protocol_only_commit": null,
+    "protocol_registered": false,
+    "protocol_created_after_outcomes": false,
+    "registered_variant_count": 0,
+    "registered_variant_ids_and_hashes": [],
+    "stability_graph_registered": false,
+    "structural_dry_verification_run_for_epoch": false,
+    "accepted_p7_synthetic_dry_labels_verified": ["NO_CANDIDATE_OUTCOMES_PRODUCED", "NO_REAL_PARTITION_ACCESS", "PREEXECUTION_IDENTITY_CYCLE_ABSENT", "MULTIVARIANT_STAGE_AUTHORIZATION_AVAILABLE"]
+  },
+  "rif_lifecycle_status": {
+    "research_identity_registered": false,
+    "holdout_reserved": false,
+    "all_partitions_closed": true,
+    "candidate_frozen": false,
+    "result_artifact_exists": false,
+    "final_holdout_access_count": 0,
+    "governance_state_created": false
+  },
+  "development": {
+    "authorized": false,
+    "expected_execution_count": 0,
+    "actual_execution_count": 0,
+    "access_receipt_count": 0,
+    "result_count": 0,
+    "sealed": false,
+    "gate_matrix": [],
+    "nominee": null
+  },
+  "validation": {
+    "opened": false,
+    "execution_count": 0,
+    "access_receipt_count": 0,
+    "sealed": false,
+    "gate_matrix": [],
+    "result": "NOT_PERMITTED_AFTER_PREFLIGHT_BLOCK"
+  },
+  "candidate_freeze": {
+    "frozen": false,
+    "variant_id": null,
+    "configuration_sha256": null
+  },
+  "final_holdout": {
+    "authorized": false,
+    "access_count": 0,
+    "execution_count": 0,
+    "result_hash": null,
+    "gate_matrix": [],
+    "result": "NOT_PERMITTED_AFTER_PREFLIGHT_BLOCK"
+  },
+  "epoch_authority_results": {
+    "concentration": "NOT_EXECUTED",
+    "independence_v3": "NOT_EXECUTED",
+    "uncertainty_v2": "NOT_EXECUTED"
+  },
+  "zero_access_and_outcome_proof": {
+    "candidate_partition_reads": 0,
+    "candidate_events": 0,
+    "candidate_outcomes": 0,
+    "development_executions": 0,
+    "validation_executions": 0,
+    "final_holdout_executions": 0,
+    "paper_evaluations": 0,
+    "trader_changes": 0,
+    "order_placement_actions": 0
+  },
+  "prohibited_evidence_scan": {
+    "barred_interval": "[2024-01-01T00:00:00Z, 2026-01-01T00:00:00Z)",
+    "runtime_dependency_found": false,
+    "environment_override_found": false,
+    "symlink_dependency_found": false,
+    "cache_dependency_found": false,
+    "command_argument_dependency_found": false,
+    "old_identity_references": "Tracked Historian quarantine authorities/tests and prior blocked reports only; no epoch protocol, ledger, execution, or result exists.",
+    "old_evidence_used_for_variant_or_outcome_decisions": false
+  },
+  "verification": {
+    "engine_go_test_all": "PASS",
+    "engine_go_vet_all": "PASS",
+    "engine_runner_bridge_race": "PASS",
+    "rif_go_test_all": "PASS",
+    "rif_go_vet_all": "PASS",
+    "rif_research_race": "PASS",
+    "historian_r1p5r_prospective_tests": "PASS",
+    "historian_r1p5r_prospective_vet": "PASS",
+    "historian_exact_checkpoint_overlay_audit": "PASS",
+    "deterministic_engine_build": "PASS",
+    "deterministic_rif_build": "PASS",
+    "canonicalization_checks": "PASS",
+    "exact_authority_checks": "PASS",
+    "exact_gate_checks": "PASS",
+    "stage_set_synthetic_contract_checks": "PASS",
+    "no_trader_dependency_scan": "PASS",
+    "secret_scan": "PASS",
+    "checkpoint_mutation_scan": "PASS",
+    "prohibited_data_scan": "PASS",
+    "clean_worktree_audit_before_report": "PASS",
+    "optional_tools": {"govulncheck": "UNAVAILABLE", "gosec": "UNAVAILABLE", "staticcheck": "UNAVAILABLE"}
+  },
+  "exact_commands": [
+    "GOWORK=off GOFLAGS=-buildvcs=false go test ./... -count=1",
+    "GOWORK=off GOFLAGS=-buildvcs=false go vet ./...",
+    "GOWORK=off GOFLAGS=-buildvcs=false go test -race ./internal/qualificationrunner ./internal/rifbridge -count=1",
+    "GOWORK=off GOFLAGS=-buildvcs=false go test -race ./research -count=1",
+    "GOWORK=off GOFLAGS=-buildvcs=false go test ./internal/r1p5r ./internal/prospective -count=1",
+    "GOWORK=off GOFLAGS=-buildvcs=false go vet ./internal/r1p5r ./internal/prospective",
+    "GOWORK=off go test -v -overlay=/tmp/pr4b0_r1_post_p7_historian_overlay.json -run ^TestPR4B0R1PostP7AcceptedCheckpointAudit$ -count=1 ./internal/r1p5r",
+    "GOWORK=off go build -trimpath -buildvcs=false -o <temporary-output> ./cmd/ak-engine",
+    "GOWORK=off go test -c -trimpath -buildvcs=false -o <temporary-output> ./research",
+    "GOWORK=off GOFLAGS=-buildvcs=false go list -deps ./...",
+    "git merge-base --is-ancestor <P7-semantic-source> <accepted-final>",
+    "git diff --name-status <P7-semantic-source>..<accepted-final>",
+    "git status --porcelain=v1",
+    "git diff --check",
+    "sha256sum <accepted-checkpoint-and-source-chain-files>"
+  ],
+  "exact_files_changed": [
+    "runs/reports/pr4b0_r1_post_p7_fresh_epoch_blocked.json",
+    "runs/reports/pr4b0_r1_post_p7_fresh_epoch_blocked.md"
+  ],
+  "commits_created": {
+    "engine_report_commit": "RECORDED_IN_EXTERNAL_CLOSEOUT_TO_AVOID_SELF_REFERENCE",
+    "rif": [],
+    "historian": []
+  },
+  "required_artifact_disposition": {
+    "repository_preflight": "IN_THIS_REPORT",
+    "p6_and_p7_verification": "IN_THIS_REPORT",
+    "p7_source_to_report_ancestry": "IN_THIS_REPORT",
+    "checkpoint_and_source_chain_verification": "IN_THIS_REPORT",
+    "authority_verification": "IN_THIS_REPORT",
+    "gate_set_verification": "IN_THIS_REPORT",
+    "quarantine_scan": "IN_THIS_REPORT",
+    "availability_cutoff_derivation": "IN_THIS_REPORT",
+    "protocol_registration": "NOT_PERMITTED_AFTER_PREFLIGHT_BLOCK",
+    "protocol_only_commit_audit": "NOT_APPLICABLE_NO_PROTOCOL_COMMIT",
+    "v00_identity": "IN_THIS_REPORT",
+    "complete_variant_ledger": "NOT_REGISTERED_COUNT_ZERO",
+    "stability_neighborhood_graph": "NOT_REGISTERED",
+    "pre_execution_runner_identity": "BINARY_AND_SOURCE_VERIFIED_COMPLETE_EPOCH_IDENTITY_NOT_CREATED",
+    "rif_research_identity": "NOT_REGISTERED",
+    "holdout_reservation": "NOT_RESERVED",
+    "structural_dry_verification": "P7_CONTRACT_VERIFIED_EPOCH_PATH_NOT_ENTERED",
+    "development_execution_set": "NOT_AUTHORIZED",
+    "development_execution_receipts": "NONE",
+    "development_gate_matrix": "EMPTY",
+    "deterministic_nominee_selection": "NONE",
+    "validation_execution_set": "NOT_OPENED",
+    "validation_receipts_and_gate_matrix": "NONE",
+    "candidate_freeze": "NOT_PERMITTED",
+    "final_holdout_authorization_and_access_receipt": "NONE",
+    "final_holdout_gate_matrix": "EMPTY",
+    "concentration_results": "NOT_EXECUTED",
+    "independence_v3_results": "NOT_EXECUTED",
+    "uncertainty_v2_results": "NOT_EXECUTED",
+    "result_hash_and_stage_seal_verification": "NO_RESULTS_OR_STAGE_SEALS",
+    "prohibited_evidence_scan": "IN_THIS_REPORT",
+    "exact_commands": "IN_THIS_REPORT",
+    "exact_files_changed": "IN_THIS_REPORT",
+    "exact_commits": "EXTERNAL_CLOSEOUT",
+    "final_verdict": "PR4B0_R1_RESEARCH_BLOCKED"
+  },
+  "remaining_blockers": [
+    "An accepted production Historian-to-Engine partition-artifact preparation authority is absent.",
+    "An accepted production P7 stage-set orchestration entry point is absent.",
+    "Frozen V00's eight-symbol configuration conflicts with the mandatory nine-symbol/no-narrower-whitelist rules."
+  ]
+}
