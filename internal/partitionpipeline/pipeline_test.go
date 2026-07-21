@@ -79,6 +79,48 @@ func TestSyntheticPlanAndMaterializationLifecycle(t *testing.T) {
 	_ = root
 }
 
+func TestCreatePlanRequiresExactAcceptedCheckpointTuple(t *testing.T) {
+	base := CheckpointInput{
+		SourceRoot:                "/not-opened",
+		ProspectiveSourceRoot:     "/not-opened-either",
+		CheckpointRelativePath:    "checkpoint.json",
+		CheckpointID:              acceptedCheckpointID,
+		CheckpointSHA256:          acceptedCheckpointSHA256,
+		HistorianCommit:           acceptedHistorianCommit,
+		HistorianTree:             acceptedHistorianTree,
+		SourceIdentitySHA256:      acceptedSourceIdentitySHA256,
+		ReacquisitionProtocol:     HashIdentity{ID: acceptedReacquisitionProtocolID, SHA256: acceptedReacquisitionProtocolSHA},
+		PreAcquisitionSealSHA256:  acceptedPreAcquisitionSealSHA,
+		SealedBinarySHA256:        acceptedSealedBinarySHA,
+		AbandonedEvidenceRegistry: HashIdentity{ID: acceptedAbandonedRegistryID, SHA256: acceptedAbandonedRegistrySHA},
+		AvailabilityCutoff:        acceptedAvailabilityCutoff,
+	}
+	tests := map[string]func(*CheckpointInput){
+		"checkpoint id":        func(value *CheckpointInput) { value.CheckpointID = "substitute" },
+		"checkpoint hash":      func(value *CheckpointInput) { value.CheckpointSHA256 = testHash('0') },
+		"historian commit":     func(value *CheckpointInput) { value.HistorianCommit = strings.Repeat("0", 40) },
+		"historian tree":       func(value *CheckpointInput) { value.HistorianTree = strings.Repeat("0", 40) },
+		"source identity":      func(value *CheckpointInput) { value.SourceIdentitySHA256 = testHash('0') },
+		"protocol":             func(value *CheckpointInput) { value.ReacquisitionProtocol.SHA256 = testHash('0') },
+		"pre-acquisition seal": func(value *CheckpointInput) { value.PreAcquisitionSealSHA256 = testHash('0') },
+		"sealed binary":        func(value *CheckpointInput) { value.SealedBinarySHA256 = testHash('0') },
+		"abandoned registry":   func(value *CheckpointInput) { value.AbandonedEvidenceRegistry.SHA256 = testHash('0') },
+		"availability cutoff":  func(value *CheckpointInput) { value.AvailabilityCutoff = value.AvailabilityCutoff.Add(time.Second) },
+	}
+	for name, mutate := range tests {
+		t.Run(name, func(t *testing.T) {
+			candidate := base
+			mutate(&candidate)
+			if _, err := CreatePlan(candidate, "DEVELOPMENT"); err == nil || !strings.Contains(err.Error(), "identity substitution") {
+				t.Fatalf("checkpoint substitution did not fail before source access: %v", err)
+			}
+		})
+	}
+	if _, err := CreatePlan(base, "TRAIN"); err == nil {
+		t.Fatal("alternate partition boundary name was accepted")
+	}
+}
+
 func TestPlanRejectsBoundaryUniverseMembershipAndPathMutation(t *testing.T) {
 	_, base := syntheticSource(t, "VALIDATION")
 	tests := map[string]func(*Plan){

@@ -94,13 +94,27 @@ func TestStageReplayAndWrongConfigFailClosed(t *testing.T) {
 	if err := o.RunDevelopmentSet(); err != nil {
 		t.Fatalf("idempotent completed DEVELOPMENT resume failed: %v", err)
 	}
-	wrong := config
-	wrong.Identity.Repositories.RunnerGitCommit = "0000000000000000000000000000000000000000"
-	wrong.ConfigSHA256 = ""
-	wrong, _ = SealConfig(wrong)
-	other, _ := New(epoch, wrong)
-	if _, err := other.Status(); err == nil {
-		t.Fatal("another runner/configuration reopened epoch")
+	mutations := map[string]func(*Config){
+		"runner": func(value *Config) {
+			value.Identity.Repositories.RunnerGitCommit = "0000000000000000000000000000000000000000"
+		},
+		"checkpoint": func(value *Config) { value.Identity.Dataset.Checkpoint.SHA256 = hashChar('0') },
+		"protocol": func(value *Config) {
+			value.Identity.Protocol.SHA256, value.Identity.Protocol.ContentAddressedIdentity = hashChar('0'), hashChar('0')
+		},
+		"ledger": func(value *Config) { value.VariantLedger.LedgerSHA256 = hashChar('0') },
+	}
+	for name, mutate := range mutations {
+		t.Run(name, func(t *testing.T) {
+			wrong := config
+			mutate(&wrong)
+			wrong.ConfigSHA256 = ""
+			wrong, _ = SealConfig(wrong)
+			other, _ := New(epoch, wrong)
+			if _, err := other.Status(); err == nil {
+				t.Fatalf("another %s/configuration reopened epoch", name)
+			}
+		})
 	}
 }
 
