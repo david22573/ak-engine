@@ -68,7 +68,7 @@ func verifyRequest(request ExecutionRequest, requireConsumed bool) (VerifiedRequ
 	if request.CandidateFamily != identity.CandidateScope.FamilyID || request.CandidateFamily != V00CandidateFamily || identity.CandidateScope.StrategySide != "LONG" || identity.CandidateScope.Horizon != "240m" || identity.CandidateScope.SemanticsFrozen {
 		return VerifiedRequest{}, errors.New("candidate family, side, horizon, or reservation-time semantics mismatch")
 	}
-	if !reflect.DeepEqual(request.Dataset, DatasetBinding{identity.Dataset.Checkpoint, identity.Dataset.SourceIdentitySHA256, identity.Dataset.SealedBinarySHA256, identity.Dataset.RequiredSymbols, identity.Dataset.EligibleInterval, identity.Dataset.ProhibitedPriorExposure, identity.Dataset.AvailabilityCutoff}) {
+	if !reflect.DeepEqual(request.Dataset, DatasetBinding{identity.Dataset.Checkpoint, identity.Dataset.SourceIdentitySHA256, identity.Dataset.SealedBinarySHA256, identity.Dataset.RequiredSymbols, identity.Dataset.CandidateTargetSymbols, identity.Dataset.ContextOnlySymbols, identity.Dataset.UniverseContractSHA256, identity.Dataset.EligibleInterval, identity.Dataset.ProhibitedPriorExposure, identity.Dataset.AvailabilityCutoff}) {
 		return VerifiedRequest{}, errors.New("dataset, source, interval, symbol, cutoff, or barred-exposure substitution")
 	}
 	registeredPartition, ok := findPartition(identity, request.Partition.Name)
@@ -223,8 +223,13 @@ func validateIdentity(identity ResearchIdentityV4) error {
 	if !validSHA(identity.Repositories.RunnerExecutableSHA256) || !validSHA(identity.Dataset.Checkpoint.SHA256) || !validSHA(identity.Dataset.SourceIdentitySHA256) || !validSHA(identity.Dataset.SealedBinarySHA256) || len(identity.Dataset.RequiredSymbols) == 0 || len(identity.Partitions) != 3 || identity.VariantLedger.MaximumRegisteredVariants > 12 || len(identity.VariantLedger.Variants) == 0 || !identity.AccessPolicy.NoAccessBeforeReservation || !identity.AccessPolicy.DurableAccessReceiptRequired || identity.AccessPolicy.PermittedAccessCountPerPartition != 1 {
 		return errors.New("RIF V4 repository, dataset, partition, ledger, or access identity is incomplete")
 	}
-	if !reflect.DeepEqual(identity.Dataset.RequiredSymbols, acceptedSymbols) {
-		return errors.New("registered symbol universe differs from accepted PR4B0 gate universe")
+	universe := UniverseContract{SchemaVersion: UniverseContractVersion, DatasetRequiredSymbols: append([]string(nil), identity.Dataset.RequiredSymbols...), CandidateTargetSymbols: append([]string(nil), identity.Dataset.CandidateTargetSymbols...), ContextOnlySymbols: append([]string(nil), identity.Dataset.ContextOnlySymbols...), SymbolBlacklists: []string{}, OutcomeDerivedFilters: []string{}, ContractSHA256: identity.Dataset.UniverseContractSHA256}
+	if err := VerifyUniverseContract(universe); err != nil {
+		return fmt.Errorf("registered universe: %w", err)
+	}
+	accepted, err := V00UniverseContract()
+	if err != nil || !reflect.DeepEqual(universe, accepted) {
+		return errors.New("registered universe differs from accepted V00 dataset/target/context contract")
 	}
 	return nil
 }

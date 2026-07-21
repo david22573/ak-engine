@@ -13,6 +13,7 @@ const (
 	ReadinessSchemaVersion  = "ak.engine.qualification_structural_readiness.v1"
 	ResultSchemaVersion     = "ak.engine.qualification_execution_result.v1"
 	DatasetArtifactVersion  = "ak.engine.synthetic_partition_fixture.v1"
+	UniverseContractVersion = "ak.engine.universe_contract.v1"
 	ConfigurationVersion    = "ak.engine.downtrend-midvol-relief.configuration.v1"
 	VariantLedgerVersion    = "ak.engine.variant_ledger.v1"
 	V00SourceSHA256         = "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1"
@@ -59,6 +60,15 @@ type CandidateScope struct {
 	Horizon         string `json:"permitted_horizon"`
 	SemanticsFrozen bool   `json:"candidate_semantics_frozen"`
 }
+type UniverseContract struct {
+	SchemaVersion          string   `json:"schema_version"`
+	DatasetRequiredSymbols []string `json:"dataset_required_symbols"`
+	CandidateTargetSymbols []string `json:"candidate_target_symbols"`
+	ContextOnlySymbols     []string `json:"context_only_symbols"`
+	SymbolBlacklists       []string `json:"symbol_blacklists"`
+	OutcomeDerivedFilters  []string `json:"outcome_derived_symbol_filters"`
+	ContractSHA256         string   `json:"contract_sha256"`
+}
 type DatasetIdentity struct {
 	Checkpoint                HashIdentity `json:"checkpoint"`
 	SourceIdentitySHA256      string       `json:"source_identity_sha256"`
@@ -67,7 +77,10 @@ type DatasetIdentity struct {
 	SealedBinarySHA256        string       `json:"sealed_binary_sha256"`
 	AbandonedEvidenceRegistry HashIdentity `json:"abandoned_evidence_registry"`
 	HistorianCheckpointCommit string       `json:"historian_checkpoint_commit"`
-	RequiredSymbols           []string     `json:"required_symbols"`
+	RequiredSymbols           []string     `json:"dataset_required_symbols"`
+	CandidateTargetSymbols    []string     `json:"candidate_target_symbols"`
+	ContextOnlySymbols        []string     `json:"context_only_symbols"`
+	UniverseContractSHA256    string       `json:"universe_contract_sha256"`
 	EligibleInterval          Interval     `json:"eligible_interval"`
 	ProhibitedPriorExposure   []Interval   `json:"prohibited_prior_exposure_intervals"`
 	AvailabilityCutoff        time.Time    `json:"availability_cutoff"`
@@ -167,7 +180,10 @@ type DatasetBinding struct {
 	Checkpoint              HashIdentity `json:"checkpoint"`
 	SourceIdentitySHA256    string       `json:"source_identity_sha256"`
 	SealedBinarySHA256      string       `json:"sealed_binary_sha256"`
-	RequiredSymbols         []string     `json:"required_symbols"`
+	RequiredSymbols         []string     `json:"dataset_required_symbols"`
+	CandidateTargetSymbols  []string     `json:"candidate_target_symbols"`
+	ContextOnlySymbols      []string     `json:"context_only_symbols"`
+	UniverseContractSHA256  string       `json:"universe_contract_sha256"`
 	EligibleInterval        Interval     `json:"eligible_interval"`
 	ProhibitedPriorExposure []Interval   `json:"prohibited_prior_exposure_intervals"`
 	AvailabilityCutoff      time.Time    `json:"availability_cutoff"`
@@ -244,7 +260,10 @@ type PartitionArtifact struct {
 	SourceIdentitySHA256 string     `json:"source_identity_sha256"`
 	SealedBinarySHA256   string     `json:"sealed_binary_sha256"`
 	Partition            string     `json:"partition"`
-	Symbols              []string   `json:"symbols"`
+	PartitionPlanSHA256  string     `json:"partition_plan_sha256"`
+	DatasetSymbols       []string   `json:"dataset_required_symbols"`
+	TargetSymbols        []string   `json:"candidate_target_symbols"`
+	ContextOnlySymbols   []string   `json:"context_only_symbols"`
 	Rows                 []InputRow `json:"rows"`
 	ArtifactSHA256       string     `json:"artifact_sha256"`
 }

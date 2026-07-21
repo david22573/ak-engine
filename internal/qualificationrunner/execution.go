@@ -150,7 +150,7 @@ func decodePartitionArtifact(data []byte) (PartitionArtifact, error) {
 }
 
 func validateArtifactShape(artifact PartitionArtifact) error {
-	if artifact.SchemaVersion != DatasetArtifactVersion || (artifact.Label != SyntheticLabel && artifact.Label != RegisteredResearchLabel) || !validSHA(artifact.CheckpointSHA256) || !validSHA(artifact.SourceIdentitySHA256) || !validSHA(artifact.SealedBinarySHA256) || artifact.Partition == "" || len(artifact.Symbols) == 0 || len(artifact.Rows) == 0 {
+	if artifact.SchemaVersion != DatasetArtifactVersion || (artifact.Label != SyntheticLabel && artifact.Label != RegisteredResearchLabel) || !validSHA(artifact.CheckpointSHA256) || !validSHA(artifact.SourceIdentitySHA256) || !validSHA(artifact.SealedBinarySHA256) || artifact.Partition == "" || len(artifact.DatasetSymbols) == 0 || len(artifact.TargetSymbols) == 0 || len(artifact.Rows) == 0 {
 		return errors.New("synthetic partition artifact identity is incomplete")
 	}
 	return nil
@@ -165,10 +165,10 @@ func validateArtifactBindingWithPolicy(verified VerifiedRequest, artifact Partit
 		return err
 	}
 	request := verified.Request
-	if artifact.CheckpointSHA256 != request.Dataset.Checkpoint.SHA256 || artifact.SourceIdentitySHA256 != request.Dataset.SourceIdentitySHA256 || artifact.SealedBinarySHA256 != request.Dataset.SealedBinarySHA256 || artifact.Partition != request.Partition.Name || (requireRegisteredArtifactHash && artifact.ArtifactSHA256 != request.Partition.RequiredSymbolCoverageSHA256) {
+	if artifact.CheckpointSHA256 != request.Dataset.Checkpoint.SHA256 || artifact.SourceIdentitySHA256 != request.Dataset.SourceIdentitySHA256 || artifact.SealedBinarySHA256 != request.Dataset.SealedBinarySHA256 || artifact.Partition != request.Partition.Name || artifact.PartitionPlanSHA256 != request.Partition.RequiredSymbolCoverageSHA256 {
 		return errors.New("checkpoint, source, sealed binary, partition, or registered artifact substitution")
 	}
-	if !reflect.DeepEqual(artifact.Symbols, request.Dataset.RequiredSymbols) {
+	if !reflect.DeepEqual(artifact.DatasetSymbols, request.Dataset.RequiredSymbols) || !reflect.DeepEqual(artifact.TargetSymbols, request.Dataset.CandidateTargetSymbols) || !reflect.DeepEqual(artifact.ContextOnlySymbols, request.Dataset.ContextOnlySymbols) {
 		return errors.New("partition artifact symbol universe mismatch")
 	}
 	observed := map[string]struct{}{}
@@ -182,7 +182,7 @@ func validateArtifactBindingWithPolicy(verified VerifiedRequest, artifact Partit
 		if row.EventTime.Before(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)) {
 			return errors.New("pre-2026 row rejected")
 		}
-		if !containsString(request.Dataset.RequiredSymbols, row.Symbol) {
+		if !containsString(request.Dataset.CandidateTargetSymbols, row.Symbol) {
 			return errors.New("row adds an unregistered symbol")
 		}
 		for _, barred := range request.Dataset.ProhibitedPriorExposure {
@@ -201,8 +201,8 @@ func validateArtifactBindingWithPolicy(verified VerifiedRequest, artifact Partit
 		}
 		observed[row.Symbol] = struct{}{}
 	}
-	if len(observed) != len(request.Dataset.RequiredSymbols) {
-		return errors.New("partition rows omit required symbols")
+	if len(observed) != len(request.Dataset.CandidateTargetSymbols) {
+		return errors.New("partition rows omit required target symbols")
 	}
 	return nil
 }
@@ -220,6 +220,9 @@ func executeVariant(verified VerifiedRequest, artifact PartitionArtifact) ([]pre
 	events := []preconditions.RetainedEvent{}
 	net := map[string]float64{}
 	for _, row := range rows {
+		if !containsString(configuration.Symbols, row.Symbol) {
+			continue
+		}
 		if !v00Signal(configuration, row) {
 			continue
 		}

@@ -8,9 +8,12 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strings"
 )
 
-var acceptedSymbols = []string{"ADAUSDT", "AVAXUSDT", "BNBUSDT", "DOGEUSDT", "ETHUSDT", "LINKUSDT", "SOLUSDT", "XRPUSDT"}
+var acceptedDatasetSymbols = []string{"ADAUSDT", "AVAXUSDT", "BNBUSDT", "BTCUSDT", "DOGEUSDT", "ETHUSDT", "LINKUSDT", "SOLUSDT", "XRPUSDT"}
+var acceptedTargetSymbols = []string{"ADAUSDT", "AVAXUSDT", "BNBUSDT", "DOGEUSDT", "ETHUSDT", "LINKUSDT", "SOLUSDT", "XRPUSDT"}
+var acceptedContextOnlySymbols = []string{"BTCUSDT"}
 
 func V00Configuration() CandidateConfiguration {
 	return CandidateConfiguration{
@@ -20,12 +23,106 @@ func V00Configuration() CandidateConfiguration {
 		ContextAgreement: "REQUIRE_COMPLETE_BTC_ETH_CONTEXT",
 		EventQuality:     "BASELINE_DECISION_CLOSE",
 		CooldownMinutes:  0,
-		Symbols:          append([]string(nil), acceptedSymbols...), DateExclusions: []string{}, QuarterExclusions: []string{},
+		Symbols:          append([]string(nil), acceptedTargetSymbols...), DateExclusions: []string{}, QuarterExclusions: []string{},
 		TransactionCostBPS: 10, SizingPolicy: "ONE_EQUAL_UNIT_PER_ACCEPTED_EVENT",
 		OutcomeDerivedFilters: []string{},
 		Indicators:            []string{"EMA50", "EMA200", "TrendSlope20", "RealizedVol60"},
 		Features:              []string{"close", "ema_50", "ema_200", "trend_slope_20", "realized_vol_60", "btc_context", "eth_context"},
 	}
+}
+
+func V00UniverseContract() (UniverseContract, error) {
+	contract := UniverseContract{
+		SchemaVersion:          UniverseContractVersion,
+		DatasetRequiredSymbols: append([]string(nil), acceptedDatasetSymbols...),
+		CandidateTargetSymbols: append([]string(nil), acceptedTargetSymbols...),
+		ContextOnlySymbols:     append([]string(nil), acceptedContextOnlySymbols...),
+		SymbolBlacklists:       []string{}, OutcomeDerivedFilters: []string{},
+	}
+	return SealUniverseContract(contract)
+}
+
+func SealUniverseContract(contract UniverseContract) (UniverseContract, error) {
+	contract.ContractSHA256 = ""
+	contract.DatasetRequiredSymbols = append([]string(nil), contract.DatasetRequiredSymbols...)
+	contract.CandidateTargetSymbols = append([]string(nil), contract.CandidateTargetSymbols...)
+	contract.ContextOnlySymbols = append([]string(nil), contract.ContextOnlySymbols...)
+	contract.SymbolBlacklists = append([]string{}, contract.SymbolBlacklists...)
+	contract.OutcomeDerivedFilters = append([]string{}, contract.OutcomeDerivedFilters...)
+	for _, values := range [][]string{contract.DatasetRequiredSymbols, contract.CandidateTargetSymbols, contract.ContextOnlySymbols} {
+		sort.Strings(values)
+	}
+	if err := validateUniverseContract(contract); err != nil {
+		return UniverseContract{}, err
+	}
+	hash, err := canonicalHash(contract)
+	if err != nil {
+		return UniverseContract{}, err
+	}
+	contract.ContractSHA256 = hash
+	return contract, nil
+}
+
+func VerifyUniverseContract(contract UniverseContract) error {
+	want, err := SealUniverseContract(contract)
+	if err != nil {
+		return err
+	}
+	if contract.ContractSHA256 != want.ContractSHA256 || !reflect.DeepEqual(contract, want) {
+		return errors.New("universe contract is noncanonical or mutated")
+	}
+	return nil
+}
+
+func validateUniverseContract(contract UniverseContract) error {
+	if contract.SchemaVersion != UniverseContractVersion || len(contract.DatasetRequiredSymbols) == 0 || len(contract.CandidateTargetSymbols) == 0 {
+		return errors.New("complete universe contract is required")
+	}
+	if len(contract.SymbolBlacklists) != 0 || len(contract.OutcomeDerivedFilters) != 0 {
+		return errors.New("symbol blacklists and outcome-derived symbol filters are prohibited")
+	}
+	unique := func(name string, values []string) (map[string]struct{}, error) {
+		seen := map[string]struct{}{}
+		for _, value := range values {
+			if value == "" || value != strings.ToUpper(value) {
+				return nil, fmt.Errorf("%s contains a noncanonical symbol", name)
+			}
+			if _, exists := seen[value]; exists {
+				return nil, fmt.Errorf("%s contains a duplicate symbol", name)
+			}
+			seen[value] = struct{}{}
+		}
+		return seen, nil
+	}
+	dataset, err := unique("dataset", contract.DatasetRequiredSymbols)
+	if err != nil {
+		return err
+	}
+	targets, err := unique("targets", contract.CandidateTargetSymbols)
+	if err != nil {
+		return err
+	}
+	contexts, err := unique("context-only", contract.ContextOnlySymbols)
+	if err != nil {
+		return err
+	}
+	if len(targets)+len(contexts) != len(dataset) {
+		return errors.New("target/context-only union differs from dataset universe")
+	}
+	for symbol := range targets {
+		if _, overlap := contexts[symbol]; overlap {
+			return errors.New("target and context-only symbols overlap")
+		}
+		if _, exists := dataset[symbol]; !exists {
+			return errors.New("target symbol is absent from dataset universe")
+		}
+	}
+	for symbol := range contexts {
+		if _, exists := dataset[symbol]; !exists {
+			return errors.New("context-only symbol is absent from dataset universe")
+		}
+	}
+	return nil
 }
 
 func CanonicalConfigurationHash(configuration CandidateConfiguration) (string, error) {
