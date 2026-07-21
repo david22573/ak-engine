@@ -53,6 +53,36 @@ type sourceFragment struct {
 	FragmentHash            string             `json:"fragment_hash"`
 }
 
+type prospectiveRecord struct {
+	Market              string `json:"market"`
+	Symbol              string `json:"symbol"`
+	Interval            string `json:"interval"`
+	Period              string `json:"period"`
+	SourceDate          string `json:"source_date"`
+	OpenTimeMS          int64  `json:"open_time_ms"`
+	Open                string `json:"open"`
+	High                string `json:"high"`
+	Low                 string `json:"low"`
+	Close               string `json:"close"`
+	Volume              string `json:"volume"`
+	CloseTimeMS         int64  `json:"close_time_ms"`
+	QuoteAssetVolume    string `json:"quote_asset_volume"`
+	NumberOfTrades      int64  `json:"number_of_trades"`
+	TakerBuyBaseVolume  string `json:"taker_buy_base_volume"`
+	TakerBuyQuoteVolume string `json:"taker_buy_quote_volume"`
+}
+
+type prospectiveFragment struct {
+	SchemaVersion           string              `json:"schema_version"`
+	NormalizationVersion    string              `json:"normalization_version"`
+	CycleID                 string              `json:"cycle_id"`
+	Symbol                  string              `json:"symbol"`
+	SourceSchemaVersion     string              `json:"source_schema_version"`
+	SourceSchemaFingerprint string              `json:"source_schema_fingerprint"`
+	Records                 []prospectiveRecord `json:"records"`
+	FragmentHash            string              `json:"fragment_hash"`
+}
+
 func CreateRegistry(root string) error {
 	if root == "" || filepath.Clean(root) != root {
 		return errUnsafePath
@@ -198,7 +228,7 @@ func Materialize(root, planSHA string, now time.Time) (qualificationrunner.Parti
 			return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("planned manifest changed")
 		}
 		for _, fragmentRef := range member.FragmentArtifacts {
-			fragment, err := readFragment(plan.SourceRoot, fragmentRef)
+			fragment, err := readFragment(plan, fragmentRef)
 			if err != nil {
 				return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
 			}
@@ -373,33 +403,73 @@ func ConsumeArtifact(root, planSHA string, now time.Time) ([]byte, ConsumptionRe
 	return data, receipt, nil
 }
 
-func readFragment(root string, ref SourceArtifact) (sourceFragment, error) {
+func readFragment(plan Plan, ref SourceArtifact) (sourceFragment, error) {
+	root, err := sourceRootByID(plan.SourceRoot, plan.ProspectiveSourceRoot, ref.SourceRootID)
+	if err != nil {
+		return sourceFragment{}, err
+	}
 	path, err := secureJoin(root, ref.RelativePath, true)
 	if err != nil {
 		return sourceFragment{}, err
 	}
-	compressed, err := os.ReadFile(path)
+	encoded, err := os.ReadFile(path)
 	if err != nil {
 		return sourceFragment{}, err
 	}
-	reader, err := gzip.NewReader(bytes.NewReader(compressed))
-	if err != nil {
-		return sourceFragment{}, err
+	data := encoded
+	if ref.Encoding == BackfillFragmentEncoding || ref.Encoding == SyntheticFragmentEncoding {
+		reader, gzipErr := gzip.NewReader(bytes.NewReader(encoded))
+		if gzipErr != nil {
+			return sourceFragment{}, gzipErr
+		}
+		decompressed, readErr := io.ReadAll(io.LimitReader(reader, 64*1024*1024+1))
+		closeErr := reader.Close()
+		if readErr != nil || closeErr != nil || len(decompressed) > 64*1024*1024 {
+			return sourceFragment{}, errors.New("fragment exceeds bounded size or is not a complete gzip stream")
+		}
+		data = decompressed
+	} else if ref.Encoding != ProspectiveFragmentEncoding {
+		return sourceFragment{}, errors.New("unregistered source fragment encoding")
 	}
-	defer reader.Close()
-	data, err := io.ReadAll(io.LimitReader(reader, 64*1024*1024+1))
-	if err != nil || len(data) > 64*1024*1024 {
+	if len(data) > 64*1024*1024 {
 		return sourceFragment{}, errors.New("fragment exceeds bounded size")
+	}
+	if ref.Encoding == ProspectiveFragmentEncoding {
+		return decodeProspectiveFragment(data, ref)
 	}
 	var fragment sourceFragment
 	if err := strictJSON(data, &fragment); err != nil {
 		return sourceFragment{}, err
 	}
-	want := fragment
-	want.FragmentHash = ""
-	hash, err := canonicalHash(want)
+	var hash string
+	if ref.Encoding == BackfillFragmentEncoding {
+		hash, err = historianCanonicalJSONHash(data, "fragment_hash")
+		if fragment.SchemaVersion != "ak-historian.pr4b0-r1p5r.normalized-fragment.v1" {
+			return sourceFragment{}, errors.New("backfill fragment schema substitution")
+		}
+	} else {
+		want := fragment
+		want.FragmentHash = ""
+		hash, err = canonicalHash(want)
+	}
 	if err != nil || fragment.FragmentHash != ref.CanonicalSHA256 || fragment.FragmentHash != hash {
 		return sourceFragment{}, errors.New("source fragment canonical hash changed")
+	}
+	return fragment, nil
+}
+
+func decodeProspectiveFragment(data []byte, ref SourceArtifact) (sourceFragment, error) {
+	var prospective prospectiveFragment
+	if err := strictJSON(data, &prospective); err != nil {
+		return sourceFragment{}, err
+	}
+	hash, err := historianCanonicalJSONHash(data, "fragment_hash")
+	if err != nil || prospective.SchemaVersion != "ak-historian.pr4b0-r1p4.normalized-fragment.v1" || prospective.NormalizationVersion == "" || prospective.CycleID == "" || prospective.FragmentHash != ref.CanonicalSHA256 || prospective.FragmentHash != hash || !validSHA(ref.ReceiptSHA256) || ref.ObservedAvailableAtUTC.IsZero() {
+		return sourceFragment{}, errors.New("prospective source fragment canonical identity changed")
+	}
+	fragment := sourceFragment{SchemaVersion: prospective.SchemaVersion, RequestID: ref.ReceiptSHA256, Symbol: prospective.Symbol, SourceSchemaVersion: prospective.SourceSchemaVersion, SourceSchemaFingerprint: prospective.SourceSchemaFingerprint, FragmentHash: prospective.FragmentHash, Records: make([]normalizedRecord, len(prospective.Records))}
+	for index, row := range prospective.Records {
+		fragment.Records[index] = normalizedRecord{Market: row.Market, Symbol: row.Symbol, Interval: row.Interval, Period: row.Period, SourceDate: row.SourceDate, OpenTimeMS: row.OpenTimeMS, Open: row.Open, High: row.High, Low: row.Low, Close: row.Close, Volume: row.Volume, CloseTimeMS: row.CloseTimeMS, QuoteAssetVolume: row.QuoteAssetVolume, NumberOfTrades: row.NumberOfTrades, TakerBuyBaseVolume: row.TakerBuyBaseVolume, TakerBuyQuoteVolume: row.TakerBuyQuoteVolume, MarketEventTimeUTC: time.UnixMilli(row.OpenTimeMS).UTC(), ProviderCandleCloseTimeUTC: time.UnixMilli(row.CloseTimeMS).UTC(), ObservedAvailableAtUTC: ref.ObservedAvailableAtUTC.UTC(), AcquiredAtUTC: ref.ObservedAvailableAtUTC.UTC(), AcquisitionReceiptID: ref.ReceiptSHA256}
 	}
 	return fragment, nil
 }

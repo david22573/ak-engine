@@ -23,6 +23,11 @@ const (
 	OutputPathPolicy                = "REGISTRY_ROOT/artifacts/<checkpoint>/<partition>/<plan_sha256>.json"
 	SymlinkPolicy                   = "REJECT_ALL_SOURCE_REGISTRY_CACHE_AND_OUTPUT_SYMLINKS"
 	CachePolicy                     = "REGISTERED_REGISTRY_ROOT_ONLY_NO_CALLER_CACHE"
+	CheckpointSourceRootID          = "R1P5R_CHECKPOINT_STORE"
+	ProspectiveSourceRootID         = "P4_PROSPECTIVE_STORE"
+	BackfillFragmentEncoding        = "R1P5R_GZIP_CANONICAL_JSON_V1"
+	ProspectiveFragmentEncoding     = "P4_CANONICAL_JSON_V1"
+	SyntheticFragmentEncoding       = "SYNTHETIC_GZIP_CANONICAL_JSON_V1"
 )
 
 type LifecycleState string
@@ -48,8 +53,12 @@ type Interval struct {
 }
 
 type SourceArtifact struct {
-	RelativePath    string `json:"relative_path"`
-	CanonicalSHA256 string `json:"canonical_sha256"`
+	SourceRootID           string    `json:"source_root_id"`
+	RelativePath           string    `json:"relative_path"`
+	CanonicalSHA256        string    `json:"canonical_sha256"`
+	Encoding               string    `json:"encoding,omitempty"`
+	ReceiptSHA256          string    `json:"receipt_sha256,omitempty"`
+	ObservedAvailableAtUTC time.Time `json:"observed_available_at_utc,omitempty"`
 }
 
 type SourceManifest struct {
@@ -90,6 +99,7 @@ type Plan struct {
 	CachePolicy               string           `json:"cache_policy"`
 	AvailabilityCutoff        time.Time        `json:"availability_cutoff"`
 	SourceRoot                string           `json:"canonical_source_root"`
+	ProspectiveSourceRoot     string           `json:"canonical_prospective_source_root,omitempty"`
 	SyntheticFixture          bool             `json:"synthetic_fixture"`
 	PlanSHA256                string           `json:"canonical_plan_sha256"`
 }

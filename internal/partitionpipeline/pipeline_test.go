@@ -157,6 +157,31 @@ func TestMaterializerRejectsChangedSymlinkCrossPartitionAndWrongSymbol(t *testin
 	}
 }
 
+func TestReadProspectiveFragmentBindsReceiptAvailability(t *testing.T) {
+	root := t.TempDir()
+	prospectiveRoot := t.TempDir()
+	if err := os.Mkdir(filepath.Join(prospectiveRoot, "normalized"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	observed := time.Date(2026, 7, 14, 19, 10, 2, 0, time.UTC)
+	row := prospectiveRecord{Market: "futures-um", Symbol: "ADAUSDT", Interval: "1m", Period: "1m", SourceDate: "2026-07-14", OpenTimeMS: time.Date(2026, 7, 14, 19, 5, 0, 0, time.UTC).UnixMilli(), Open: "1", High: "2", Low: "0.5", Close: "1.5", Volume: "10", CloseTimeMS: time.Date(2026, 7, 14, 19, 5, 59, 999000000, time.UTC).UnixMilli(), QuoteAssetVolume: "15", NumberOfTrades: 2, TakerBuyBaseVolume: "5", TakerBuyQuoteVolume: "7.5"}
+	fragment := prospectiveFragment{SchemaVersion: "ak-historian.pr4b0-r1p4.normalized-fragment.v1", NormalizationVersion: "test-normalization", CycleID: "test-cycle", Symbol: "ADAUSDT", SourceSchemaVersion: "test-source", SourceSchemaFingerprint: testHash('9'), Records: []prospectiveRecord{row}}
+	fragment.FragmentHash, _ = historianCanonicalHash(fragment, "fragment_hash")
+	data, _ := json.Marshal(fragment)
+	relative := "normalized/ADAUSDT.json"
+	if err := os.WriteFile(filepath.Join(prospectiveRoot, filepath.FromSlash(relative)), data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	receiptSHA := testHash('7')
+	decoded, err := readFragment(Plan{SourceRoot: root, ProspectiveSourceRoot: prospectiveRoot}, SourceArtifact{SourceRootID: ProspectiveSourceRootID, RelativePath: relative, CanonicalSHA256: fragment.FragmentHash, Encoding: ProspectiveFragmentEncoding, ReceiptSHA256: receiptSHA, ObservedAvailableAtUTC: observed})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(decoded.Records) != 1 || decoded.Records[0].AcquisitionReceiptID != receiptSHA || !decoded.Records[0].ObservedAvailableAtUTC.Equal(observed) || decoded.Records[0].MarketEventTimeUTC.UnixMilli() != row.OpenTimeMS || decoded.Records[0].ProviderCandleCloseTimeUTC.UnixMilli() != row.CloseTimeMS {
+		t.Fatalf("prospective metadata binding mismatch: %+v", decoded.Records)
+	}
+}
+
 func TestUnregisteredPlanCacheAndAuthorizationFailClosed(t *testing.T) {
 	_, plan := syntheticSource(t, "FINAL_HOLDOUT")
 	registry := filepath.Join(t.TempDir(), "registry")
@@ -261,7 +286,8 @@ func syntheticSource(t *testing.T, partition string) (string, Plan) {
 		if err := os.WriteFile(filepath.Join(root, filepath.FromSlash(manifestRel)), manifestData, 0o600); err != nil {
 			t.Fatal(err)
 		}
-		members = append(members, SourceManifest{Symbol: symbol, UTCDate: interval.Start.Format("2006-01-02"), RelativePath: manifestRel, FileSHA256: byteHash(manifestData), PartitionSHA256: testHash('c'), ExpectedRows: len(records), ReceiptArtifacts: []SourceArtifact{{RelativePath: "synthetic-receipt/" + symbol, CanonicalSHA256: testHash('7')}}, FragmentArtifacts: []SourceArtifact{{RelativePath: fragmentRel, CanonicalSHA256: fragment.FragmentHash}}})
+		receiptSHA := testHash('7')
+		members = append(members, SourceManifest{Symbol: symbol, UTCDate: interval.Start.Format("2006-01-02"), RelativePath: manifestRel, FileSHA256: byteHash(manifestData), PartitionSHA256: testHash('c'), ExpectedRows: len(records), ReceiptArtifacts: []SourceArtifact{{SourceRootID: CheckpointSourceRootID, RelativePath: "synthetic-receipt/" + symbol, CanonicalSHA256: receiptSHA, ObservedAvailableAtUTC: interval.Start}}, FragmentArtifacts: []SourceArtifact{{SourceRootID: CheckpointSourceRootID, RelativePath: fragmentRel, CanonicalSHA256: fragment.FragmentHash, Encoding: SyntheticFragmentEncoding, ReceiptSHA256: receiptSHA, ObservedAvailableAtUTC: interval.Start}}})
 	}
 	sortMembers(members)
 	plan := Plan{SchemaVersion: PlanSchemaVersion, Checkpoint: HashIdentity{"synthetic-checkpoint", testHash('1')}, HistorianCommit: strings.Repeat("2", 40), HistorianTree: strings.Repeat("3", 40), SourceIdentitySHA256: testHash('4'), ReacquisitionProtocol: HashIdentity{"synthetic-protocol", testHash('5')}, PreAcquisitionSealSHA256: testHash('6'), SealedBinarySHA256: testHash('7'), AbandonedEvidenceRegistry: HashIdentity{"synthetic-abandoned", testHash('8')}, DatasetRequiredSymbols: universe.DatasetRequiredSymbols, CandidateTargetSymbols: universe.CandidateTargetSymbols, ContextOnlySymbols: universe.ContextOnlySymbols, UniverseContractSHA256: universe.ContractSHA256, EligibleInterval: Interval{time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2026, 7, 17, 0, 0, 0, 0, time.UTC)}, PartitionName: partition, PartitionInterval: interval, SourceManifests: members, ExpectedStructuralDays: int(interval.End.Sub(interval.Start) / (24 * time.Hour)), SchemaIdentitySHA256: testHash('9'), OutputFormat: OutputFormat, OrderingPolicy: OrderingPolicy, OutputPathPolicy: OutputPathPolicy, SymlinkPolicy: SymlinkPolicy, CachePolicy: CachePolicy, AvailabilityCutoff: time.Date(2026, 7, 17, 7, 36, 29, 0, time.UTC), SourceRoot: root, SyntheticFixture: true}
