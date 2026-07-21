@@ -15,8 +15,13 @@ func TestEngineDoesNotDependOnRIFSourceCheckout(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read go.mod: %v", err)
 	}
-	if strings.Contains(string(goMod), "ak-rif") {
-		t.Fatalf("go.mod must not require or replace ak-rif")
+	const version = "github.com/david22573/ak-rif v0.0.0-20260720214045-23be9a8ef9b7"
+	if !strings.Contains(string(goMod), version) || strings.Contains(string(goMod), "replace github.com/david22573/ak-rif") {
+		t.Fatalf("go.mod must require the accepted vendored RIF snapshot without a source-checkout replacement")
+	}
+	commit, err := os.ReadFile(filepath.Join(root, "vendor", "github.com", "david22573", "ak-rif", "RIF_SOURCE_COMMIT"))
+	if err != nil || strings.TrimSpace(string(commit)) != "23be9a8ef9b754af4fe61eacea3650404707b484" {
+		t.Fatalf("vendored RIF provenance is missing or incorrect: %v", err)
 	}
 
 	err = filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
@@ -41,7 +46,10 @@ func TestEngineDoesNotDependOnRIFSourceCheckout(t *testing.T) {
 			importPath := strings.Trim(imported.Path.Value, "\"")
 			if importPath == "ak-rif" || strings.HasPrefix(importPath, "ak-rif/") ||
 				importPath == "github.com/david22573/ak-rif" || strings.HasPrefix(importPath, "github.com/david22573/ak-rif/") {
-				t.Fatalf("engine source imports ak-rif implementation package: %s", path)
+				relative, _ := filepath.Rel(root, path)
+				if !strings.HasPrefix(filepath.ToSlash(relative), "internal/epochorchestrator/") && !strings.HasPrefix(filepath.ToSlash(relative), "vendor/") {
+					t.Fatalf("RIF implementation import escaped the production orchestrator adapter: %s", path)
+				}
 			}
 		}
 		return nil

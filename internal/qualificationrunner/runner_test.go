@@ -332,14 +332,17 @@ func syntheticRequest(t *testing.T, mode Mode, variantID string, consumed, froze
 	checkpoint := HashIdentity{"synthetic-checkpoint", testHash('a')}
 	source := testHash('b')
 	sealedBinary := testHash('c')
+	universe, err := V00UniverseContract()
+	if err != nil {
+		t.Fatal(err)
+	}
 	artifactBytes := []byte(nil)
 	coverage := testHash('d')
 	if rows != nil {
-		artifact, err := SealPartitionArtifact(PartitionArtifact{CheckpointSHA256: checkpoint.SHA256, SourceIdentitySHA256: source, SealedBinarySHA256: sealedBinary, Partition: partitionName, Symbols: append([]string(nil), acceptedSymbols...), Rows: rows})
+		artifact, err := SealPartitionArtifact(PartitionArtifact{CheckpointSHA256: checkpoint.SHA256, SourceIdentitySHA256: source, SealedBinarySHA256: sealedBinary, Partition: partitionName, PartitionPlanSHA256: coverage, DatasetSymbols: append([]string(nil), acceptedDatasetSymbols...), TargetSymbols: append([]string(nil), acceptedTargetSymbols...), ContextOnlySymbols: append([]string(nil), acceptedContextOnlySymbols...), Rows: rows})
 		if err != nil {
 			t.Fatal(err)
 		}
-		coverage = artifact.ArtifactSHA256
 		artifactBytes, err = EncodePartitionArtifact(artifact)
 		if err != nil {
 			t.Fatal(err)
@@ -350,7 +353,7 @@ func syntheticRequest(t *testing.T, mode Mode, variantID string, consumed, froze
 	independenceHash, _ := preconditions.AcceptedIndependencePolicyHashV3(policy)
 	uncertaintyHash, _ := preconditions.AcceptedUncertaintyMethodHashV2(preconditions.AcceptedUncertaintyMethodV2())
 	authorities := AuthorityIdentity{HashIdentity{preconditions.AcceptedIndependencePolicyVersionV3, independenceHash}, HashIdentity{preconditions.AcceptedUncertaintyMethodVersion, uncertaintyHash}, policy.GovernanceDecisionHash, HashIdentity{qualification.PR4B0GateSetID, gateHash}, gateIDs, HashIdentity{"synthetic-cost-policy", testHash('e')}, HashIdentity{"synthetic-seed-policy", testHash('f')}}
-	identity := ResearchIdentityV4{"ak.rif.research_identity.v4", "synthetic-engine-runner", RepositoryIdentity{strings.Repeat("1", 40), strings.Repeat("2", 40), strings.Repeat("3", 40), strings.Repeat("4", 40), strings.Repeat("5", 40), testHash('1')}, ProtocolIdentity{"synthetic-protocol", testHash('2'), testHash('2'), "synthetic.protocol.v1"}, CandidateScope{V00CandidateFamily, "LONG", "240m", false}, DatasetIdentity{checkpoint, source, HashIdentity{"synthetic-reacquisition", testHash('3')}, testHash('4'), sealedBinary, HashIdentity{"synthetic-abandoned", testHash('5')}, strings.Repeat("6", 40), append([]string(nil), acceptedSymbols...), Interval{time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2033, 1, 1, 0, 0, 0, 0, time.UTC)}, []Interval{{time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)}}, time.Date(2033, 1, 2, 0, 0, 0, 0, time.UTC)}, partitions, testIdentityLedger(ledger), authorities, AccessPolicy{true, []string{"exact runner", "reservation"}, []string{"development sealed", "registered nominee"}, []string{"candidate frozen", "validation sealed"}, []string{"dataset", "executable", "no defaults"}, 1, "NO_RETRY_AFTER_ACCESS", true}}
+	identity := ResearchIdentityV4{"ak.rif.research_identity.v4", "synthetic-engine-runner", RepositoryIdentity{strings.Repeat("1", 40), strings.Repeat("2", 40), strings.Repeat("3", 40), strings.Repeat("4", 40), strings.Repeat("5", 40), testHash('1')}, ProtocolIdentity{"synthetic-protocol", testHash('2'), testHash('2'), "synthetic.protocol.v1"}, CandidateScope{V00CandidateFamily, "LONG", "240m", false}, DatasetIdentity{checkpoint, source, HashIdentity{"synthetic-reacquisition", testHash('3')}, testHash('4'), sealedBinary, HashIdentity{"synthetic-abandoned", testHash('5')}, strings.Repeat("6", 40), append([]string(nil), universe.DatasetRequiredSymbols...), append([]string(nil), universe.CandidateTargetSymbols...), append([]string(nil), universe.ContextOnlySymbols...), universe.ContractSHA256, Interval{time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2033, 1, 1, 0, 0, 0, 0, time.UTC)}, []Interval{{time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)}}, time.Date(2033, 1, 2, 0, 0, 0, 0, time.UTC)}, partitions, testIdentityLedger(ledger), authorities, AccessPolicy{true, []string{"exact runner", "reservation"}, []string{"development sealed", "registered nominee"}, []string{"candidate frozen", "validation sealed"}, []string{"dataset", "executable", "no defaults"}, 1, "NO_RETRY_AFTER_ACCESS", true}}
 	identityBytes, _ := json.Marshal(identity)
 	identityHash := hashBytes(identityBytes)
 	partition := findIdentityPartition(identity, partitionName)
@@ -368,7 +371,7 @@ func syntheticRequest(t *testing.T, mode Mode, variantID string, consumed, froze
 		frozenCandidate.FrozenIdentityHash = mustLocalHash(t, *frozenCandidate)
 	}
 	envelope := buildEnvelope(t, identityBytes, identityHash, identity, state, authorization, consumed, frozenCandidate)
-	request := ExecutionRequest{RequestSchemaVersion, mode, envelope, identity.Protocol, ledger, variantID, selected.ConfigurationSHA256, DatasetBinding{checkpoint, source, sealedBinary, append([]string(nil), acceptedSymbols...), identity.Dataset.EligibleInterval, identity.Dataset.ProhibitedPriorExposure, identity.Dataset.AvailabilityCutoff}, partition, V00CandidateFamily, identity.Authorities.Independence, identity.Authorities.Uncertainty, HashIdentity{"ak.engine.concentration-governance.structural.v1", policy.GovernanceDecisionHash}, identity.Authorities.QualificationGateSet, identity.Authorities.TransactionCostPolicy, identity.Authorities.DeterministicSeedPolicy, RunnerIdentity{identity.Repositories.RunnerGitCommit, identity.Repositories.RunnerExecutableSHA256, V00SourceSHA256}}
+	request := ExecutionRequest{RequestSchemaVersion, mode, envelope, identity.Protocol, ledger, variantID, selected.ConfigurationSHA256, DatasetBinding{checkpoint, source, sealedBinary, append([]string(nil), universe.DatasetRequiredSymbols...), append([]string(nil), universe.CandidateTargetSymbols...), append([]string(nil), universe.ContextOnlySymbols...), universe.ContractSHA256, identity.Dataset.EligibleInterval, identity.Dataset.ProhibitedPriorExposure, identity.Dataset.AvailabilityCutoff}, partition, V00CandidateFamily, identity.Authorities.Independence, identity.Authorities.Uncertainty, HashIdentity{"ak.engine.concentration-governance.structural.v1", policy.GovernanceDecisionHash}, identity.Authorities.QualificationGateSet, identity.Authorities.TransactionCostPolicy, identity.Authorities.DeterministicSeedPolicy, RunnerIdentity{identity.Repositories.RunnerGitCommit, identity.Repositories.RunnerExecutableSHA256, V00SourceSHA256}}
 	return request, artifactBytes
 }
 
@@ -416,7 +419,7 @@ func passingRows(partition string, start time.Time, count int) []InputRow {
 	rows := make([]InputRow, count)
 	for i := range rows {
 		event := start.Add(time.Duration(i) * 25 * time.Hour)
-		symbol := acceptedSymbols[i%len(acceptedSymbols)]
+		symbol := acceptedTargetSymbols[i%len(acceptedTargetSymbols)]
 		gross := 20.0
 		if i%10 == 0 {
 			gross = -20
