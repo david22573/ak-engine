@@ -1,0 +1,324 @@
+{
+  "schema_version": "ak.engine.pr4b0_r1p8.production_pipeline_orchestrator_universe_report.v1",
+  "final_label": "PR4B0_R1P8_PRODUCTION_PIPELINE_ORCHESTRATOR_AND_UNIVERSE_COMPLETE",
+  "declarations": [
+    "No real candidate configuration was executed.",
+    "No real DEVELOPMENT outcome was produced.",
+    "No real VALIDATION outcome was produced.",
+    "No real FINAL_HOLDOUT row was accessed.",
+    "No protocol was registered for a real research epoch.",
+    "No paper evaluation was started."
+  ],
+  "verdict": {
+    "p8_complete": true,
+    "pr4b0_r1_may_restart": true,
+    "restart_condition": "Restart only through the accepted production orchestrator from a new isolated epoch root; P8 did not perform the restart.",
+    "remaining_blockers": []
+  },
+  "repositories": {
+    "engine": {
+      "starting_commit": "76b31415791cc98308bc3f0d4d23bec326cedd0b",
+      "starting_tree": "32941c8f51365b89ba78c85255c88cf77f13a71f",
+      "semantic_source_commit": "83ecf47d765fc2941a8b36c0a465d10612653ad7",
+      "resulting_semantic_commit": "6075e42c31df456c9faefdae03f1f4cd9695672f",
+      "resulting_semantic_tree": "1cc34dbcbccf219f9638bb7b92671a6b644ba108",
+      "branch": "pr4b0-r1p8-production-pipeline-orchestrator"
+    },
+    "rif": {
+      "starting_commit": "ed2cbc903e5b34052f4f9d63ad99d02101effb37",
+      "semantic_source_commit": "6e8dca3aad579ae8e8c0b54a62a15156ec52ece0",
+      "resulting_semantic_commit": "23be9a8ef9b754af4fe61eacea3650404707b484",
+      "branch": "pr4b0-r1p8-production-orchestration"
+    },
+    "historian": {
+      "starting_and_resulting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e",
+      "tree": "74182d50c8f6dc6639c68cd6af9a82656640701c",
+      "changed": false
+    }
+  },
+  "blocked_evidence": {
+    "commit": "b9c1e60a845367aee5f33b5c9f52d5a794588ef2",
+    "parent": "76b31415791cc98308bc3f0d4d23bec326cedd0b",
+    "reports_only": true,
+    "files": [
+      "runs/reports/pr4b0_r1_post_p7_fresh_epoch_blocked.json",
+      "runs/reports/pr4b0_r1_post_p7_fresh_epoch_blocked.md"
+    ],
+    "used_as_implementation": false
+  },
+  "production_gaps_reproduced": [
+    "No accepted-checkpoint production partition constructor or materializer path existed.",
+    "No production command drove the accepted P7 RIF stage-execution lifecycle.",
+    "The runner conflated the eight V00 targets with the nine-symbol dataset requirement."
+  ],
+  "accepted_checkpoint": {
+    "id": "r1p5r-checkpoint-20260717T073628Z",
+    "sha256": "sha256:bef53d11aa9ce9a6dad61b89ef7ace063b6da812ff92208d463c6ecfbfe8f29c",
+    "physical_file_sha256": "5cf2a16be6484cd114cea48a5e7c5bc9e3db2063e2101f24d0d67fca1b7bcf66",
+    "source_identity_sha256": "sha256:d99a88a72b4bfe84c2ae43a4a477724b95fde2b45b381f7b75fc4c107d2a161a",
+    "availability_cutoff": "2026-07-17T07:36:29Z",
+    "eligible_interval": "[2026-01-01T00:00:00Z,2026-07-17T00:00:00Z)",
+    "complete_days": 197,
+    "manifest_memberships": 1773,
+    "reacquisition_protocol_sha256": "sha256:7fd6c667d97a0ff3387e352d8c8e9b25ef5a744d641147ed66b98df75dcc0e1a",
+    "pre_acquisition_seal_sha256": "sha256:8046a306c80c127bd631df6eb4ae07ef587c350d4ac3a5f3be33f84a0f4681c9",
+    "sealed_binary_sha256": "sha256:c10fdf10255a8c88c817d5189b20ca7411be1fcd2ae64df8c07e2d1934054ae6",
+    "abandoned_evidence_registry_sha256": "sha256:f8a47626a234544f34ae59846c330682e78943add69edb171c558287b35417ca"
+  },
+  "partition_pipeline": {
+    "plan_schema": "ak.engine.partition_artifact_plan.v1",
+    "output_format": "ak.engine.qualification_partition_artifact.canonical-json.v1",
+    "lifecycle": [
+      "PLAN_CREATED",
+      "PLAN_VERIFIED",
+      "MATERIALIZATION_AUTHORIZED",
+      "MATERIALIZATION_STARTED",
+      "MATERIALIZATION_SEALED",
+      "CONSUMPTION_AUTHORIZED",
+      "CONSUMPTION_SEALED"
+    ],
+    "source_roots": [
+      "R1P5R_CHECKPOINT_STORE",
+      "P4_PROSPECTIVE_STORE"
+    ],
+    "backfill_fragment_references": 4212,
+    "prospective_fragment_references": 5715,
+    "unique_planned_fragment_paths": 8244,
+    "real_materialization_performed": false,
+    "authorization_model": "Only a registered PLAN_VERIFIED plan plus exact durable RIF authorization can advance to materialization; opening rows seals an access receipt before consumption."
+  },
+  "partition_plans": {
+    "DEVELOPMENT": {
+      "interval": "[2026-01-01T00:00:00Z,2026-04-10T00:00:00Z)",
+      "days": 99,
+      "memberships": 891,
+      "plan_sha256": "sha256:5724a094236ce839e1d8c63a9c13c52697f7377bef0752982347e6516aff4ac8"
+    },
+    "VALIDATION": {
+      "interval": "[2026-04-10T00:00:00Z,2026-05-29T00:00:00Z)",
+      "days": 49,
+      "memberships": 441,
+      "plan_sha256": "sha256:94e4f1b46b03c7ac89241ac98b3cba0d5712aaf5d4a236970aa6212bffd71fa1"
+    },
+    "FINAL_HOLDOUT": {
+      "interval": "[2026-05-29T00:00:00Z,2026-07-17T00:00:00Z)",
+      "days": 49,
+      "memberships": 441,
+      "plan_sha256": "sha256:560480a951b57ef481e1238948ae6277f12c8c1d3eda3c2822b2ce983a6c928f"
+    }
+  },
+  "orchestrator": {
+    "entry_point": "ak-engine pr4b0-r1-epoch <operation> --config <canonical-config> --epoch-root <isolated-root>",
+    "implementation": "internal/epochorchestrator",
+    "rif_integration": "direct typed github.com/david22573/ak-rif/research calls",
+    "vendored_rif_version": "v0.0.0-20260720214045-23be9a8ef9b7",
+    "operations": [
+      "preflight",
+      "register-protocol",
+      "register-research-identity",
+      "reserve-holdout",
+      "authorize-development-set",
+      "run-development-set",
+      "seal-development-set",
+      "derive-nominee",
+      "authorize-validation-set",
+      "run-validation-set",
+      "seal-validation-set",
+      "freeze-candidate",
+      "authorize-final-holdout",
+      "run-final-holdout",
+      "seal-final-holdout",
+      "closeout",
+      "status",
+      "resume"
+    ],
+    "state_machine_terminal_states": [
+      "QUALIFIED",
+      "REJECTED",
+      "BLOCKED"
+    ],
+    "retry_rule": "Only durable zero-row, zero-outcome, zero-result proof permits one retry; indeterminate or receipt-bearing access blocks."
+  },
+  "runner": {
+    "schema_version": "ak.rif.runner_implementation_identity.v1",
+    "source_commit": "6075e42c31df456c9faefdae03f1f4cd9695672f",
+    "package_sha256": "sha256:547dbee820b222706a0d24e57b1539c6dbe63aa350eac7e82f55f83db9b0cfa8",
+    "deterministic_build_inputs_sha256": "sha256:fb1c73ccdfbb7c3b4a9b59409f934f232a4f1631977740c23fd46fd46ac576ae",
+    "build_mode_sha256": "sha256:1cd8274a92c822fbcd7082da5764ed8a6e61d46efbd0611572a373e11d58a90f",
+    "binary_sha256": "sha256:7cd16826c01cab401bab965399b75682e07f39b635840f8eb87a7c4d6b306f89",
+    "accepted_p7_binary_sha256": "sha256:371153d611cebce5838caebf1a57346f15f566c7494042538758b133cd98faa7"
+  },
+  "p7_contracts": {
+    "stage_execution_set": "ak.rif.stage_execution_set.v1",
+    "governance_store": "ak.rif.research_governance_store.v2",
+    "governance_envelope": "ak.rif.research_governance_envelope.v2",
+    "execution_result_envelope": "ak.rif.execution_result_envelope.v1"
+  },
+  "v00": {
+    "source_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "configuration_sha256": "sha256:9a3b4d2797daedac643491b8b420b033d05ca46bf051f9fa42b656eb29ede4de",
+    "interpretation": "A",
+    "interpretation_name": "BTCUSDT is context-only",
+    "universe_contract_sha256": "sha256:aa74974d23f39b031e4832490720a5d739d61ce9301e41d276490eff8e0fa35e",
+    "dataset_required_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "BTCUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ],
+    "candidate_target_symbols": [
+      "ADAUSDT",
+      "AVAXUSDT",
+      "BNBUSDT",
+      "DOGEUSDT",
+      "ETHUSDT",
+      "LINKUSDT",
+      "SOLUSDT",
+      "XRPUSDT"
+    ],
+    "context_only_symbols": [
+      "BTCUSDT"
+    ],
+    "candidate_semantics_changed": false,
+    "gate_population": "Candidate events, gates, and concentration use primary target symbols only; BTC remains a required partition input and market-context dependency and is never scored as a target."
+  },
+  "accepted_authorities": {
+    "qualification_gate_set_sha256": "sha256:647e5d0885dbe8b73df736762e2f998bfa88f54d9331ed6aa4604888ab982635",
+    "independence_sha256": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f",
+    "uncertainty_sha256": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+    "concentration_sha256": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+    "changed": false
+  },
+  "synthetic_production_drill": {
+    "result": "PASS",
+    "production_code_path": true,
+    "partitions": [
+      "DEVELOPMENT",
+      "VALIDATION",
+      "FINAL_HOLDOUT"
+    ],
+    "development_variants": 4,
+    "validation_scope": "nominee plus two mandatory neighbors",
+    "final_scope": "single frozen candidate",
+    "terminal_closeout": "QUALIFIED or legitimate REJECTED",
+    "resume_read_only": true,
+    "successful_replay_rejected": true,
+    "zero_access_retry_tested": true,
+    "indeterminate_access_block_tested": true
+  },
+  "accepted_structural_preflight": {
+    "status": "READY_TO_REGISTER_PROTOCOL",
+    "config_sha256": "sha256:21a5a059036e68edb3e8d798e3c0f2a9a9d6ab7bb44ef0f9ce922cb8b6ab2cd3",
+    "epoch_root": "/home/davidmiguel22573/Github/.planning/2026-07-20-pr4b0-r1p8-production-pipeline-orchestra/accepted-preflight/epoch-v3",
+    "phase": "PREFLIGHT_VERIFIED",
+    "next_operation": "register-protocol",
+    "plan_registry_entries": 3,
+    "plan_registry_states": [
+      "PLAN_VERIFIED",
+      "PLAN_VERIFIED",
+      "PLAN_VERIFIED"
+    ],
+    "protocol_files": 0,
+    "rif_governance_stores": 0,
+    "materialized_artifacts": 0,
+    "access_receipts": 0,
+    "candidate_outcomes": 0,
+    "result_artifacts": 0
+  },
+  "no_real_access_proof": {
+    "real_protocol_registrations": 0,
+    "real_partition_access_count": 0,
+    "real_candidate_outcome_count": 0,
+    "evidence": [
+      "Preflight code calls VerifyPlan/RegisterPlan only and contains no Materialize or ConsumeArtifact call.",
+      "All accepted plan registry entries remain PLAN_VERIFIED.",
+      "The accepted epoch root contains only orchestrator state, registry state, and canonical plan files.",
+      "No access receipt, artifact, protocol, RIF store, candidate event, outcome, or result file exists."
+    ],
+    "external_store_note": "The independently running prospective Historian added later unreferenced nine-symbol cycles and updated some source atimes during the audit window. These external daemon changes are outside the content-addressed accepted plan and are not pipeline access evidence; P8 opened no fragment bytes."
+  },
+  "tests_and_commands": [
+    {"command": "GOWORK=off go test ./... -count=1", "repository": "ak-engine", "result": "PASS"},
+    {"command": "GOWORK=off go vet ./...", "repository": "ak-engine", "result": "PASS"},
+    {"command": "GOWORK=off go test -race ./internal/qualificationrunner ./internal/rifbridge ./internal/app -count=1", "repository": "ak-engine", "result": "PASS"},
+    {"command": "GOWORK=off go test ./... -count=1", "repository": "ak-rif", "result": "PASS"},
+    {"command": "GOWORK=off go vet ./...", "repository": "ak-rif", "result": "PASS"},
+    {"command": "GOWORK=off go test -race ./research -count=1", "repository": "ak-rif", "result": "PASS"},
+    {"command": "GOWORK=off go test ./... -count=1", "repository": "ak-historian", "result": "PASS"},
+    {"command": "GOWORK=off go vet ./...", "repository": "ak-historian", "result": "PASS"},
+    {"command": "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOWORK=off go build -mod=vendor -trimpath -buildvcs=false ./cmd/ak-engine", "repository": "ak-engine", "result": "PASS: sha256:7cd16826c01cab401bab965399b75682e07f39b635840f8eb87a7c4d6b306f89"},
+    {"command": "ak-engine pr4b0-r1-epoch --help", "repository": "ak-engine", "result": "PASS"},
+    {"command": "ak-engine pr4b0-r1-epoch preflight --config production-config.json --epoch-root epoch-v3", "repository": "ak-engine", "result": "READY_TO_REGISTER_PROTOCOL"}
+  ],
+  "audits": {
+    "changed_first_party_gofmt": "PASS",
+    "diff_check_first_party": "PASS",
+    "dependency_binding": "github.com/david22573/ak-rif v0.0.0-20260720214045-23be9a8ef9b7",
+    "secret_scan": "PASS",
+    "trader_and_order_api_scan": "PASS",
+    "checkpoint_mutation_scan": "PASS",
+    "source_to_report_ancestry": "PASS",
+    "blocked_commit_reports_only": "PASS",
+    "clean_semantic_worktrees_before_preflight": "PASS",
+    "preexisting_formatting_note": "Repository-wide gofmt -l reports legacy and third-party vendor files outside the P8 first-party diff; every changed first-party Go file is formatted."
+  },
+  "semantic_files_changed": {
+    "engine_total": 980,
+    "engine_vendor_files": 959,
+    "engine_first_party_files": [
+      "go.mod",
+      "internal/app/pr4b0_r1_epoch.go",
+      "internal/app/pr4b0_r1_epoch_test.go",
+      "internal/epochorchestrator/build.go",
+      "internal/epochorchestrator/orchestrator.go",
+      "internal/epochorchestrator/orchestrator_test.go",
+      "internal/epochorchestrator/synthetic.go",
+      "internal/partitionpipeline/contracts.go",
+      "internal/partitionpipeline/materialize.go",
+      "internal/partitionpipeline/pipeline_test.go",
+      "internal/partitionpipeline/plan.go",
+      "internal/partitionpipeline/synthetic.go",
+      "internal/qualificationrunner/contracts.go",
+      "internal/qualificationrunner/execution.go",
+      "internal/qualificationrunner/runner.go",
+      "internal/qualificationrunner/runner_test.go",
+      "internal/qualificationrunner/stage_plan.go",
+      "internal/qualificationrunner/stage_plan_test.go",
+      "internal/qualificationrunner/universe_test.go",
+      "internal/qualificationrunner/variants.go",
+      "internal/rifbridge/standalone_test.go"
+    ],
+    "rif_files": [
+      "research/canonical.go",
+      "research/governance_test.go",
+      "research/stage_execution.go",
+      "research/stage_execution_test.go",
+      "research/types.go"
+    ],
+    "historian_files": []
+  },
+  "semantic_commits": {
+    "engine": [
+      "36e764e feat(research): add production partition path",
+      "b180e0d feat(research): add governed epoch command",
+      "7805458 test(research): exercise production epoch",
+      "aba6b34 fix(research): bind accepted source stores",
+      "6075e42 test(research): cover identity substitution"
+    ],
+    "rif": [
+      "6fe5257 feat(research): bind explicit symbol universe",
+      "5be8249 test(research): reject universe mutation",
+      "295fbe8 feat(research): bind universe contract hash",
+      "044b52b test(research): cover universe hash binding",
+      "db41c81 fix(research): preserve Engine config bytes",
+      "508e998 test(research): cover config byte ordering",
+      "3e8b512 fix(research): normalize durable config bytes",
+      "23be9a8 test(research): cover durable config reopen"
+    ]
+  }
+}
