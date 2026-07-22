@@ -212,7 +212,7 @@ func PrepareProductionBoundaryRepairConfig(parent Config, preparedRoot string, b
 		result.UnsafeMemberships += audit.UnsafeMemberships
 		for _, entry := range manifest.Entries {
 			children[entry.ChildSHA256] = struct{}{}
-			if partition == "DEVELOPMENT" && entry.Symbol == "ADAUSDT" && entry.UTCDate == "2026-04-09" && entry.Parent.FragmentSHA256 == "sha256:cfad25fa8df42974951955c34965ab3bfa07615bfddfd0394d039a0b035d67a6" && entry.Parent.ReceiptSHA256 == "sha256:a51a972bc628d7073a80e5e9b09667b15d7bc355a75c996b3adbf913f5e1ade4" && entry.BoundaryClass == "RIGHT_CLIPPED" && entry.ChildRowCount == 560 && entry.ChildLastTimestampUTC.Before(entry.MembershipInterval.End) {
+			if isOriginalADAUSDTDefect(partition, entry) {
 				result.OriginalADAUSDTDefectFound = true
 				result.OriginalADAUSDTChildSHA256 = entry.ChildSHA256
 				result.OriginalADAUSDTChildRows = entry.ChildRowCount
@@ -228,6 +228,17 @@ func PrepareProductionBoundaryRepairConfig(parent Config, preparedRoot string, b
 	}
 	result.ResultSHA256, err = boundaryRepairResultHash(result)
 	return repaired, result, err
+}
+
+func isOriginalADAUSDTDefect(partition string, entry partitionpipeline.PreparationManifestEntry) bool {
+	return partition == "DEVELOPMENT" &&
+		entry.Symbol == "ADAUSDT" &&
+		entry.UTCDate == "2026-04-09" &&
+		entry.Parent.FragmentSHA256 == "sha256:cfad25fa5ee30f53f012f6ce9e6d92565dfe6cec21af063ecff3c61e250506b1" &&
+		entry.Parent.ReceiptSHA256 == "sha256:a51a972bdec54aa84149458e9fe3de472973a6673aa4121725fef06dd4ba1735" &&
+		entry.BoundaryClass == "RIGHT_CLIPPED" &&
+		entry.ChildRowCount == 560 &&
+		entry.ChildLastTimestampUTC.Before(entry.MembershipInterval.End)
 }
 
 func ensureBoundaryStoreBase(root string) (string, error) {

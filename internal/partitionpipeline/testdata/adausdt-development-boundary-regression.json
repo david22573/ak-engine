@@ -9,6 +9,6 @@
   "expected_child_row_count": 560,
   "expected_excluded_right_rows": 440,
   "expected_boundary_class": "RIGHT_CLIPPED",
-  "receipt_sha256": "sha256:a51a972bc628d7073a80e5e9b09667b15d7bc355a75c996b3adbf913f5e1ade4",
-  "fragment_sha256": "sha256:cfad25fa8df42974951955c34965ab3bfa07615bfddfd0394d039a0b035d67a6"
+  "receipt_sha256": "sha256:a51a972bdec54aa84149458e9fe3de472973a6673aa4121725fef06dd4ba1735",
+  "fragment_sha256": "sha256:cfad25fa5ee30f53f012f6ce9e6d92565dfe6cec21af063ecff3c61e250506b1"
 }
