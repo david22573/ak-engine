@@ -15,6 +15,22 @@ func TestProductionShapedSyntheticEpochAndResume(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	stageRoots := map[string]struct{}{}
+	for _, name := range orderedBoundaryPartitions {
+		plan := config.Plans[name]
+		audit, auditErr := partitionpipeline.AuditPreparedPlan(plan)
+		if auditErr != nil || audit.Memberships != 9 || audit.Classes.Both != 9 || plan.SourceRoot != "" || plan.ProspectiveSourceRoot != "" {
+			t.Fatalf("%s did not exercise child-only boundary-crossing preparation: audit=%#v err=%v", name, audit, auditErr)
+		}
+		if _, duplicate := stageRoots[plan.PreparedSourceRoot]; duplicate {
+			t.Fatal("neighboring stages share a candidate-facing child root")
+		}
+		stageRoots[plan.PreparedSourceRoot] = struct{}{}
+	}
+	boundaryAudit, err := AuditBoundaryConfig(config)
+	if err != nil || boundaryAudit.Memberships != 27 || boundaryAudit.Classes.Both != 27 || boundaryAudit.UnsafeMemberships != 0 {
+		t.Fatalf("synthetic all-stage boundary audit failed: audit=%#v err=%v", boundaryAudit, err)
+	}
 	epoch := filepath.Join(t.TempDir(), "epoch")
 	orchestrator, err := New(epoch, config)
 	if err != nil {

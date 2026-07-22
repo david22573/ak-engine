@@ -106,12 +106,24 @@ type dailyManifest struct {
 
 type sourceReceipt struct {
 	SchemaVersion           string    `json:"schema_version"`
+	Symbol                  string    `json:"symbol"`
 	ReceiptHash             string    `json:"receipt_hash"`
 	NormalizedFragmentHash  string    `json:"normalized_fragment_hash"`
 	CurrentReceiptChainHash string    `json:"current_receipt_chain_hash"`
 	FragmentHash            string    `json:"fragment_hash"`
 	FragmentPath            string    `json:"fragment_relative_path"`
 	ObservedAvailableAtUTC  time.Time `json:"observed_available_at_utc"`
+	RequestedStartUTC       time.Time `json:"requested_start_utc"`
+	RequestedEndUTC         time.Time `json:"requested_end_exclusive_utc"`
+	ParsedRowCount          int       `json:"parsed_row_count"`
+	ParsedRecordCount       int       `json:"parsed_record_count"`
+	FirstCandleOpenUTC      time.Time `json:"first_candle_open_time_utc"`
+	LastCandleCloseUTC      time.Time `json:"last_candle_close_time_utc"`
+	FinalCandleCloseUTC     time.Time `json:"final_candle_close_time_utc"`
+	AuthorityReceipt        struct {
+		CoveredPeriodStart time.Time `json:"covered_period_start"`
+		CoveredPeriodEnd   time.Time `json:"covered_period_end"`
+	} `json:"accepted_authority_receipt"`
 }
 
 const (
@@ -327,6 +339,12 @@ type indexedReceipt struct {
 	fragmentHash           string
 	encoding               string
 	observedAvailableAtUTC time.Time
+	symbol                 string
+	parentStartUTC         time.Time
+	parentEndUTC           time.Time
+	parentRowCount         int
+	firstCandleOpenUTC     time.Time
+	lastCandleCloseUTC     time.Time
 }
 
 func indexReceipts(backfillRoot, prospectiveRoot string) (map[string]indexedReceipt, error) {
@@ -385,19 +403,30 @@ func decodeIndexedReceipt(data []byte, rootID, relative string) (indexedReceipt,
 		return indexedReceipt{}, err
 	}
 	identity, fragmentHash, encoding, expectedSchema, hashField := receipt.ReceiptHash, receipt.NormalizedFragmentHash, BackfillFragmentEncoding, backfillReceiptSchema, "receipt_hash"
+	parentStart, parentEnd, rowCount := receipt.RequestedStartUTC.UTC(), receipt.RequestedEndUTC.UTC(), receipt.ParsedRowCount
+	firstOpen, lastClose := receipt.FirstCandleOpenUTC.UTC(), receipt.LastCandleCloseUTC.UTC()
 	if rootID == ProspectiveSourceRootID {
 		identity, fragmentHash, encoding, expectedSchema, hashField = receipt.CurrentReceiptChainHash, receipt.FragmentHash, ProspectiveFragmentEncoding, prospectiveReceiptSchema, "current_receipt_chain_hash"
+		parentStart, parentEnd, rowCount = receipt.AuthorityReceipt.CoveredPeriodStart.UTC(), receipt.AuthorityReceipt.CoveredPeriodEnd.UTC(), receipt.ParsedRecordCount
+		firstOpen, lastClose = receipt.FirstCandleOpenUTC.UTC(), receipt.FinalCandleCloseUTC.UTC()
 	} else if rootID != CheckpointSourceRootID {
 		return indexedReceipt{}, errors.New("unregistered source root identity")
 	}
 	canonicalIdentity, err := historianCanonicalJSONHash(data, hashField)
-	if err != nil || receipt.SchemaVersion != expectedSchema || !validSHA(identity) || canonicalIdentity != identity || !validSHA(fragmentHash) || receipt.FragmentPath == "" || receipt.ObservedAvailableAtUTC.IsZero() {
+	if err != nil || receipt.SchemaVersion != expectedSchema || receipt.Symbol == "" || !validSHA(identity) || canonicalIdentity != identity || !validSHA(fragmentHash) || receipt.FragmentPath == "" || receipt.ObservedAvailableAtUTC.IsZero() || parentStart.IsZero() || !parentStart.Before(parentEnd) || rowCount <= 0 || firstOpen.IsZero() || lastClose.IsZero() || !firstOpen.Equal(parentStart) || !lastClose.Add(time.Millisecond).Equal(parentEnd) || int(parentEnd.Sub(parentStart)/time.Minute) != rowCount {
 		return indexedReceipt{}, errors.New("source receipt hash is invalid")
 	}
-	return indexedReceipt{sourceRootID: rootID, relative: relative, canonicalSHA256: identity, fragmentPath: receipt.FragmentPath, fragmentHash: fragmentHash, encoding: encoding, observedAvailableAtUTC: receipt.ObservedAvailableAtUTC.UTC()}, nil
+	return indexedReceipt{sourceRootID: rootID, relative: relative, canonicalSHA256: identity, fragmentPath: receipt.FragmentPath, fragmentHash: fragmentHash, encoding: encoding, observedAvailableAtUTC: receipt.ObservedAvailableAtUTC.UTC(), symbol: receipt.Symbol, parentStartUTC: parentStart, parentEndUTC: parentEnd, parentRowCount: rowCount, firstCandleOpenUTC: firstOpen, lastCandleCloseUTC: lastClose}, nil
 }
 
 func VerifyPlan(plan Plan) error {
+	if plan.SchemaVersion == PreparedPlanSchemaVersion {
+		return verifyPreparedPlan(plan)
+	}
+	return verifyParentPlan(plan)
+}
+
+func verifyParentPlan(plan Plan) error {
 	if plan.SchemaVersion != PlanSchemaVersion || !validSHA(plan.Checkpoint.SHA256) || len(plan.HistorianCommit) != 40 || len(plan.HistorianTree) != 40 || !validSHA(plan.SourceIdentitySHA256) || !validSHA(plan.PreAcquisitionSealSHA256) || !validSHA(plan.SealedBinarySHA256) || !validSHA(plan.UniverseContractSHA256) || !intervalValid(plan.EligibleInterval) || !intervalValid(plan.PartitionInterval) || !validSHA(plan.SchemaIdentitySHA256) || plan.OutputFormat != OutputFormat || plan.OrderingPolicy != OrderingPolicy || plan.OutputPathPolicy != OutputPathPolicy || plan.SymlinkPolicy != SymlinkPolicy || plan.CachePolicy != CachePolicy || plan.AvailabilityCutoff.IsZero() {
 		return errors.New("partition plan is incomplete or uses a noncanonical policy")
 	}

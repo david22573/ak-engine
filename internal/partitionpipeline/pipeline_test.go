@@ -146,16 +146,22 @@ func TestPlanRejectsBoundaryUniverseMembershipAndPathMutation(t *testing.T) {
 	}
 }
 
-func TestMaterializerRejectsChangedSymlinkCrossPartitionAndWrongSymbol(t *testing.T) {
+func TestMaterializerRejectsChangedManifestSymlinkAndUnsafeChild(t *testing.T) {
 	for name, mutate := range map[string]func(*testing.T, string, Plan){
 		"changed manifest": func(t *testing.T, root string, p Plan) {
-			if err := os.WriteFile(filepath.Join(root, filepath.FromSlash(p.SourceManifests[0].RelativePath)), []byte("changed\n"), 0o600); err != nil {
+			if err := os.Chmod(filepath.Join(root, filepath.FromSlash(p.PreparationManifest.ID)), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(root, filepath.FromSlash(p.PreparationManifest.ID)), []byte("changed\n"), 0o600); err != nil {
 				t.Fatal(err)
 			}
 		},
 		"symlink fragment": func(t *testing.T, root string, p Plan) {
 			ref := p.SourceManifests[0].FragmentArtifacts[0]
 			path := filepath.Join(root, filepath.FromSlash(ref.RelativePath))
+			if err := os.Chmod(path, 0o600); err != nil {
+				t.Fatal(err)
+			}
 			if err := os.Remove(path); err != nil {
 				t.Fatal(err)
 			}
@@ -164,19 +170,19 @@ func TestMaterializerRejectsChangedSymlinkCrossPartitionAndWrongSymbol(t *testin
 			}
 		},
 		"cross partition row": func(t *testing.T, root string, p Plan) {
-			rewriteFirstFragment(t, root, p, func(row *normalizedRecord) {
+			rewriteFirstChild(t, root, p, func(row *normalizedRecord) {
 				row.OpenTimeMS = p.PartitionInterval.End.UnixMilli()
 				row.CloseTimeMS = row.OpenTimeMS + 59999
 			})
 		},
 		"pre-2026 row": func(t *testing.T, root string, p Plan) {
-			rewriteFirstFragment(t, root, p, func(row *normalizedRecord) {
+			rewriteFirstChild(t, root, p, func(row *normalizedRecord) {
 				row.OpenTimeMS = time.Date(2025, 12, 31, 0, 0, 0, 0, time.UTC).UnixMilli()
 				row.CloseTimeMS = row.OpenTimeMS + 59999
 			})
 		},
 		"wrong symbol row": func(t *testing.T, root string, p Plan) {
-			rewriteFirstFragment(t, root, p, func(row *normalizedRecord) { row.Symbol = "NOTUSDT" })
+			rewriteFirstChild(t, root, p, func(row *normalizedRecord) { row.Symbol = "NOTUSDT" })
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -293,6 +299,17 @@ func TestConsumptionRejectsPartitionCheckpointAndManifestSubstitution(t *testing
 
 func syntheticSource(t *testing.T, partition string) (string, Plan) {
 	t.Helper()
+	_, parent := syntheticParentSource(t, partition)
+	preparedRoot := filepath.Join(t.TempDir(), "prepared")
+	prepared, _, _, err := PreparePlan(parent, preparedRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return preparedRoot, prepared
+}
+
+func syntheticParentSource(t *testing.T, partition string) (string, Plan) {
+	t.Helper()
 	root := filepath.Join(t.TempDir(), "source")
 	if err := os.MkdirAll(filepath.Join(root, "manifests"), 0o700); err != nil {
 		t.Fatal(err)
@@ -388,6 +405,49 @@ func rewriteFirstFragment(t *testing.T, root string, plan Plan, mutate func(*nor
 	writer := gzip.NewWriter(&buffer)
 	writer.Write(out)
 	writer.Close()
+	if err := os.WriteFile(path, buffer.Bytes(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+func rewriteFirstChild(t *testing.T, root string, plan Plan, mutate func(*normalizedRecord)) {
+	t.Helper()
+	ref := plan.SourceManifests[0].FragmentArtifacts[0]
+	path := filepath.Join(root, filepath.FromSlash(ref.RelativePath))
+	compressed, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader, err := gzip.NewReader(bytes.NewReader(compressed))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := reader.Close(); err != nil {
+		t.Fatal(err)
+	}
+	var child ChildArtifact
+	if err := json.Unmarshal(data, &child); err != nil {
+		t.Fatal(err)
+	}
+	mutate(&child.Records[0])
+	out, err := json.Marshal(child)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buffer bytes.Buffer
+	writer := gzip.NewWriter(&buffer)
+	if _, err := writer.Write(out); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(path, 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(path, buffer.Bytes(), 0o600); err != nil {
 		t.Fatal(err)
 	}

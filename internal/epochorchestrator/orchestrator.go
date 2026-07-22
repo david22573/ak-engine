@@ -109,6 +109,21 @@ func SealConfig(cfg Config) (Config, error) {
 	return cfg, nil
 }
 
+// ValidateConfigStructure performs the complete immutable configuration and
+// plan validation without creating an epoch root, registry, authorization,
+// access receipt, or outcome.
+func ValidateConfigStructure(cfg Config) error {
+	sealed, err := SealConfig(cfg)
+	if err != nil {
+		return err
+	}
+	if cfg.ConfigSHA256 != sealed.ConfigSHA256 {
+		return errors.New("configuration is not canonically sealed")
+	}
+	orchestrator := &Orchestrator{config: sealed}
+	return orchestrator.validateConfig()
+}
+
 func New(root string, cfg Config) (*Orchestrator, error) {
 	sealed, err := SealConfig(cfg)
 	if err != nil {
@@ -731,6 +746,9 @@ func (o *Orchestrator) validateConfig() error {
 		plan, ok := o.config.Plans[name]
 		if !ok || partitionpipeline.VerifyPlan(plan) != nil {
 			return fmt.Errorf("%s partition plan invalid", name)
+		}
+		if plan.SourceIdentitySHA256 != o.config.Identity.Dataset.SourceIdentitySHA256 || plan.Checkpoint.SHA256 != o.config.Identity.Dataset.Checkpoint.SHA256 {
+			return fmt.Errorf("%s dataset identity binding mismatch", name)
 		}
 		partition := findPartition(o.config.Identity, research.PartitionName(name))
 		if partition.RequiredSymbolCoverageSHA256 != plan.PlanSHA256 || !partition.Interval.Start.Equal(plan.PartitionInterval.Start) || !partition.Interval.End.Equal(plan.PartitionInterval.End) {

@@ -108,6 +108,9 @@ func CreateRegistry(root string) error {
 }
 
 func RegisterPlan(root string, plan Plan) error {
+	if plan.SchemaVersion != PreparedPlanSchemaVersion {
+		return errors.New("production registration requires a boundary-prepared v2 plan")
+	}
 	if err := VerifyPlan(plan); err != nil {
 		return err
 	}
@@ -211,40 +214,52 @@ func Materialize(root, planSHA string, now time.Time) (qualificationrunner.Parti
 	if err != nil {
 		return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
 	}
+	if plan.SchemaVersion != PreparedPlanSchemaVersion || plan.PreparationManifest == nil {
+		return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("materializer rejects direct parent fragment plans")
+	}
 	entry.State = MaterializationStarted
 	registry.Entries[planSHA] = entry
 	if err := writeRegistry(root, registry); err != nil {
 		return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
 	}
 	candles := map[string][]protocol.Candle{}
+	seenTimestamps := map[string]map[int64]struct{}{}
 	openedRows, fragmentCount := 0, 0
+	parentFragments := map[string]struct{}{}
+	orderedChildren := []string{}
+	orderedProvenance := []string{}
 	for _, member := range plan.SourceManifests {
-		manifestPath, err := secureJoin(plan.SourceRoot, member.RelativePath, true)
-		if err != nil {
-			return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
-		}
-		data, err := os.ReadFile(manifestPath)
-		if err != nil || byteHash(data) != member.FileSHA256 {
-			return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("planned manifest changed")
+		if member.MembershipInterval == nil {
+			return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("prepared membership interval is missing")
 		}
 		for _, fragmentRef := range member.FragmentArtifacts {
-			fragment, err := readFragment(plan, fragmentRef)
+			fragment, err := readChildArtifact(plan, fragmentRef)
 			if err != nil {
 				return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
 			}
 			if fragment.Symbol != member.Symbol {
-				return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("source fragment symbol differs from plan")
+				return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("prepared child symbol differs from plan")
 			}
 			fragmentCount++
+			parentFragments[fragment.Parent.FragmentSHA256] = struct{}{}
+			orderedChildren = append(orderedChildren, fragment.ChildSHA256)
+			orderedProvenance = append(orderedProvenance, fragment.Parent.ProvenanceSHA256)
 			for _, row := range fragment.Records {
 				candle, err := toCandle(row)
 				if err != nil {
 					return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
 				}
 				opened := time.UnixMilli(candle.OpenTimeMS).UTC()
-				if opened.Before(plan.PartitionInterval.Start) || !opened.Before(plan.PartitionInterval.End) || opened.Before(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)) || candle.Symbol != member.Symbol || !contains(plan.DatasetRequiredSymbols, candle.Symbol) {
+				if opened.Before(plan.PartitionInterval.Start) || !opened.Before(plan.PartitionInterval.End) || opened.Before(member.MembershipInterval.Start) || !opened.Before(member.MembershipInterval.End) || opened.Before(fragment.AuthorizedInterval.Start) || !opened.Before(fragment.AuthorizedInterval.End) || opened.Before(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)) || candle.Symbol != member.Symbol || !contains(plan.DatasetRequiredSymbols, candle.Symbol) {
 					return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("cross-partition, barred, or wrong-symbol source row rejected")
 				}
+				if seenTimestamps[candle.Symbol] == nil {
+					seenTimestamps[candle.Symbol] = map[int64]struct{}{}
+				}
+				if _, duplicate := seenTimestamps[candle.Symbol][candle.OpenTimeMS]; duplicate {
+					return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("duplicate prepared child timestamp rejected")
+				}
+				seenTimestamps[candle.Symbol][candle.OpenTimeMS] = struct{}{}
 				candles[candle.Symbol] = append(candles[candle.Symbol], candle)
 				openedRows++
 			}
@@ -255,6 +270,11 @@ func Materialize(root, planSHA string, now time.Time) (qualificationrunner.Parti
 			return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, fmt.Errorf("planned symbol %s has no rows", symbol)
 		}
 		sort.Slice(candles[symbol], func(i, j int) bool { return candles[symbol][i].OpenTimeMS < candles[symbol][j].OpenTimeMS })
+		for index := 1; index < len(candles[symbol]); index++ {
+			if candles[symbol][index-1].OpenTimeMS >= candles[symbol][index].OpenTimeMS {
+				return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, errors.New("prepared child ordering is not strictly monotonic")
+			}
+		}
 	}
 	rows, err := buildInputRows(plan, candles)
 	if err != nil {
@@ -273,8 +293,12 @@ func Materialize(root, planSHA string, now time.Time) (qualificationrunner.Parti
 	for i, member := range plan.SourceManifests {
 		orderedSources[i] = member.FileSHA256
 	}
-	receipt := AccessReceipt{SchemaVersion: AccessReceiptSchemaVersion, PlanSHA256: planSHA, CheckpointSHA256: plan.Checkpoint.SHA256, Partition: plan.PartitionName, RIFAuthorizationID: entry.Authorization.RIFAuthorizationID, RIFAccessReceiptSHA256: entry.Authorization.RIFAccessReceiptSHA256, SourceManifestCount: len(plan.SourceManifests), SourceFragmentCount: fragmentCount, RowsOpened: openedRows, CandidateInputRows: len(rows), OpenedAt: now.UTC(), ArtifactSHA256: artifact.ArtifactSHA256}
-	manifest := ArtifactManifest{SchemaVersion: ArtifactManifestVersion, PlanSHA256: planSHA, CheckpointSHA256: plan.Checkpoint.SHA256, Partition: plan.PartitionName, UniverseContractSHA256: plan.UniverseContractSHA256, OrderedSourceSHA256: orderedSources, ArtifactSHA256: artifact.ArtifactSHA256}
+	provenanceHash, err := canonicalHash(orderedProvenance)
+	if err != nil {
+		return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
+	}
+	receipt := AccessReceipt{SchemaVersion: AccessReceiptSchemaVersion, PlanSHA256: planSHA, CheckpointSHA256: plan.Checkpoint.SHA256, Partition: plan.PartitionName, RIFAuthorizationID: entry.Authorization.RIFAuthorizationID, RIFAccessReceiptSHA256: entry.Authorization.RIFAccessReceiptSHA256, SourceManifestCount: len(plan.SourceManifests), SourceFragmentCount: fragmentCount, ParentFragmentCount: len(parentFragments), PreparationManifestSHA256: plan.PreparationManifest.SHA256, ParentProvenanceSHA256: provenanceHash, RowsOpened: openedRows, CandidateInputRows: len(rows), OpenedAt: now.UTC(), ArtifactSHA256: artifact.ArtifactSHA256}
+	manifest := ArtifactManifest{SchemaVersion: ArtifactManifestVersion, PlanSHA256: planSHA, CheckpointSHA256: plan.Checkpoint.SHA256, Partition: plan.PartitionName, UniverseContractSHA256: plan.UniverseContractSHA256, OrderedSourceSHA256: orderedSources, OrderedChildSHA256: orderedChildren, OrderedParentProvenanceSHA256: orderedProvenance, PreparationManifestSHA256: plan.PreparationManifest.SHA256, ArtifactSHA256: artifact.ArtifactSHA256}
 	manifest.ManifestSHA256, err = manifestHash(manifest)
 	if err != nil {
 		return qualificationrunner.PartitionArtifact{}, ArtifactManifest{}, AccessReceipt{}, err
@@ -381,7 +405,8 @@ func ConsumeArtifact(root, planSHA string, now time.Time) ([]byte, ConsumptionRe
 		return nil, ConsumptionReceipt{}, err
 	}
 	wantManifest, err := manifestHash(manifest)
-	if err != nil || manifest.ManifestSHA256 != wantManifest || manifest.ManifestSHA256 != entry.ArtifactManifestSHA256 || manifest.PlanSHA256 != planSHA || manifest.CheckpointSHA256 != plan.Checkpoint.SHA256 || manifest.Partition != plan.PartitionName || manifest.UniverseContractSHA256 != plan.UniverseContractSHA256 || manifest.ArtifactSHA256 != artifact.ArtifactSHA256 {
+	expectedChildren, expectedProvenance := preparedPlanOrderedProvenance(plan)
+	if err != nil || plan.PreparationManifest == nil || manifest.ManifestSHA256 != wantManifest || manifest.ManifestSHA256 != entry.ArtifactManifestSHA256 || manifest.PlanSHA256 != planSHA || manifest.CheckpointSHA256 != plan.Checkpoint.SHA256 || manifest.Partition != plan.PartitionName || manifest.UniverseContractSHA256 != plan.UniverseContractSHA256 || manifest.PreparationManifestSHA256 != plan.PreparationManifest.SHA256 || !reflect.DeepEqual(manifest.OrderedChildSHA256, expectedChildren) || !reflect.DeepEqual(manifest.OrderedParentProvenanceSHA256, expectedProvenance) || manifest.ArtifactSHA256 != artifact.ArtifactSHA256 {
 		return nil, ConsumptionReceipt{}, errors.New("sealed artifact manifest identity changed")
 	}
 	previous := ""
@@ -401,6 +426,18 @@ func ConsumeArtifact(root, planSHA string, now time.Time) ([]byte, ConsumptionRe
 		return nil, ConsumptionReceipt{}, err
 	}
 	return data, receipt, nil
+}
+
+func preparedPlanOrderedProvenance(plan Plan) ([]string, []string) {
+	children := []string{}
+	provenance := []string{}
+	for _, member := range plan.SourceManifests {
+		for _, ref := range member.FragmentArtifacts {
+			children = append(children, ref.CanonicalSHA256)
+			provenance = append(provenance, ref.ParentProvenanceSHA256)
+		}
+	}
+	return children, provenance
 }
 
 func readFragment(plan Plan, ref SourceArtifact) (sourceFragment, error) {
