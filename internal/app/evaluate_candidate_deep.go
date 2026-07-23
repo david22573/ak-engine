@@ -12,10 +12,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/data"
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/rifbridge"
+	"github.com/david22573/ak-engine/pkg/protocol"
 	"github.com/spf13/cobra"
 )
 
@@ -43,9 +44,11 @@ var (
 	ecdCandlePath   string
 	ecdMarket       string
 	ecdInterval     string
+	ecdManifest     string
 	erldLeaderboard string
 	erldOutDir      string
 	erldCandlePath  string
+	erldManifest    string
 )
 
 type Phase103InventoryReport struct {
@@ -104,6 +107,8 @@ type DeepCandidateReport struct {
 	FinalStatus                string                        `json:"final_status"`
 	FixedHoldOnlyJustification string                        `json:"fixed_hold_only_justification,omitempty"`
 	ComparisonMetrics          DeepComparisonMetrics         `json:"comparison_metrics"`
+	RIFReturns                 []float64                     `json:"-"`
+	RIFTimestamps              []int64                       `json:"-"`
 }
 
 type DeepCandidateAudit struct {
@@ -329,6 +334,53 @@ var evaluateCandidateDeepCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		outDir := filepath.Dir(ecdOut)
+		stem := filepath.Join(outDir, fmt.Sprintf("phase10_3_%s_%s_%s_deep", report.Symbol, report.Family, report.Side))
+		if ecdOut != "" && strings.HasSuffix(ecdOut, ".md") {
+			stem = strings.TrimSuffix(ecdOut, ".md")
+		}
+
+		manifestPath := ecdManifest
+		if manifestPath == "" && report.CandlePath != "" {
+			probe := filepath.Join(report.CandlePath, "dataset_manifest.json")
+			if _, err := os.Stat(probe); err == nil {
+				manifestPath = probe
+			}
+		}
+
+		rifBridge := rifbridge.NewBridge()
+		isPromoted := report.FinalStatus == phase103StatusValidatedResearchLead
+		rifOut, err := rifBridge.EvaluateAndEmit(
+			stem,
+			fmt.Sprintf("%s_%s_%s", report.Symbol, report.Family, report.Side),
+			"v1.0.0",
+			"unknown",
+			[]string{},
+			[]string{},
+			"candhash",
+			"confighash",
+			report.RIFReturns,
+			report.RIFTimestamps,
+			0,
+			len(report.RIFTimestamps),
+			isPromoted,
+			manifestPath,
+		)
+		if err != nil {
+			return fmt.Errorf("rif bridge error: %w", err)
+		}
+		if !rifOut.IntegrityPassed {
+			if report.FinalStatus == phase103StatusValidatedResearchLead {
+				report.FinalStatus = phase103StatusFragile
+				report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: false, Critical: true, Actual: strings.Join(rifOut.Warnings, "; "), Threshold: "No Warnings"})
+				report.FailedGates = append(report.FailedGates, "RIF Integrity")
+			}
+		} else {
+			report.PassedGates = append(report.PassedGates, "RIF Integrity")
+			report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: true, Critical: true, Actual: "Passed", Threshold: "No Warnings"})
+		}
+
 		return writeDeepCandidateReport(ecdOut, report)
 	},
 }
@@ -374,7 +426,50 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			out := filepath.Join(outDir, fmt.Sprintf("phase10_3_%s_%s_%s_deep.md", report.Symbol, report.Family, report.Side))
+
+			stem := filepath.Join(outDir, fmt.Sprintf("phase10_3_%s_%s_%s_deep", report.Symbol, report.Family, report.Side))
+
+			manifestPath := erldManifest
+			if manifestPath == "" && report.CandlePath != "" {
+				probe := filepath.Join(report.CandlePath, "dataset_manifest.json")
+				if _, err := os.Stat(probe); err == nil {
+					manifestPath = probe
+				}
+			}
+
+			rifBridge := rifbridge.NewBridge()
+			isPromoted := report.FinalStatus == phase103StatusValidatedResearchLead
+			rifOut, err := rifBridge.EvaluateAndEmit(
+				stem,
+				fmt.Sprintf("%s_%s_%s", report.Symbol, report.Family, report.Side),
+				"v1.0.0",
+				"unknown",
+				[]string{},
+				[]string{},
+				"candhash",
+				"confighash",
+				report.RIFReturns,
+				report.RIFTimestamps,
+				0,
+				len(report.RIFTimestamps),
+				isPromoted,
+				manifestPath,
+			)
+			if err != nil {
+				return fmt.Errorf("rif bridge error: %w", err)
+			}
+			if !rifOut.IntegrityPassed {
+				if report.FinalStatus == phase103StatusValidatedResearchLead {
+					report.FinalStatus = phase103StatusFragile
+					report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: false, Critical: true, Actual: strings.Join(rifOut.Warnings, "; "), Threshold: "No Warnings"})
+					report.FailedGates = append(report.FailedGates, "RIF Integrity")
+				}
+			} else {
+				report.PassedGates = append(report.PassedGates, "RIF Integrity")
+				report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: true, Critical: true, Actual: "Passed", Threshold: "No Warnings"})
+			}
+
+			out := stem + ".md"
 			if err := writeDeepCandidateReport(out, report); err != nil {
 				return err
 			}
@@ -406,11 +501,13 @@ func init() {
 	evaluateCandidateDeepCmd.Flags().StringVar(&ecdCandlePath, "path", "", "Optional local parquet candle workdir")
 	evaluateCandidateDeepCmd.Flags().StringVar(&ecdMarket, "market", "", "Optional market override")
 	evaluateCandidateDeepCmd.Flags().StringVar(&ecdInterval, "interval", "", "Optional interval override")
+	evaluateCandidateDeepCmd.Flags().StringVar(&ecdManifest, "dataset-manifest", "", "Path to dataset_manifest.json")
 	rootCmd.AddCommand(evaluateCandidateDeepCmd)
 
 	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldLeaderboard, "leaderboard", "", "Phase 10.2C leaderboard JSON")
 	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldOutDir, "out-dir", "", "Output directory")
 	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldCandlePath, "path", "", "Optional local parquet candle workdir")
+	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldManifest, "dataset-manifest", "", "Path to dataset_manifest.json")
 	rootCmd.AddCommand(evaluateResearchLeadsDeepCmd)
 }
 
@@ -616,6 +713,14 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 	}
 	for _, delay := range []int{0, 1, 3, 5, 10} {
 		set := deepReturnsForEvents(events, candles, 60, 5, delay, 0)
+		if delay == 1 {
+			// Extract RIF returns using a separate call for 1440m just to get returns
+			rifSet := deepReturnsForEvents(events, candles, 1440, 5.0, 1, candles[len(candles)-1].OpenTimeMS)
+			for i, r := range rifSet.ReturnsBps {
+				report.RIFReturns = append(report.RIFReturns, r/10000.0)
+				report.RIFTimestamps = append(report.RIFTimestamps, events[i].EventTimeMS)
+			}
+		}
 		m := deepMetricFromBps(set.ReturnsBps)
 		report.EntryDelays = append(report.EntryDelays, DeepEntryDelayMetric{
 			DelayCandles:   delay,

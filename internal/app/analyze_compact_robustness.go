@@ -255,18 +255,18 @@ type rankedInventoryReport struct {
 }
 
 var (
-	acompChunks  string
-	acompReports string
-	acompSymbols string
-	acompFrom    string
-	acompTo      string
-	acompFamily  string
-	acompSide    string
-	acompHorizon string
+	acompChunks       string
+	acompReports      string
+	acompSymbols      string
+	acompFrom         string
+	acompTo           string
+	acompFamily       string
+	acompSide         string
+	acompHorizon      string
 	acompCoverageOnly bool
-	ainvFamily   string
-	ainvSide     string
-	ainvHorizon  string
+	ainvFamily        string
+	ainvSide          string
+	ainvHorizon       string
 )
 
 var analyzeCompactRobustnessCmd = &cobra.Command{

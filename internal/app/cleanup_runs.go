@@ -61,12 +61,12 @@ func runCleanupRuns(cmd *cobra.Command) error {
 
 	manifestPath := filepath.Join(cleanupRoot, "runs", "manifests", "phase10_5_low_resource_manifest.json")
 	manifest := loadManifest(manifestPath)
-	
+
 	// Create map of successful / failed chunks
 	latestSuccessfulChunk := make(map[string]time.Time) // track latest successful month per symbol
 	failedChunks := make(map[string]bool)               // symbol_month -> is failed
 	successfulChunks := make(map[string]bool)           // symbol_month -> is successful
-	
+
 	if manifest != nil {
 		for key, status := range manifest.Chunks {
 			isOk := isComplete(status)
@@ -92,7 +92,7 @@ func runCleanupRuns(cmd *cobra.Command) error {
 
 	for _, relRoot := range allowedRoots {
 		fullRoot := filepath.Join(cleanupRoot, relRoot)
-		
+
 		if _, err := os.Stat(fullRoot); os.IsNotExist(err) {
 			continue
 		}
@@ -108,19 +108,19 @@ func runCleanupRuns(cmd *cobra.Command) error {
 			}
 
 			filename := filepath.Base(p)
-			
+
 			// Never delete manifests, though they aren't in these directories
 			if strings.HasSuffix(filename, "manifest.json") {
 				report.FilesToKeep = append(report.FilesToKeep, p)
 				return nil
 			}
-			
+
 			// Never delete final reports
 			if strings.HasPrefix(p, filepath.Join(cleanupRoot, "runs", "reports")) && !strings.Contains(p, "chunks") {
 				report.FilesToKeep = append(report.FilesToKeep, p)
 				return nil
 			}
-			
+
 			// Summaries usually shouldn't be deleted for most policies
 			isSummary := strings.HasSuffix(filename, "-summary.json")
 			if isSummary {
@@ -186,7 +186,7 @@ func runCleanupRuns(cmd *cobra.Command) error {
 	}
 
 	os.MkdirAll(filepath.Join(cleanupRoot, "runs", "reports"), 0755)
-	
+
 	if cleanupDryRun {
 		fmt.Printf("Dry run completed. Would delete %d files (%.1f MB).\n", len(report.FilesToDelete), float64(report.BytesToDelete)/(1024*1024))
 	} else if cleanupForce {
@@ -201,9 +201,9 @@ func runCleanupRuns(cmd *cobra.Command) error {
 		md += fmt.Sprintf("**Policy:** %s\n", cleanupRetainPolicy)
 		md += fmt.Sprintf("**Files Deleted:** %d\n", len(report.FilesToDelete))
 		md += fmt.Sprintf("**Bytes Freed:** %.1f MB\n", float64(report.BytesToDelete)/(1024*1024))
-		
+
 		os.WriteFile(mdPath, []byte(md), 0644)
-		
+
 		fmt.Printf("Cleanup completed. Deleted %d files (%.1f MB).\n", len(report.FilesToDelete), float64(report.BytesToDelete)/(1024*1024))
 	} else {
 		fmt.Println("Neither --dry-run nor --force specified. Doing nothing.")

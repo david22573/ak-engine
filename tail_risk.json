@@ -1,0 +1,25 @@
+{
+  "worst_monthly_pf": {
+    "month": "2025-03",
+    "pf_5bps": 0.6617110801258633,
+    "expectancy_5bps": -49.37427157926543
+  },
+  "worst_monthly_expectancy": {
+    "month": "2025-03",
+    "expectancy_5bps": -49.37427157926543
+  },
+  "worst_symbol_month": {
+    "symbol": "BNBUSDT",
+    "month": "2025-12",
+    "pf_5bps": 0.161822,
+    "net_bps": -12149.134937,
+    "event_count": 137
+  },
+  "worst_symbol_month_by_net": {
+    "symbol": "ADAUSDT",
+    "month": "2025-02",
+    "pf_5bps": 0.606816,
+    "net_bps": -281273.284925,
+    "event_count": 4218
+  }
+}

@@ -902,7 +902,7 @@
 | Phone SSH | `ssh -F /dev/null -p 8022 ... 192.168.1.79` | fail/blocker | `ssh: connect to host 192.168.1.79 port 8022: No route to host`. |
 | Phone SSH fallback | `ssh -F /dev/null -p 8022 ... 192.168.1.81` | fail/blocker | Timed out after 12 seconds. |
 | Tailscale status | `tailscale status` | diagnostic | Phone nodes listed offline (`moto-g-5g---2023`, `moto-g-power-5g---2024`). |
-| Local app tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./internal/app` | pass | `ok github.com/davidmiguel22573/ak-engine/internal/app 12.418s`. |
+| Local app tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./internal/app` | pass | `ok github.com/david22573/ak-engine/internal/app 12.418s`. |
 | Chromebook raw audit | `find runs/reports/chunks -type f \\( -name '*.jsonl' -o -name '*.jsonl.gz' -o -name '*funding-events*' \\) | wc -l` | pass after cleanup | Count is `0`. |
 | ak-trader status | `git -C /home/davidmiguel22573/Github/ak-trader status --short` | pass | No output; no ak-trader changes detected. |
 | Report JSON validation | `jq empty runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.json runs/reports/phase10_11b_confirmed_coverage_gap.json` | pass | Both refreshed report JSON files parse. |
@@ -949,7 +949,7 @@
 ## Final Test Results
 | Step | Command | Status | Notes |
 |------|---------|--------|-------|
-| Local app tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./internal/app` | pass | `ok github.com/davidmiguel22573/ak-engine/internal/app`. |
+| Local app tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./internal/app` | pass | `ok github.com/david22573/ak-engine/internal/app`. |
 | Full local tests | `env GOCACHE=$(pwd)/.cache/go-build GOMODCACHE=$(pwd)/.cache/go-mod GOWORK=off GOTOOLCHAIN=local go test ./...` | pass | All packages passed. |
 | Final report JSON | `jq empty runs/reports/phase10_11b_confirmed_funding_extreme_evaluation.json runs/reports/phase10_11b_confirmed_coverage_gap.json` | pass | Both parse. |
 | Chromebook raw audit | `find runs/reports/chunks -type f \\( -name '*.jsonl' -o -name '*.jsonl.gz' -o -name '*funding-events*' \\) | wc -l` | pass | `0`. |

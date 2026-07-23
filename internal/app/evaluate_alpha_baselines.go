@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
 	"github.com/spf13/cobra"
 )
 
@@ -227,7 +227,7 @@ var evaluateAlphaBaselinesCmd = &cobra.Command{
 			for _, c := range cands {
 				c.EventTimeMS = r.EventTimeMS
 				c.Label = label
-				
+
 				ret5 := (f5 - r.Close) / r.Close
 				ret15 := (f15 - r.Close) / r.Close
 				ret30 := (f30 - r.Close) / r.Close
@@ -472,7 +472,7 @@ func buildAlphaBaselinesReport(out BaselineReportJSON) string {
 	for k, m := range out.Global {
 		cands = append(cands, candidate{k, m})
 	}
-	
+
 	sort.Slice(cands, func(i, j int) bool {
 		return cands[i].M.Expectancy15 > cands[j].M.Expectancy15
 	})

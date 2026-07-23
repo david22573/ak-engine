@@ -6,12 +6,14 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 )
 
 func exactThresholds(rows []features.Row, idx int, lookback int) Thresholds {
 	start := idx - lookback
-	if start < 0 { start = 0 }
+	if start < 0 {
+		start = 0
+	}
 	var atr, bb, vol []float64
 	for i := start; i < idx; i++ {
 		r := &rows[i]
@@ -47,7 +49,7 @@ func TestComputeTrailingThresholds_SubsamplingAccuracy(t *testing.T) {
 			Warmup:        false,
 			ATRPct14:      rand.Float64() * 0.05,
 			BBWidth20:     rand.Float64() * 0.1,
-			VolumeRatio20: 0.5 + rand.Float64() * 2.0,
+			VolumeRatio20: 0.5 + rand.Float64()*2.0,
 		}
 	}
 
@@ -65,7 +67,7 @@ func TestComputeTrailingThresholds_SubsamplingAccuracy(t *testing.T) {
 
 	maxErr := 0.0
 	compare := func(name string, ex, sub float64) {
-		err := math.Abs(ex - sub) / ex
+		err := math.Abs(ex-sub) / ex
 		if err > maxErr {
 			maxErr = err
 		}

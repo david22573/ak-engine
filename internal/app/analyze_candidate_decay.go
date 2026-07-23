@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	acdName     string
-	acdH1Path   string
-	acdH2Path   string
-	acdOutPath  string
+	acdName    string
+	acdH1Path  string
+	acdH2Path  string
+	acdOutPath string
 )
 
 var analyzeCandidateDecayCmd = &cobra.Command{
@@ -68,7 +68,7 @@ var analyzeCandidateDecayCmd = &cobra.Command{
 		sb.WriteString("\n## Cost Adjustment (5 bps per leg)\n")
 		sb.WriteString("| Metric | H1 | H2 | Status |\n")
 		sb.WriteString("|---|---|---|---|\n")
-		
+
 		h1c := h1.Haircuts["5_bps"]
 		h2c := h2.Haircuts["5_bps"]
 		statusH2 := "PASS"
@@ -95,7 +95,7 @@ var analyzeCandidateDecayCmd = &cobra.Command{
 		jsonOut := strings.Replace(acdOutPath, ".md", ".json", 1)
 		if strings.HasSuffix(jsonOut, ".json") {
 			type DecayJson struct {
-				Status string `json:"status"`
+				Status string    `json:"status"`
 				H1     CBMetrics `json:"h1"`
 				H2     CBMetrics `json:"h2"`
 				H1Cost CBMetrics `json:"h1_cost"`

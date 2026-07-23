@@ -2,10 +2,10 @@ package app
 
 import (
 	"context"
-	"testing"
 	"strings"
+	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/features"
 )
 
 func TestPhase12DTMVRSignalLongAccepted(t *testing.T) {
@@ -23,7 +23,7 @@ func TestPhase12DTMVRSignalLongAccepted(t *testing.T) {
 func TestPhase12DTMVRSignalRejectsWhenTrendNotDown(t *testing.T) {
 	rows := phase12DTMVRTestRows("long")
 	rows[20].Close = 105 // Break trend_down logic: row.Close < row.EMA50
-	
+
 	side, gate := phase12DTMVRSignal(rows, 20)
 	if side != "" {
 		t.Fatalf("side=%q, want rejected", side)
@@ -36,7 +36,7 @@ func TestPhase12DTMVRSignalRejectsWhenTrendNotDown(t *testing.T) {
 func TestPhase12DTMVRSignalRejectsWhenVolNotMid(t *testing.T) {
 	rows := phase12DTMVRTestRows("long")
 	rows[20].RealizedVol60 = 0.01 // High Vol (not between 0.0015 and 0.006)
-	
+
 	side, gate := phase12DTMVRSignal(rows, 20)
 	if side != "" {
 		t.Fatalf("side=%q, want rejected", side)
@@ -47,11 +47,11 @@ func TestPhase12DTMVRSignalRejectsWhenVolNotMid(t *testing.T) {
 }
 
 func TestPhase12DTMVRSignalIsLongOnly(t *testing.T) {
-	// The implementation simply returns "long" when conditions are met. 
+	// The implementation simply returns "long" when conditions are met.
 	// We verify that even if we try to simulate a short condition, it either rejects or returns long.
 	// Since our test rows are purely based on trend_down + vol_mid, we can just check there's no short side.
 	rows := phase12DTMVRTestRows("long")
-	
+
 	side, _ := phase12DTMVRSignal(rows, 20)
 	if side == "short" {
 		t.Fatalf("side=%q, want long only", side)
@@ -59,7 +59,7 @@ func TestPhase12DTMVRSignalIsLongOnly(t *testing.T) {
 }
 
 func TestPhase12DTMVRReportHasNoFundingPrimaryDependency(t *testing.T) {
-	report, err := runPhase12DowntrendMidVolRelief(context.Background(), t.TempDir(), "futures-um", "1m", nil, []string{"2024-01"})
+	report, err := runPhase12DowntrendMidVolRelief(context.Background(), t.TempDir(), "futures-um", "1m", nil, []string{"2024-01"}, false, "")
 	if err != nil {
 		t.Fatalf("run report with missing local data: %v", err)
 	}
@@ -88,18 +88,16 @@ func phase12DTMVRTestRows(side string) []features.Row {
 		// Trend: Close < EMA50 && EMA50 < EMA200 && TrendSlope20 < 0
 		// Vol: RealizedVol60 >= 0.0015 && RealizedVol60 <= 0.006
 		rows[i] = features.Row{
-			Symbol:           "TESTUSDT",
-			EventTimeMS:      int64(i * 60000),
-			AvailableAtMS:    int64(i * 60000),
-			Close:            90,
-			EMA20:            95,
-			EMA50:            100,
-			EMA200:           110,
-			TrendSlope20:     -0.02,
-			RealizedVol60:    0.003,
+			Symbol:        "TESTUSDT",
+			EventTimeMS:   int64(i * 60000),
+			AvailableAtMS: int64(i * 60000),
+			Close:         90,
+			EMA20:         95,
+			EMA50:         100,
+			EMA200:        110,
+			TrendSlope20:  -0.02,
+			RealizedVol60: 0.003,
 		}
 	}
 	return rows
 }
-
-

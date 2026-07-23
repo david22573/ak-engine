@@ -3,7 +3,7 @@ package features
 import (
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func TestBuildRows_WarmupAndFuture(t *testing.T) {
@@ -88,7 +88,7 @@ func TestBuildRows_ContextReturns(t *testing.T) {
 			OpenTimeMS: int64(i * 60000), CloseTimeMS: int64((i * 60000) + 59999),
 			Open: 10, High: 11, Low: 9, Close: 10,
 		})
-		
+
 		btcCandles = append(btcCandles, protocol.Candle{
 			Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m",
 			OpenTimeMS: int64(i * 60000), CloseTimeMS: int64((i * 60000) + 59999),
@@ -121,7 +121,7 @@ func TestBuildRows_ContextReturns(t *testing.T) {
 	if row.ETHReturn60 == 0 {
 		t.Errorf("expected ETHReturn60 != 0, got %f", row.ETHReturn60)
 	}
-	
+
 	// btc prev=1040, curr=1100 -> return = 60/1040 = 0.0576923
 	// eth prev=60, curr=0 -> return = -60/60 = -1
 }

@@ -2,18 +2,18 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
 	"io/ioutil"
 	"os"
 	"testing"
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
 )
 
 func TestEvaluateShockFade_Leakage(t *testing.T) {
 	// Create dummy features and regimes
 	featFile, _ := ioutil.TempFile("", "feat-*.json")
 	defer os.Remove(featFile.Name())
-	
+
 	regFile, _ := ioutil.TempFile("", "reg-*.json")
 	defer os.Remove(regFile.Name())
 

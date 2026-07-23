@@ -10,8 +10,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/data"
-	"github.com/davidmiguel22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/features"
 	"github.com/spf13/cobra"
 )
 
@@ -24,26 +24,26 @@ const phase13CFPFamily = "ContextFreeLinkLocalProbe"
 const phase13CFPHorizon = "60m" // 60 minutes horizon
 
 type Phase13ProofReport struct {
-	Phase                 string             `json:"phase"`
-	ExecutiveVerdict      string             `json:"executive_verdict"`
-	LocalDataUsed         string             `json:"local_data_used"`
-	CandidateDefinition   string             `json:"candidate_definition"`
-	PreEntryFieldsUsed    []string           `json:"pre_entry_fields_used"`
-	HorizonSelected       string             `json:"horizon_selected"`
-	EventCount            int                `json:"event_count"`
-	ClusterCount          int                `json:"cluster_count"`
-	MaxSerializedEventSize int               `json:"max_serialized_event_size"`
-	CompactJSONLValidation string            `json:"compact_jsonl_validation_result"`
-	AggregatorConsumption  string            `json:"aggregator_consumption_result"`
-	CostStress            map[string]float64 `json:"cost_stress_results"`
-	Concentration         map[string]int     `json:"concentration_results"`
-	ClusterAudit          string             `json:"cluster_audit_results"`
-	LeaveOneOutStatus     string             `json:"leave_one_out_status"`
-	FilterSimulation      string             `json:"filter_simulation_results"`
-	Limitations           string             `json:"limitations"`
-	ProvesCompactPipeline bool               `json:"proves_compact_pipeline"`
-	ResearchMerit         string             `json:"research_merit"`
-	RecommendedPhase13_1  string             `json:"recommended_phase_13_1"`
+	Phase                  string             `json:"phase"`
+	ExecutiveVerdict       string             `json:"executive_verdict"`
+	LocalDataUsed          string             `json:"local_data_used"`
+	CandidateDefinition    string             `json:"candidate_definition"`
+	PreEntryFieldsUsed     []string           `json:"pre_entry_fields_used"`
+	HorizonSelected        string             `json:"horizon_selected"`
+	EventCount             int                `json:"event_count"`
+	ClusterCount           int                `json:"cluster_count"`
+	MaxSerializedEventSize int                `json:"max_serialized_event_size"`
+	CompactJSONLValidation string             `json:"compact_jsonl_validation_result"`
+	AggregatorConsumption  string             `json:"aggregator_consumption_result"`
+	CostStress             map[string]float64 `json:"cost_stress_results"`
+	Concentration          map[string]int     `json:"concentration_results"`
+	ClusterAudit           string             `json:"cluster_audit_results"`
+	LeaveOneOutStatus      string             `json:"leave_one_out_status"`
+	FilterSimulation       string             `json:"filter_simulation_results"`
+	Limitations            string             `json:"limitations"`
+	ProvesCompactPipeline  bool               `json:"proves_compact_pipeline"`
+	ResearchMerit          string             `json:"research_merit"`
+	RecommendedPhase13_1   string             `json:"recommended_phase_13_1"`
 }
 
 var phase13ContextFreeProbeCmd = &cobra.Command{
@@ -90,6 +90,29 @@ func runPhase13ContextFreeProbe(ctx context.Context, workdir string, emitCompact
 		ProvesCompactPipeline: false,
 		ResearchMerit:         "Minimal, mainly for pipeline verification",
 		RecommendedPhase13_1:  "Proceed to distributed context-free evaluation or acquire missing context data",
+	}
+
+	caps := CandidateCapabilities{
+		CandidateName:                 "ContextFreeLinkLocalProbe",
+		FamilyName:                    phase13CFPFamily,
+		SupportedSymbols:              []string{"LINKUSDT"},
+		SupportedIntervals:            []string{"1m"},
+		SupportedHorizons:             []string{phase13CFPHorizon},
+		RequiresBTCContext:            false,
+		RequiresETHContext:            false,
+		RequiresFundingContext:        false,
+		RequiresVolumeContext:         false,
+		RequiresClusterContext:        true,
+		SupportsCompactEmission:       true,
+		ContextFreeModeAllowed:        true,
+		AllowedMissingContextBehavior: AllowMissingContext,
+		IsResearchOnly:                true,
+		IsPromotable:                  false,
+	}
+
+	if err := ValidateCandidateInputs(caps, false, false, false, emitCompactEvents); err != nil {
+		report.ExecutiveVerdict = "PHASE13_CONTEXT_FREE_PROOF_BLOCKED_INVALID_CAPS"
+		return report, fmt.Errorf("capability validation failed: %w", err)
 	}
 
 	src := data.NewLocalParquetSource()
@@ -139,7 +162,7 @@ func runPhase13ContextFreeProbe(ctx context.Context, workdir string, emitCompact
 
 	for i := 20; i < len(rows); i++ {
 		row := rows[i]
-		
+
 		// Ensure only Jan 2024
 		t := time.UnixMilli(row.EventTimeMS).UTC()
 		if t.Year() != 2024 || t.Month() != 1 {
@@ -163,7 +186,7 @@ func runPhase13ContextFreeProbe(ctx context.Context, workdir string, emitCompact
 		if trendRegime != "up" || volBucket != "mid" {
 			continue
 		}
-		
+
 		// We need a pull-back to enter
 		if row.Close >= row.EMA20 {
 			continue
@@ -247,7 +270,7 @@ func runPhase13ContextFreeProbe(ctx context.Context, workdir string, emitCompact
 			report.CompactJSONLValidation = err.Error()
 			return report, nil
 		}
-		
+
 		report.CompactJSONLValidation = "PASS"
 
 		if err := os.MkdirAll(filepath.Dir(jsonlOut), 0755); err != nil {
@@ -267,12 +290,12 @@ func runPhase13ContextFreeProbe(ctx context.Context, workdir string, emitCompact
 		}
 
 		report.AggregatorConsumption = "PASS"
-		
+
 		summary := agg.FullSummary()
 		report.EventCount = summary.EventCount
 		report.ClusterCount = summary.ClusterCount
 		report.ClusterAudit = fmt.Sprintf("Cluster size: %.2f avg, max %d", summary.AverageClusterSize, summary.MaxClusterSize)
-		
+
 		report.CostStress = map[string]float64{
 			"net_5_bps":  summary.Net5Bps,
 			"net_75_bps": summary.Net75Bps,
@@ -358,16 +381,16 @@ func renderPhase13CFPMarkdown(report Phase13ProofReport) string {
 	b.WriteString(fmt.Sprintf("- **Limitations**: %s\n", report.Limitations))
 	b.WriteString(fmt.Sprintf("- **Research Merit**: %s\n", report.ResearchMerit))
 	b.WriteString(fmt.Sprintf("- **Recommended Phase 13.1**: %s\n\n", report.RecommendedPhase13_1))
-	
+
 	b.WriteString("## Cost Stress Results\n")
 	for k, v := range report.CostStress {
 		b.WriteString(fmt.Sprintf("- %s: %.2f\n", k, v))
 	}
-	
+
 	b.WriteString("\n## Concentration Results\n")
 	for k, v := range report.Concentration {
 		b.WriteString(fmt.Sprintf("- %s: %d\n", k, v))
 	}
-	
+
 	return b.String()
 }

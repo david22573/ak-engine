@@ -19,16 +19,16 @@ func TestPhase10LowResourcePrep(t *testing.T) {
 
 	tempDir := t.TempDir()
 	manifestPath := filepath.Join(tempDir, "runs/manifests/phase10_5_low_resource_manifest.json")
-	
+
 	// Create a dummy completed chunk
 	m := &Manifest{Chunks: make(map[string]*ChunkStatus)}
 	m.Chunks["TESTUSDT_2024-01"] = &ChunkStatus{
-		Symbol: "TESTUSDT",
-		Month:  "2024-01",
-		FeatureStatus: "DONE",
-		RegimeStatus: "DONE",
+		Symbol:            "TESTUSDT",
+		Month:             "2024-01",
+		FeatureStatus:     "DONE",
+		RegimeStatus:      "DONE",
 		FundingJoinStatus: "DONE",
-		ReportStatus: "DONE",
+		ReportStatus:      "DONE",
 	}
 	saveManifest(manifestPath, m)
 

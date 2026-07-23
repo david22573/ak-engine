@@ -8,30 +8,30 @@ import (
 )
 
 type NativeSummaryV2Row struct {
-	Family                 string  `json:"family"`
-	Side                   string  `json:"side"`
-	Symbol                 string  `json:"symbol"`
-	Month                  string  `json:"month"`
-	Quarter                string  `json:"quarter"`
-	Year                   string  `json:"year"`
-	HorizonMinutes         int     `json:"horizon_minutes"`
-	CostBps                float64 `json:"cost_bps"`
-	DelayCandles           int     `json:"delay_candles"`
-	FundingBucket          string  `json:"funding_bucket"`
-	RegimeBucket           string  `json:"regime_bucket"`
-	FundingXRegimeBucket   string  `json:"funding_x_regime_bucket"`
-	EventCount             int     `json:"event_count"`
-	DeClusteredEventCount  int     `json:"declustered_event_count"`
-	GrossProfitBps         float64 `json:"gross_profit_bps"`
-	GrossLossBps           float64 `json:"gross_loss_bps"`
-	NetBps                 float64 `json:"net_bps"`
-	ExpectancyBps          float64 `json:"expectancy_bps"`
-	ProfitFactor           float64 `json:"profit_factor"`
-	WinCount               int     `json:"win_count"`
-	LossCount              int     `json:"loss_count"`
-	WinRate                float64 `json:"win_rate"`
-	InputHash              string  `json:"input_hash"`
-	SummaryHash            string  `json:"summary_hash"`
+	Family                string  `json:"family"`
+	Side                  string  `json:"side"`
+	Symbol                string  `json:"symbol"`
+	Month                 string  `json:"month"`
+	Quarter               string  `json:"quarter"`
+	Year                  string  `json:"year"`
+	HorizonMinutes        int     `json:"horizon_minutes"`
+	CostBps               float64 `json:"cost_bps"`
+	DelayCandles          int     `json:"delay_candles"`
+	FundingBucket         string  `json:"funding_bucket"`
+	RegimeBucket          string  `json:"regime_bucket"`
+	FundingXRegimeBucket  string  `json:"funding_x_regime_bucket"`
+	EventCount            int     `json:"event_count"`
+	DeClusteredEventCount int     `json:"declustered_event_count"`
+	GrossProfitBps        float64 `json:"gross_profit_bps"`
+	GrossLossBps          float64 `json:"gross_loss_bps"`
+	NetBps                float64 `json:"net_bps"`
+	ExpectancyBps         float64 `json:"expectancy_bps"`
+	ProfitFactor          float64 `json:"profit_factor"`
+	WinCount              int     `json:"win_count"`
+	LossCount             int     `json:"loss_count"`
+	WinRate               float64 `json:"win_rate"`
+	InputHash             string  `json:"input_hash"`
+	SummaryHash           string  `json:"summary_hash"`
 }
 
 type v2GroupKey struct {
@@ -127,7 +127,7 @@ func computeNativeSummaryV2(events []FundingEventRow, rows []ResearchFeatureRow,
 		var grossProf, grossLoss float64
 		var wins, losses int
 		var mockEvents []FundingEventRow
-		
+
 		for _, d := range dataList {
 			if d.Ret > 0 {
 				grossProf += d.Ret
@@ -152,29 +152,29 @@ func computeNativeSummaryV2(events []FundingEventRow, rows []ResearchFeatureRow,
 		}
 
 		row := NativeSummaryV2Row{
-			Family:                 k.Family,
-			Side:                   k.Side,
-			Symbol:                 k.Symbol,
-			Month:                  k.Month,
-			Quarter:                quarterFromMonth(k.Month),
-			Year:                   monthYear(k.Month),
-			HorizonMinutes:         k.HorizonMinutes,
-			CostBps:                k.CostBps,
-			DelayCandles:           k.DelayCandles,
-			FundingBucket:          k.FundingBucket,
-			RegimeBucket:           k.RegimeBucket,
-			FundingXRegimeBucket:   fmt.Sprintf("%s|%s", k.FundingBucket, k.RegimeBucket),
-			EventCount:             eventCount,
-			DeClusteredEventCount:  declustered,
-			GrossProfitBps:         roundMetric(grossProf),
-			GrossLossBps:           roundMetric(grossLoss),
-			NetBps:                 roundMetric(netBps),
-			ExpectancyBps:          roundMetric(expectancy),
-			ProfitFactor:           roundMetric(pf),
-			WinCount:               wins,
-			LossCount:              losses,
-			WinRate:                roundMetric(winRate),
-			InputHash:              inputHash,
+			Family:                k.Family,
+			Side:                  k.Side,
+			Symbol:                k.Symbol,
+			Month:                 k.Month,
+			Quarter:               quarterFromMonth(k.Month),
+			Year:                  monthYear(k.Month),
+			HorizonMinutes:        k.HorizonMinutes,
+			CostBps:               k.CostBps,
+			DelayCandles:          k.DelayCandles,
+			FundingBucket:         k.FundingBucket,
+			RegimeBucket:          k.RegimeBucket,
+			FundingXRegimeBucket:  fmt.Sprintf("%s|%s", k.FundingBucket, k.RegimeBucket),
+			EventCount:            eventCount,
+			DeClusteredEventCount: declustered,
+			GrossProfitBps:        roundMetric(grossProf),
+			GrossLossBps:          roundMetric(grossLoss),
+			NetBps:                roundMetric(netBps),
+			ExpectancyBps:         roundMetric(expectancy),
+			ProfitFactor:          roundMetric(pf),
+			WinCount:              wins,
+			LossCount:             losses,
+			WinRate:               roundMetric(winRate),
+			InputHash:             inputHash,
 		}
 
 		// Compute summary hash
@@ -184,7 +184,7 @@ func computeNativeSummaryV2(events []FundingEventRow, rows []ResearchFeatureRow,
 
 		result = append(result, row)
 	}
-	
+
 	// Sort to keep deterministic
 	sort.Slice(result, func(i, j int) bool {
 		a, b := result[i], result[j]

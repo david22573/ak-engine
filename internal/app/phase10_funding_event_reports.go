@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
 )
 
 func phase10FundingEventBuildReport(cfg phase10FundingEventPipelineConfig, manifest *Phase10FundingEventManifest, leaderboard *FundingLeaderboardReport, processedKeys map[string]struct{}, inputChunksRebuilt int) phase10FundingEventPipelineReport {

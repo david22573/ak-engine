@@ -27,7 +27,7 @@ func TestPhase13ContextFreeProbe_CompactEventEmission(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	
+
 	// If it was blocked, data might be missing locally, which is fine, but we can't fully test
 	if report1.ExecutiveVerdict == "PHASE13_CONTEXT_FREE_PROOF_BLOCKED_NO_DATA" {
 		t.Skip("local parquet data missing, skipping emit test")
@@ -44,9 +44,9 @@ func TestPhase13ContextFreeProbe_CompactEventEmission(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if report2.ExecutiveVerdict != "PHASE13_CONTEXT_FREE_PROOF_PASSED_INFRA_ONLY" && 
-	   report2.ExecutiveVerdict != "PHASE13_CONTEXT_FREE_PROOF_PASSED_RESEARCH_LEAD" && 
-	   report2.ExecutiveVerdict != "PHASE13_CONTEXT_FREE_PROOF_BLOCKED_NO_EVENTS" {
+	if report2.ExecutiveVerdict != "PHASE13_CONTEXT_FREE_PROOF_PASSED_INFRA_ONLY" &&
+		report2.ExecutiveVerdict != "PHASE13_CONTEXT_FREE_PROOF_PASSED_RESEARCH_LEAD" &&
+		report2.ExecutiveVerdict != "PHASE13_CONTEXT_FREE_PROOF_BLOCKED_NO_EVENTS" {
 		t.Errorf("unexpected verdict: %s", report2.ExecutiveVerdict)
 	}
 
@@ -60,7 +60,7 @@ func TestPhase13ContextFreeProbe_CompactEventEmission(t *testing.T) {
 		if report2.MaxSerializedEventSize > 1024 {
 			t.Errorf("event size %d > 1024", report2.MaxSerializedEventSize)
 		}
-		
+
 		// check that BTC/ETH contexts are not required
 		foundBTC := false
 		for _, f := range report2.PreEntryFieldsUsed {

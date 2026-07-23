@@ -3,8 +3,8 @@ package backtest
 import (
 	"fmt"
 
-	"github.com/davidmiguel22573/ak-engine/internal/strategy"
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/internal/strategy"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func ResolveExitPrice(pos Position, candle protocol.Candle) (float64, ExitReason, bool, error) {

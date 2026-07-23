@@ -19,9 +19,9 @@ type Row struct {
 	BBWidth20        float64 `json:"bb_width_20"`
 	BBWidthPctRank60 float64 `json:"bb_width_pct_rank_60"`
 
-	EMA20       float64 `json:"ema_20"`
-	EMA50       float64 `json:"ema_50"`
-	EMA200      float64 `json:"ema_200"`
+	EMA20        float64 `json:"ema_20"`
+	EMA50        float64 `json:"ema_50"`
+	EMA200       float64 `json:"ema_200"`
 	TrendSlope20 float64 `json:"trend_slope_20"`
 
 	VolumeRatio20      float64 `json:"volume_ratio_20"`

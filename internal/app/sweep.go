@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/davidmiguel22573/ak-engine/internal/backtest"
-	"github.com/davidmiguel22573/ak-engine/internal/data"
-	"github.com/davidmiguel22573/ak-engine/internal/strategy"
+	"github.com/david22573/ak-engine/internal/backtest"
+	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/strategy"
 	"github.com/spf13/cobra"
 )
 

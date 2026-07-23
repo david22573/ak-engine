@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
 	"github.com/spf13/cobra"
 )
 
@@ -21,18 +21,18 @@ var (
 )
 
 type ShockFadeMetrics struct {
-	EventCount         int     `json:"event_count"`
-	AvgFwd5            float64 `json:"avg_fwd_5"`
-	AvgFwd15           float64 `json:"avg_fwd_15"`
-	AvgFwd30           float64 `json:"avg_fwd_30"`
-	AvgFwd60           float64 `json:"avg_fwd_60"`
-	MedianFwd          float64 `json:"median_fwd"`
-	WinRate            float64 `json:"win_rate"`
-	ProfitFactor       float64 `json:"profit_factor"`
-	Expectancy         float64 `json:"expectancy"`
-	MaxFavorableEx     float64 `json:"max_favorable_excursion"`
-	MaxAdverseEx       float64 `json:"max_adverse_excursion"`
-	DrawdownProxy      float64 `json:"drawdown_proxy"`
+	EventCount         int                `json:"event_count"`
+	AvgFwd5            float64            `json:"avg_fwd_5"`
+	AvgFwd15           float64            `json:"avg_fwd_15"`
+	AvgFwd30           float64            `json:"avg_fwd_30"`
+	AvgFwd60           float64            `json:"avg_fwd_60"`
+	MedianFwd          float64            `json:"median_fwd"`
+	WinRate            float64            `json:"win_rate"`
+	ProfitFactor       float64            `json:"profit_factor"`
+	Expectancy         float64            `json:"expectancy"`
+	MaxFavorableEx     float64            `json:"max_favorable_excursion"`
+	MaxAdverseEx       float64            `json:"max_adverse_excursion"`
+	DrawdownProxy      float64            `json:"drawdown_proxy"`
 	PerfByComposite    map[string]float64 `json:"perf_by_composite"`
 	PerfByVolatility   map[string]float64 `json:"perf_by_volatility"`
 	PerfByTrend        map[string]float64 `json:"perf_by_trend"`
@@ -113,9 +113,9 @@ var evaluateShockFadeCmd = &cobra.Command{
 
 		type Evt struct {
 			Fwd5, Fwd15, Fwd30, Fwd60 float64
-			MAE, MFE float64
-			Label regime.Label
-			Hour int
+			MAE, MFE                  float64
+			Label                     regime.Label
+			Hour                      int
 		}
 
 		var evts []Evt
@@ -154,12 +154,12 @@ var evaluateShockFadeCmd = &cobra.Command{
 		}
 
 		m := ShockFadeMetrics{
-			EventCount: len(evts),
-			PerfByComposite: make(map[string]float64),
-			PerfByVolatility: make(map[string]float64),
-			PerfByTrend: make(map[string]float64),
-			PerfByLiquidity: make(map[string]float64),
-			PerfByMarketBeta: make(map[string]float64),
+			EventCount:         len(evts),
+			PerfByComposite:    make(map[string]float64),
+			PerfByVolatility:   make(map[string]float64),
+			PerfByTrend:        make(map[string]float64),
+			PerfByLiquidity:    make(map[string]float64),
+			PerfByMarketBeta:   make(map[string]float64),
 			PerfByTimeOfDayUTC: make(map[string]float64),
 			PerfByShockSubtype: make(map[string]float64),
 		}
@@ -184,7 +184,7 @@ var evaluateShockFadeCmd = &cobra.Command{
 				fwd60s = append(fwd60s, e.Fwd60)
 				m.MaxFavorableEx += e.MFE
 				m.MaxAdverseEx += e.MAE
-				
+
 				if e.Fwd60 > 0 {
 					wins++
 					grossWin += e.Fwd60
@@ -238,13 +238,27 @@ var evaluateShockFadeCmd = &cobra.Command{
 			m.MedianFwd = fwd60s[len(fwd60s)/2]
 
 			// average the maps
-			for k, v := range countByComposite { m.PerfByComposite[k] /= float64(v) }
-			for k, v := range countByVol { m.PerfByVolatility[k] /= float64(v) }
-			for k, v := range countByTrend { m.PerfByTrend[k] /= float64(v) }
-			for k, v := range countByLiq { m.PerfByLiquidity[k] /= float64(v) }
-			for k, v := range countByBeta { m.PerfByMarketBeta[k] /= float64(v) }
-			for k, v := range countByTime { m.PerfByTimeOfDayUTC[k] /= float64(v) }
-			for k, v := range countByShock { m.PerfByShockSubtype[k] /= float64(v) }
+			for k, v := range countByComposite {
+				m.PerfByComposite[k] /= float64(v)
+			}
+			for k, v := range countByVol {
+				m.PerfByVolatility[k] /= float64(v)
+			}
+			for k, v := range countByTrend {
+				m.PerfByTrend[k] /= float64(v)
+			}
+			for k, v := range countByLiq {
+				m.PerfByLiquidity[k] /= float64(v)
+			}
+			for k, v := range countByBeta {
+				m.PerfByMarketBeta[k] /= float64(v)
+			}
+			for k, v := range countByTime {
+				m.PerfByTimeOfDayUTC[k] /= float64(v)
+			}
+			for k, v := range countByShock {
+				m.PerfByShockSubtype[k] /= float64(v)
+			}
 
 			m.DrawdownProxy = m.MaxAdverseEx // simplified
 		}
@@ -285,7 +299,7 @@ var evaluateShockFadeCmd = &cobra.Command{
 					}
 					fmt.Fprintf(f, "- %d bps: PF = %.2f\n", int(bps), pf)
 				}
-				
+
 				f.Close()
 
 				jsonOut := strings.TrimSuffix(esfOut, ".md") + ".json"

@@ -3,11 +3,11 @@ package features
 import (
 	"math"
 
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 func ATR(candles []protocol.Candle, idx int, period int) (float64, bool) {
-	if idx - period < 0 || idx >= len(candles) {
+	if idx-period < 0 || idx >= len(candles) {
 		return 0, false
 	}
 
@@ -31,7 +31,7 @@ func ATR(candles []protocol.Candle, idx int, period int) (float64, bool) {
 }
 
 func RealizedVol(closes []float64, idx int, period int) (float64, bool) {
-	if idx - period < 0 || idx >= len(closes) {
+	if idx-period < 0 || idx >= len(closes) {
 		return 0, false
 	}
 
@@ -60,7 +60,7 @@ func RealizedVol(closes []float64, idx int, period int) (float64, bool) {
 }
 
 func BBWidth(closes []float64, idx int, period int, mult float64) (float64, bool) {
-	if idx - period + 1 < 0 || idx >= len(closes) {
+	if idx-period+1 < 0 || idx >= len(closes) {
 		return 0, false
 	}
 
@@ -88,7 +88,7 @@ func BBWidth(closes []float64, idx int, period int, mult float64) (float64, bool
 }
 
 func PercentRankTrailing(values []float64, idx int, lookback int) (float64, bool) {
-	if idx - lookback < 0 || idx >= len(values) {
+	if idx-lookback < 0 || idx >= len(values) {
 		return 0, false
 	}
 

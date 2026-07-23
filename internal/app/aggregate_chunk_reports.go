@@ -20,17 +20,17 @@ var (
 )
 
 type aggregateChunkReport struct {
-	Symbol            string   `json:"symbol"`
-	MonthsRequested   int      `json:"months_requested"`
-	MonthsCompleted   int      `json:"months_completed"`
-	MonthsFailed      int      `json:"months_failed"`
-	TotalFeatureRows  int      `json:"total_feature_rows"`
-	TotalRegimeRows   int      `json:"total_regime_rows"`
-	LeakageStatus     string   `json:"leakage_status"`
-	FailedChunks      []string `json:"failed_chunks"`
-	TotalChunks       int      `json:"total_chunks"`
-	TotalRows         int      `json:"total_rows"`
-	Status            string   `json:"status"`
+	Symbol           string   `json:"symbol"`
+	MonthsRequested  int      `json:"months_requested"`
+	MonthsCompleted  int      `json:"months_completed"`
+	MonthsFailed     int      `json:"months_failed"`
+	TotalFeatureRows int      `json:"total_feature_rows"`
+	TotalRegimeRows  int      `json:"total_regime_rows"`
+	LeakageStatus    string   `json:"leakage_status"`
+	FailedChunks     []string `json:"failed_chunks"`
+	TotalChunks      int      `json:"total_chunks"`
+	TotalRows        int      `json:"total_rows"`
+	Status           string   `json:"status"`
 }
 
 var aggregateChunkReportsCmd = &cobra.Command{
@@ -111,8 +111,8 @@ func runAggregateChunkReports() error {
 		}
 
 		os.MkdirAll(filepath.Dir(acrOut), 0755)
-		
-		// Create JSON report 
+
+		// Create JSON report
 		jsonPath := strings.TrimSuffix(acrOut, filepath.Ext(acrOut)) + ".json"
 		outData, _ := json.MarshalIndent(report, "", "  ")
 		os.WriteFile(jsonPath, outData, 0644)

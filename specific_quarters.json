@@ -1,0 +1,233 @@
+{
+  "2024-Q4": {
+    "quarter": "2024-Q4",
+    "event_count": 61084,
+    "de_clustered_event_count": 2432,
+    "pf_5bps": 1.5309018702281898,
+    "expectancy_5bps": 48.55282838312815,
+    "months": [
+      {
+        "month": "2024-10",
+        "event_count": 6731,
+        "pf_5bps": 0.8125395053854589,
+        "net_bps": -111924.93216
+      },
+      {
+        "month": "2024-12",
+        "event_count": 27670,
+        "pf_5bps": 1.3705125721173312,
+        "net_bps": 1101904.9372710001
+      },
+      {
+        "month": "2024-11",
+        "event_count": 26683,
+        "pf_5bps": 1.9804177965182017,
+        "net_bps": 1975820.9638440001
+      }
+    ],
+    "symbols": [
+      {
+        "symbol": "LINKUSDT",
+        "event_count": 10713,
+        "pf_5bps": 1.3039689943119448,
+        "net_bps": 335204.10638300003
+      },
+      {
+        "symbol": "AVAXUSDT",
+        "event_count": 9771,
+        "pf_5bps": 1.441423205298864,
+        "net_bps": 400193.299976
+      },
+      {
+        "symbol": "ADAUSDT",
+        "event_count": 10404,
+        "pf_5bps": 1.451824800145039,
+        "net_bps": 471560.06716
+      },
+      {
+        "symbol": "DOGEUSDT",
+        "event_count": 11084,
+        "pf_5bps": 1.6065922946550795,
+        "net_bps": 618211.887585
+      },
+      {
+        "symbol": "XRPUSDT",
+        "event_count": 9294,
+        "pf_5bps": 1.6704482172272346,
+        "net_bps": 634664.919752
+      },
+      {
+        "symbol": "SOLUSDT",
+        "event_count": 5138,
+        "pf_5bps": 1.8502419345257646,
+        "net_bps": 267335.03149699996
+      },
+      {
+        "symbol": "BNBUSDT",
+        "event_count": 2205,
+        "pf_5bps": 1.8624541812865023,
+        "net_bps": 120787.17701300001
+      },
+      {
+        "symbol": "ETHUSDT",
+        "event_count": 2475,
+        "pf_5bps": 2.042369847872904,
+        "net_bps": 117844.479589
+      }
+    ]
+  },
+  "2025-Q1": {
+    "quarter": "2025-Q1",
+    "event_count": 63543,
+    "de_clustered_event_count": 2405,
+    "pf_5bps": 0.8479310493086315,
+    "expectancy_5bps": -20.03363687674488,
+    "months": [
+      {
+        "month": "2025-03",
+        "event_count": 19195,
+        "pf_5bps": 0.6617110801258633,
+        "net_bps": -947739.142964
+      },
+      {
+        "month": "2025-02",
+        "event_count": 26030,
+        "pf_5bps": 0.7346180448304133,
+        "net_bps": -1039758.3099590001
+      },
+      {
+        "month": "2025-01",
+        "event_count": 18318,
+        "pf_5bps": 1.4325979766263406,
+        "net_bps": 714500.0648640001
+      }
+    ],
+    "symbols": [
+      {
+        "symbol": "ETHUSDT",
+        "event_count": 4895,
+        "pf_5bps": 0.6892226309212732,
+        "net_bps": -201110.973769
+      },
+      {
+        "symbol": "AVAXUSDT",
+        "event_count": 9031,
+        "pf_5bps": 0.6964597841418447,
+        "net_bps": -402101.51536
+      },
+      {
+        "symbol": "ADAUSDT",
+        "event_count": 10976,
+        "pf_5bps": 0.7504088787351599,
+        "net_bps": -402779.904666
+      },
+      {
+        "symbol": "DOGEUSDT",
+        "event_count": 9197,
+        "pf_5bps": 0.752261653291701,
+        "net_bps": -312234.89532899996
+      },
+      {
+        "symbol": "LINKUSDT",
+        "event_count": 10592,
+        "pf_5bps": 0.8597345626772855,
+        "net_bps": -207806.013485
+      },
+      {
+        "symbol": "BNBUSDT",
+        "event_count": 2061,
+        "pf_5bps": 1.0219155296748257,
+        "net_bps": 4558.443527000003
+      },
+      {
+        "symbol": "SOLUSDT",
+        "event_count": 7941,
+        "pf_5bps": 1.0257114186192675,
+        "net_bps": 22357.730468000023
+      },
+      {
+        "symbol": "XRPUSDT",
+        "event_count": 8850,
+        "pf_5bps": 1.2340366663706384,
+        "net_bps": 226119.74055500003
+      }
+    ]
+  },
+  "2025-Q4": {
+    "quarter": "2025-Q4",
+    "event_count": 39677,
+    "de_clustered_event_count": 1537,
+    "pf_5bps": 0.861975876188831,
+    "expectancy_5bps": -14.295466878544246,
+    "months": [
+      {
+        "month": "2025-12",
+        "event_count": 7164,
+        "pf_5bps": 0.7222674960669336,
+        "net_bps": -177396.52938
+      },
+      {
+        "month": "2025-10",
+        "event_count": 15574,
+        "pf_5bps": 0.8781874616063036,
+        "net_bps": -192056.22030900003
+      },
+      {
+        "month": "2025-11",
+        "event_count": 16939,
+        "pf_5bps": 0.8955948932283752,
+        "net_bps": -197748.48965099998
+      }
+    ],
+    "symbols": [
+      {
+        "symbol": "SOLUSDT",
+        "event_count": 5475,
+        "pf_5bps": 0.6765028968998205,
+        "net_bps": -195394.99913900002
+      },
+      {
+        "symbol": "ETHUSDT",
+        "event_count": 4120,
+        "pf_5bps": 0.678421243563587,
+        "net_bps": -141270.356894
+      },
+      {
+        "symbol": "ADAUSDT",
+        "event_count": 5991,
+        "pf_5bps": 0.773888867855109,
+        "net_bps": -147390.786986
+      },
+      {
+        "symbol": "DOGEUSDT",
+        "event_count": 5507,
+        "pf_5bps": 0.8629594031114534,
+        "net_bps": -82108.504019
+      },
+      {
+        "symbol": "LINKUSDT",
+        "event_count": 6703,
+        "pf_5bps": 0.8960378055532988,
+        "net_bps": -74417.858531
+      },
+      {
+        "symbol": "XRPUSDT",
+        "event_count": 3924,
+        "pf_5bps": 0.9266793032402422,
+        "net_bps": -26945.404359
+      },
+      {
+        "symbol": "AVAXUSDT",
+        "event_count": 5169,
+        "pf_5bps": 1.0802568230595495,
+        "net_bps": 41845.261354
+      },
+      {
+        "symbol": "BNBUSDT",
+        "event_count": 2788,
+        "pf_5bps": 1.2779406677741085,
+        "net_bps": 58481.409233999984
+      }
+    ]
+  }
+}

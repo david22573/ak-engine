@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/davidmiguel22573/ak-engine/internal/data"
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
 type BuildOptions struct {
-	Market       string
-	Symbol       string
-	Interval     string
-	DropWarmup   bool
-	ContextBTC   []protocol.Candle
-	ContextETH   []protocol.Candle
+	Market     string
+	Symbol     string
+	Interval   string
+	DropWarmup bool
+	ContextBTC []protocol.Candle
+	ContextETH []protocol.Candle
 }
 
 func BuildRows(candles []protocol.Candle, opts BuildOptions) ([]Row, error) {

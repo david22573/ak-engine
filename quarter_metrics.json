@@ -1,0 +1,282 @@
+[
+  {
+    "quarter": "2024-Q1",
+    "event_count": 48740,
+    "de_clustered_event_count": 1919,
+    "cost_5bps": {
+      "gross_profit": 5756941.273500999,
+      "gross_loss": 4385833.929972,
+      "net": 1371107.3435220001,
+      "win_count": 27013,
+      "loss_count": 21727
+    },
+    "cost_7_5bps": {
+      "gross_profit": 5689682.960312,
+      "gross_loss": 4440425.616787,
+      "net": 1249257.343522,
+      "win_count": 26795,
+      "loss_count": 21945
+    },
+    "cost_10bps": {
+      "gross_profit": 5622999.304299999,
+      "gross_loss": 4495591.960778,
+      "net": 1127407.343522,
+      "win_count": 26540,
+      "loss_count": 22200
+    },
+    "pf_5bps": 1.31262181045185,
+    "pf_7_5bps": 1.2813372976685367,
+    "pf_10bps": 1.2507806209634051,
+    "expectancy_5bps": 28.1310493131309,
+    "expectancy_7_5bps": 25.631049313130898,
+    "expectancy_10bps": 23.131049313130898,
+    "win_rate_5bps": 55.42265080016414,
+    "win_rate_7_5bps": 54.975379565038985,
+    "win_rate_10bps": 54.45219532211736
+  },
+  {
+    "quarter": "2024-Q2",
+    "event_count": 30320,
+    "de_clustered_event_count": 1283,
+    "cost_5bps": {
+      "gross_profit": 3492623.690658,
+      "gross_loss": 2888994.465525,
+      "net": 603629.2251370001,
+      "win_count": 17959,
+      "loss_count": 12361
+    },
+    "cost_7_5bps": {
+      "gross_profit": 3447931.751059,
+      "gross_loss": 2920102.5259239995,
+      "net": 527829.225137,
+      "win_count": 17796,
+      "loss_count": 12524
+    },
+    "cost_10bps": {
+      "gross_profit": 3403639.187618,
+      "gross_loss": 2951609.9624849996,
+      "net": 452029.225137,
+      "win_count": 17633,
+      "loss_count": 12687
+    },
+    "pf_5bps": 1.2089409420254136,
+    "pf_7_5bps": 1.1807570865916706,
+    "pf_10bps": 1.1531466660155976,
+    "expectancy_5bps": 19.908615604782323,
+    "expectancy_7_5bps": 17.40861560478232,
+    "expectancy_10bps": 14.908615604782321,
+    "win_rate_5bps": 59.23153034300792,
+    "win_rate_7_5bps": 58.693931398416886,
+    "win_rate_10bps": 58.156332453825854
+  },
+  {
+    "quarter": "2024-Q3",
+    "event_count": 28990,
+    "de_clustered_event_count": 1197,
+    "cost_5bps": {
+      "gross_profit": 3896540.668126,
+      "gross_loss": 2778457.902436,
+      "net": 1118082.765689,
+      "win_count": 16017,
+      "loss_count": 12973
+    },
+    "cost_7_5bps": {
+      "gross_profit": 3856681.7923239996,
+      "gross_loss": 2811074.0266340007,
+      "net": 1045607.7656890001,
+      "win_count": 15877,
+      "loss_count": 13113
+    },
+    "cost_10bps": {
+      "gross_profit": 3817154.407317,
+      "gross_loss": 2844021.6416260004,
+      "net": 973132.7656889999,
+      "win_count": 15754,
+      "loss_count": 13236
+    },
+    "pf_5bps": 1.402411267311168,
+    "pf_7_5bps": 1.3719602386074539,
+    "pf_10bps": 1.3421678483201114,
+    "expectancy_5bps": 38.56787739527423,
+    "expectancy_7_5bps": 36.06787739527424,
+    "expectancy_10bps": 33.56787739527423,
+    "win_rate_5bps": 55.25008623663332,
+    "win_rate_7_5bps": 54.767161090031045,
+    "win_rate_10bps": 54.34287685408762
+  },
+  {
+    "quarter": "2024-Q4",
+    "event_count": 61084,
+    "de_clustered_event_count": 2432,
+    "cost_5bps": {
+      "gross_profit": 8552145.89497,
+      "gross_loss": 5586344.926011001,
+      "net": 2965800.968955,
+      "win_count": 36076,
+      "loss_count": 25008
+    },
+    "cost_7_5bps": {
+      "gross_profit": 8462240.556145,
+      "gross_loss": 5649149.587187001,
+      "net": 2813090.968955,
+      "win_count": 35847,
+      "loss_count": 25237
+    },
+    "cost_10bps": {
+      "gross_profit": 8372922.920457999,
+      "gross_loss": 5712541.9514999995,
+      "net": 2660380.968955,
+      "win_count": 35600,
+      "loss_count": 25484
+    },
+    "pf_5bps": 1.5309018702281898,
+    "pf_7_5bps": 1.4979671586920713,
+    "pf_10bps": 1.4657087845559607,
+    "expectancy_5bps": 48.55282838312815,
+    "expectancy_7_5bps": 46.05282838312815,
+    "expectancy_10bps": 43.55282838312815,
+    "win_rate_5bps": 59.059655556283154,
+    "win_rate_7_5bps": 58.68476196712723,
+    "win_rate_10bps": 58.28040075960972
+  },
+  {
+    "quarter": "2025-Q1",
+    "event_count": 63543,
+    "de_clustered_event_count": 2405,
+    "cost_5bps": {
+      "gross_profit": 7098188.0661200015,
+      "gross_loss": 8371185.454180001,
+      "net": -1272997.3880589998,
+      "win_count": 31795,
+      "loss_count": 31748
+    },
+    "cost_7_5bps": {
+      "gross_profit": 7019062.255394,
+      "gross_loss": 8450917.143451,
+      "net": -1431854.8880589998,
+      "win_count": 31497,
+      "loss_count": 32046
+    },
+    "cost_10bps": {
+      "gross_profit": 6940624.592877,
+      "gross_loss": 8531336.980936,
+      "net": -1590712.3880589998,
+      "win_count": 31259,
+      "loss_count": 32284
+    },
+    "pf_5bps": 0.8479310493086315,
+    "pf_7_5bps": 0.8305681071353764,
+    "pf_10bps": 0.8135447712810333,
+    "expectancy_5bps": -20.03363687674488,
+    "expectancy_7_5bps": -22.53363687674488,
+    "expectancy_10bps": -25.03363687674488,
+    "win_rate_5bps": 50.03698283052421,
+    "win_rate_7_5bps": 49.568009064727825,
+    "win_rate_10bps": 49.193459547078355
+  },
+  {
+    "quarter": "2025-Q2",
+    "event_count": 30018,
+    "de_clustered_event_count": 1220,
+    "cost_5bps": {
+      "gross_profit": 3123661.343286999,
+      "gross_loss": 2249031.926473,
+      "net": 874629.416811,
+      "win_count": 18079,
+      "loss_count": 11939
+    },
+    "cost_7_5bps": {
+      "gross_profit": 3078670.137776001,
+      "gross_loss": 2279085.720964,
+      "net": 799584.416811,
+      "win_count": 17919,
+      "loss_count": 12099
+    },
+    "cost_10bps": {
+      "gross_profit": 3034033.1324050003,
+      "gross_loss": 2309493.7155939997,
+      "net": 724539.416811,
+      "win_count": 17793,
+      "loss_count": 12225
+    },
+    "pf_5bps": 1.3888915077277801,
+    "pf_7_5bps": 1.3508356045834886,
+    "pf_10bps": 1.3137221859140888,
+    "expectancy_5bps": 29.136831794623227,
+    "expectancy_7_5bps": 26.636831794623227,
+    "expectancy_10bps": 24.136831794623227,
+    "win_rate_5bps": 60.227197015124254,
+    "win_rate_7_5bps": 59.69418348990606,
+    "win_rate_10bps": 59.27443533879673
+  },
+  {
+    "quarter": "2025-Q3",
+    "event_count": 27470,
+    "de_clustered_event_count": 1185,
+    "cost_5bps": {
+      "gross_profit": 2129078.205086,
+      "gross_loss": 1788612.790434,
+      "net": 340465.41465299996,
+      "win_count": 14095,
+      "loss_count": 13375
+    },
+    "cost_7_5bps": {
+      "gross_profit": 2094043.6897200001,
+      "gross_loss": 1822253.2750640004,
+      "net": 271790.414653,
+      "win_count": 13940,
+      "loss_count": 13530
+    },
+    "cost_10bps": {
+      "gross_profit": 2059365.6113630002,
+      "gross_loss": 1856250.196712,
+      "net": 203115.414653,
+      "win_count": 13794,
+      "loss_count": 13676
+    },
+    "pf_5bps": 1.1903516605007545,
+    "pf_7_5bps": 1.1491507346290564,
+    "pf_10bps": 1.1094224340074312,
+    "expectancy_5bps": 12.394081348853293,
+    "expectancy_7_5bps": 9.894081348853295,
+    "expectancy_10bps": 7.394081348853295,
+    "win_rate_5bps": 51.31052056789225,
+    "win_rate_7_5bps": 50.74626865671642,
+    "win_rate_10bps": 50.214779759737894
+  },
+  {
+    "quarter": "2025-Q4",
+    "event_count": 39677,
+    "de_clustered_event_count": 1537,
+    "cost_5bps": {
+      "gross_profit": 3542234.2975540003,
+      "gross_loss": 4109435.5368919997,
+      "net": -567201.2393400001,
+      "win_count": 20756,
+      "loss_count": 18921
+    },
+    "cost_7_5bps": {
+      "gross_profit": 3490597.3997979998,
+      "gross_loss": 4156991.139135001,
+      "net": -666393.7393400001,
+      "win_count": 20546,
+      "loss_count": 19131
+    },
+    "cost_10bps": {
+      "gross_profit": 3439462.894721,
+      "gross_loss": 4205049.134056,
+      "net": -765586.2393400001,
+      "win_count": 20362,
+      "loss_count": 19315
+    },
+    "pf_5bps": 0.861975876188831,
+    "pf_7_5bps": 0.8396932499895425,
+    "pf_10bps": 0.8179364342892825,
+    "expectancy_5bps": -14.295466878544246,
+    "expectancy_7_5bps": -16.795466878544246,
+    "expectancy_10bps": -19.295466878544246,
+    "win_rate_5bps": 52.31242281422487,
+    "win_rate_7_5bps": 51.7831489275903,
+    "win_rate_10bps": 51.319404188824755
+  }
+]

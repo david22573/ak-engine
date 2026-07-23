@@ -48,7 +48,7 @@ func TestPhase120PostCostDistribution(t *testing.T) {
 		months:   make(map[string]*phase120Stats),
 		quarters: make(map[string]*phase120Stats),
 	}
-	
+
 	// Add trades. Costs are 5, 7.5, 10 bps.
 	// Trade 1: raw return = 6 bps
 	// Cost5 = +1, Cost7.5 = -1.5, Cost10 = -4

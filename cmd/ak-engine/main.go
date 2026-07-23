@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/davidmiguel22573/ak-engine/internal/app"
+	"github.com/david22573/ak-engine/internal/app"
 )
 
 func main() {

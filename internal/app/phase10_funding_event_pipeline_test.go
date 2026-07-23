@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
 )
 
 func TestEphemeralPipelineEvaluatesBeforeCleanupAndDeletesHeavyFiles(t *testing.T) {
@@ -302,22 +302,22 @@ func TestFundingThresholdFailureDistinctFromUnsupportedContext(t *testing.T) {
 
 func ephemeralTestConfig(root string) phase10FundingEventPipelineConfig {
 	cfg := phase10FundingEventPipelineConfig{
-		RootDir:         root,
-		Workdir:         root,
-		Symbols:         []string{"LINKUSDT"},
-		ContextSymbols:  "BTCUSDT,ETHUSDT",
-		Months:          []string{"2025-01"},
-		Chunk:           "monthly",
-		MaxRows:         50000,
-		RetainPolicy:    "reports_only",
-		ManifestPath:    filepath.Join(root, phase10FundingEventManifestPath),
-		ReportsDir:      filepath.Join(root, "runs", "reports"),
-		ChunksDir:       filepath.Join(root, "runs", "reports", "chunks"),
-		ContinueOnError: false,
-		MinFreeGB:       0,
-		DiskBudgetGB:    8,
+		RootDir:           root,
+		Workdir:           root,
+		Symbols:           []string{"LINKUSDT"},
+		ContextSymbols:    "BTCUSDT,ETHUSDT",
+		Months:            []string{"2025-01"},
+		Chunk:             "monthly",
+		MaxRows:           50000,
+		RetainPolicy:      "reports_only",
+		ManifestPath:      filepath.Join(root, phase10FundingEventManifestPath),
+		ReportsDir:        filepath.Join(root, "runs", "reports"),
+		ChunksDir:         filepath.Join(root, "runs", "reports", "chunks"),
+		ContinueOnError:   false,
+		MinFreeGB:         0,
+		DiskBudgetGB:      8,
 		RetainEventDetail: true,
-		EventFormat:     "jsonl.gz",
+		EventFormat:       "jsonl.gz",
 	}
 	return normalizePhase10FundingEventPipelineConfig(cfg)
 }

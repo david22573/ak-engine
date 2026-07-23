@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davidmiguel22573/ak-engine/internal/backtest"
-	"github.com/davidmiguel22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/backtest"
+	"github.com/david22573/ak-engine/internal/regime"
 	"github.com/spf13/cobra"
 )
 
@@ -32,11 +32,11 @@ type evalBucket struct {
 }
 
 type bucketMetrics struct {
-	Count       int     `json:"trade_count"`
-	WinRate     float64 `json:"win_rate"`
-	GrossProfit float64 `json:"gross_profit"`
-	GrossLoss   float64 `json:"gross_loss"`
-	NetPnL      float64 `json:"net_pnl"`
+	Count        int     `json:"trade_count"`
+	WinRate      float64 `json:"win_rate"`
+	GrossProfit  float64 `json:"gross_profit"`
+	GrossLoss    float64 `json:"gross_loss"`
+	NetPnL       float64 `json:"net_pnl"`
 	ProfitFactor float64 `json:"profit_factor"`
 	AverageWin   float64 `json:"average_win"`
 	AverageLoss  float64 `json:"average_loss"`
@@ -50,14 +50,14 @@ type evalReportJSON struct {
 		TotalTrades   int `json:"total_trades"`
 		MatchedTrades int `json:"matched_trades"`
 	} `json:"summary"`
-	GlobalPerformance   bucketMetrics             `json:"global_performance"`
-	ByCompositeRegime   map[string]bucketMetrics  `json:"by_composite_regime"`
-	ByVolatilityRegime  map[string]bucketMetrics  `json:"by_volatility_regime"`
-	ByTrendRegime       map[string]bucketMetrics  `json:"by_trend_regime"`
-	ByLiquidityRegime   map[string]bucketMetrics  `json:"by_liquidity_regime"`
-	ByMarketBeta        map[string]bucketMetrics  `json:"by_market_beta"`
-	LeakageStatus       string                    `json:"leakage_status"`
-	Conclusion          string                    `json:"conclusion"`
+	GlobalPerformance  bucketMetrics            `json:"global_performance"`
+	ByCompositeRegime  map[string]bucketMetrics `json:"by_composite_regime"`
+	ByVolatilityRegime map[string]bucketMetrics `json:"by_volatility_regime"`
+	ByTrendRegime      map[string]bucketMetrics `json:"by_trend_regime"`
+	ByLiquidityRegime  map[string]bucketMetrics `json:"by_liquidity_regime"`
+	ByMarketBeta       map[string]bucketMetrics `json:"by_market_beta"`
+	LeakageStatus      string                   `json:"leakage_status"`
+	Conclusion         string                   `json:"conclusion"`
 }
 
 var evaluateStrategyByRegimeCmd = &cobra.Command{
@@ -142,12 +142,12 @@ var evaluateStrategyByRegimeCmd = &cobra.Command{
 				return fmt.Errorf("trade at %d cannot be joined: no prior regime label available", trade.EntryTimeMS)
 			}
 			label := labels[idx-1]
-			
+
 			// Strict leakage check (already enforced by the condition above, but let's double check)
 			if label.AvailableAtMS > trade.EntryTimeMS {
 				return fmt.Errorf("future-data join detected for trade at %d with label at %d", trade.EntryTimeMS, label.AvailableAtMS)
 			}
-			
+
 			matched = append(matched, struct {
 				Trade backtest.Trade
 				Label regime.Label
@@ -225,7 +225,7 @@ var evaluateStrategyByRegimeCmd = &cobra.Command{
 		for k, v := range out.ByMarketBeta {
 			allBuckets = append(allBuckets, bucketScore{k, v.NetPnL, v.Count})
 		}
-		
+
 		sort.Slice(allBuckets, func(i, j int) bool {
 			return allBuckets[i].NetPnL > allBuckets[j].NetPnL
 		})
@@ -281,7 +281,7 @@ func calculateBucket(trades []backtest.Trade) bucketMetrics {
 	if m.Count < 30 {
 		m.LowSample = true
 	}
-	
+
 	wins, losses := 0, 0
 	for _, t := range trades {
 		if t.NetPnL > 0 {
@@ -332,7 +332,7 @@ func calculateBucket(trades []backtest.Trade) bucketMetrics {
 func buildMarkdownReport(out evalReportJSON) string {
 	var sb strings.Builder
 	sb.WriteString("# Fast Accumulation By-Regime Postmortem\n\n")
-	
+
 	sb.WriteString("## Summary\n")
 	sb.WriteString(fmt.Sprintf("- **Total Trades Evaluated:** %d\n", out.Summary.TotalTrades))
 	sb.WriteString(fmt.Sprintf("- **Matched Trades:** %d\n", out.Summary.MatchedTrades))
@@ -403,11 +403,21 @@ func writeExtremes(sb *strings.Builder, out evalReportJSON, best bool) {
 		m    bucketMetrics
 	}
 	var all []bucket
-	for k, v := range out.ByCompositeRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByVolatilityRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByTrendRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByLiquidityRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByMarketBeta { all = append(all, bucket{k, v}) }
+	for k, v := range out.ByCompositeRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByVolatilityRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByTrendRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByLiquidityRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByMarketBeta {
+		all = append(all, bucket{k, v})
+	}
 
 	sort.Slice(all, func(i, j int) bool {
 		if best {
@@ -435,11 +445,21 @@ func writeLowSample(sb *strings.Builder, out evalReportJSON) {
 		m    bucketMetrics
 	}
 	var all []bucket
-	for k, v := range out.ByCompositeRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByVolatilityRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByTrendRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByLiquidityRegime { all = append(all, bucket{k, v}) }
-	for k, v := range out.ByMarketBeta { all = append(all, bucket{k, v}) }
+	for k, v := range out.ByCompositeRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByVolatilityRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByTrendRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByLiquidityRegime {
+		all = append(all, bucket{k, v})
+	}
+	for k, v := range out.ByMarketBeta {
+		all = append(all, bucket{k, v})
+	}
 
 	for _, b := range all {
 		if b.m.LowSample {

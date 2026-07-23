@@ -1,6 +1,6 @@
-module github.com/davidmiguel22573/ak-engine
+module github.com/david22573/ak-engine
 
-go 1.24.4
+go 1.25.6
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.23.0

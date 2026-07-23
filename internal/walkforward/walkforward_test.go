@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/data"
 )
 
 func TestGenerateSplits(t *testing.T) {

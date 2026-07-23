@@ -10,21 +10,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davidmiguel22573/ak-engine/internal/data"
-	"github.com/davidmiguel22573/ak-engine/internal/features"
-	"github.com/davidmiguel22573/ak-engine/internal/research"
-	"github.com/davidmiguel22573/ak-engine/pkg/protocol"
+	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/research"
+	"github.com/david22573/ak-engine/pkg/protocol"
 	"github.com/spf13/cobra"
 )
 
 var (
-	p12dtmvrWorkdir  string
-	p12dtmvrSymbols  string
-	p12dtmvrMarket   string
-	p12dtmvrInterval string
-	p12dtmvrFrom     string
-	p12dtmvrTo       string
-	p12dtmvrOut      string
+	p12dtmvrWorkdir           string
+	p12dtmvrSymbols           string
+	p12dtmvrMarket            string
+	p12dtmvrInterval          string
+	p12dtmvrFrom              string
+	p12dtmvrTo                string
+	p12dtmvrOut               string
+	p12dtmvrEmitCompactEvents bool
+	p12dtmvrCompactEventsOut  string
 )
 
 const phase12DTMVRFamily = "DowntrendMidVolRelief"
@@ -32,39 +34,39 @@ const phase12DTMVRFamily = "DowntrendMidVolRelief"
 var phase12DTMVRHorizons = []string{"240m"}
 
 type phase12DTMVRSummaryRow struct {
-	Symbol               string                `json:"symbol"`
-	Year                 string                `json:"year"`
-	Quarter              string                `json:"quarter"`
-	Month                string                `json:"month"`
-	Family               string                `json:"family"`
-	Side                 string                `json:"side"`
-	Horizon              string                `json:"horizon"`
-	SummarySchemaVersion string                `json:"summary_schema_version"`
-	ClusterKeyVersion    string                `json:"cluster_key_version"`
+	Symbol               string                 `json:"symbol"`
+	Year                 string                 `json:"year"`
+	Quarter              string                 `json:"quarter"`
+	Month                string                 `json:"month"`
+	Family               string                 `json:"family"`
+	Side                 string                 `json:"side"`
+	Horizon              string                 `json:"horizon"`
+	SummarySchemaVersion string                 `json:"summary_schema_version"`
+	ClusterKeyVersion    string                 `json:"cluster_key_version"`
 	Stats                phase12DTMVRStats      `json:"stats"`
 	Diagnostics          phase12DTMVRDiagnostic `json:"diagnostics,omitempty"`
 }
 
 type phase12DTMVRStats struct {
-	BaselineCostBps           float64                  `json:"baseline_cost_bps"`
-	EventCount                int                      `json:"event_count"`
-	RawEventCount             int                      `json:"raw_event_count"`
-	DeClusteredEventCount     int                      `json:"de_clustered_event_count"`
-	PFAfter5Bps               float64                  `json:"pf_after_5_bps"`
-	PFAfter7_5Bps             float64                  `json:"pf_after_7_5_bps"`
-	PFAfter10Bps              float64                  `json:"pf_after_10_bps"`
-	PFAfter15Bps              float64                  `json:"pf_after_15_bps"`
-	ExpectancyBpsAfter5Bps    float64                  `json:"expectancy_bps_after_5_bps"`
-	WinRate                   float64                  `json:"win_rate"`
-	AverageReturnBps          float64                  `json:"average_return_bps"`
-	MedianReturnBps           float64                  `json:"median_return_bps"`
-	EntryDelay1CExpectancyBps float64                  `json:"entry_delay_1c_expectancy_bps"`
-	EntryDelay1CAvailable     bool                     `json:"entry_delay_1c_available"`
-	GrossProfitBps            float64                  `json:"gross_profit_bps"`
-	GrossLossBps              float64                  `json:"gross_loss_bps"`
-	NetBps                    float64                  `json:"net_bps"`
-	WinCount                  int                      `json:"win_count"`
-	LossCount                 int                      `json:"loss_count"`
+	BaselineCostBps           float64                   `json:"baseline_cost_bps"`
+	EventCount                int                       `json:"event_count"`
+	RawEventCount             int                       `json:"raw_event_count"`
+	DeClusteredEventCount     int                       `json:"de_clustered_event_count"`
+	PFAfter5Bps               float64                   `json:"pf_after_5_bps"`
+	PFAfter7_5Bps             float64                   `json:"pf_after_7_5_bps"`
+	PFAfter10Bps              float64                   `json:"pf_after_10_bps"`
+	PFAfter15Bps              float64                   `json:"pf_after_15_bps"`
+	ExpectancyBpsAfter5Bps    float64                   `json:"expectancy_bps_after_5_bps"`
+	WinRate                   float64                   `json:"win_rate"`
+	AverageReturnBps          float64                   `json:"average_return_bps"`
+	MedianReturnBps           float64                   `json:"median_return_bps"`
+	EntryDelay1CExpectancyBps float64                   `json:"entry_delay_1c_expectancy_bps"`
+	EntryDelay1CAvailable     bool                      `json:"entry_delay_1c_available"`
+	GrossProfitBps            float64                   `json:"gross_profit_bps"`
+	GrossLossBps              float64                   `json:"gross_loss_bps"`
+	NetBps                    float64                   `json:"net_bps"`
+	WinCount                  int                       `json:"win_count"`
+	LossCount                 int                       `json:"loss_count"`
 	CostStress                []phase12DTMVRCostMetric  `json:"cost_stress"`
 	DelayStress               []phase12DTMVRDelayMetric `json:"delay_stress"`
 }
@@ -131,24 +133,24 @@ type phase12DTMVREvent struct {
 }
 
 type phase12DTMVRReport struct {
-	Phase                  string                  `json:"phase"`
-	Family                 string                  `json:"family"`
-	Mode                   string                  `json:"mode"`
-	Implementation         string                  `json:"implementation"`
-	Boundaries             []string                `json:"boundaries"`
-	Symbols                []string                `json:"symbols"`
-	Months                 []string                `json:"months"`
-	Horizons               []string                `json:"horizons"`
+	Phase                  string                   `json:"phase"`
+	Family                 string                   `json:"family"`
+	Mode                   string                   `json:"mode"`
+	Implementation         string                   `json:"implementation"`
+	Boundaries             []string                 `json:"boundaries"`
+	Symbols                []string                 `json:"symbols"`
+	Months                 []string                 `json:"months"`
+	Horizons               []string                 `json:"horizons"`
 	Coverage               phase12DTMVRCoverage     `json:"coverage"`
-	VerdictCounts          map[string]int          `json:"verdict_counts"`
-	LabelCounts            map[string]int          `json:"label_counts"`
-	FundingPrimaryTrigger  bool                    `json:"funding_primary_trigger"`
-	RawEventDetailRetained bool                    `json:"raw_event_detail_retained"`
-	AKTraderTouched        bool                    `json:"ak_trader_touched"`
+	VerdictCounts          map[string]int           `json:"verdict_counts"`
+	LabelCounts            map[string]int           `json:"label_counts"`
+	FundingPrimaryTrigger  bool                     `json:"funding_primary_trigger"`
+	RawEventDetailRetained bool                     `json:"raw_event_detail_retained"`
+	AKTraderTouched        bool                     `json:"ak_trader_touched"`
 	BestCandidate          *phase12DTMVRLeaderRow   `json:"best_candidate,omitempty"`
 	Leaderboard            []phase12DTMVRLeaderRow  `json:"leaderboard"`
 	RetainedSummaries      []phase12DTMVRSummaryRow `json:"retained_summaries"`
-	FinalRecommendation    string                  `json:"final_recommendation"`
+	FinalRecommendation    string                   `json:"final_recommendation"`
 }
 
 type phase12DTMVRCoverage struct {
@@ -191,7 +193,7 @@ var phase12DowntrendMidVolReliefCmd = &cobra.Command{
 		}
 		mdOut, jsonOut := normalizeMDAndJSONPaths(p12dtmvrOut)
 
-		report, err := runPhase12DowntrendMidVolRelief(cmd.Context(), p12dtmvrWorkdir, p12dtmvrMarket, p12dtmvrInterval, cfgSymbols, months)
+		report, err := runPhase12DowntrendMidVolRelief(cmd.Context(), p12dtmvrWorkdir, p12dtmvrMarket, p12dtmvrInterval, cfgSymbols, months, p12dtmvrEmitCompactEvents, p12dtmvrCompactEventsOut)
 		if err != nil {
 			return err
 		}
@@ -214,10 +216,12 @@ func init() {
 	phase12DowntrendMidVolReliefCmd.Flags().StringVar(&p12dtmvrFrom, "from", "2024-01", "from month YYYY-MM")
 	phase12DowntrendMidVolReliefCmd.Flags().StringVar(&p12dtmvrTo, "to", "2025-12", "to month YYYY-MM")
 	phase12DowntrendMidVolReliefCmd.Flags().StringVar(&p12dtmvrOut, "out", filepath.Join("runs", "reports", "phase12.3_regime_trend_pullback_continuation.md"), "output markdown path")
+	phase12DowntrendMidVolReliefCmd.Flags().BoolVar(&p12dtmvrEmitCompactEvents, "emit-compact-events", false, "emit retained events in compact JSONL format")
+	phase12DowntrendMidVolReliefCmd.Flags().StringVar(&p12dtmvrCompactEventsOut, "compact-events-out", "", "output path for compact JSONL events")
 	rootCmd.AddCommand(phase12DowntrendMidVolReliefCmd)
 }
 
-func runPhase12DowntrendMidVolRelief(ctx context.Context, workdir, market, interval string, symbols, months []string) (phase12DTMVRReport, error) {
+func runPhase12DowntrendMidVolRelief(ctx context.Context, workdir, market, interval string, symbols, months []string, emitCompactEvents bool, compactEventsOut string) (phase12DTMVRReport, error) {
 	report := phase12DTMVRReport{
 		Phase:          "Phase 12.3",
 		Family:         phase12DTMVRFamily,
@@ -242,6 +246,18 @@ func runPhase12DowntrendMidVolRelief(ctx context.Context, workdir, market, inter
 	report.Coverage.ExpectedSymbolMonths = len(symbols) * len(months)
 	report.Coverage.RawEventDetailRetained = false
 
+	var writer *CompactEventWriter
+	if emitCompactEvents {
+		if compactEventsOut == "" {
+			return report, fmt.Errorf("compact event out path required when emit is enabled")
+		}
+		writer = NewCompactEventWriter()
+	}
+	emitter := NewCompactEventEmitter(CompactEventEmissionConfig{
+		Enabled: emitCompactEvents,
+		Writer:  writer,
+	})
+
 	for _, symbol := range symbols {
 		fmt.Printf("phase12.3 processing %s\n", symbol)
 		rows, err := buildPhase12DTMVRInputs(ctx, workdir, market, interval, symbol, months)
@@ -255,9 +271,31 @@ func runPhase12DowntrendMidVolRelief(ctx context.Context, workdir, market, inter
 		events, diagByMonth := buildPhase12DTMVREvents(rows, months)
 		report.Coverage.CompletedSymbolMonths += len(months)
 		for _, month := range months {
+			if writer != nil && len(events[month]) > 0 {
+				for _, e := range events[month] {
+					row := rows[e.Index]
+					snapshots := phase12ToCandidateSnapshots(row, e.Side, e.ReturnsBps)
+					for _, snapshot := range snapshots {
+						if err := emitter.EmitCompactEvent(snapshot); err != nil {
+							return report, fmt.Errorf("emit compact event: %w", err)
+						}
+					}
+				}
+			}
+
 			for _, row := range summarizePhase12DTMVRMonth(symbol, month, events[month], diagByMonth[month]) {
 				report.RetainedSummaries = append(report.RetainedSummaries, row)
 			}
+		}
+	}
+
+	if writer != nil {
+		out, err := writer.ToJSONL()
+		if err != nil {
+			return report, fmt.Errorf("generate JSONL: %w", err)
+		}
+		if err := os.WriteFile(compactEventsOut, []byte(out), 0644); err != nil {
+			return report, fmt.Errorf("write JSONL: %w", err)
 		}
 	}
 
@@ -292,6 +330,66 @@ func runPhase12DowntrendMidVolRelief(ctx context.Context, workdir, market, inter
 	return report, nil
 }
 
+func phase12ToCandidateSnapshots(row features.Row, side string, returnsBps map[string]float64) []CandidateEventSnapshot {
+	var out []CandidateEventSnapshot
+	for _, horizonStr := range phase12DTMVRHorizons {
+		retBps, ok := returnsBps[horizonStr]
+		if !ok {
+			continue
+		}
+
+		trendRegime := "other"
+		if row.Close < row.EMA50 && row.EMA50 < row.EMA200 && row.TrendSlope20 < 0 {
+			trendRegime = "down"
+		}
+		volRegime := "other"
+		if row.RealizedVol60 >= 0.0015 && row.RealizedVol60 <= 0.006 {
+			volRegime = "mid"
+		}
+
+		candidateSide := "Long"
+		if side == "short" {
+			candidateSide = "Short"
+		}
+
+		snapshot := CandidateEventSnapshot{
+			CandidateFamily: phase12DTMVRFamily,
+			Symbol:          row.Symbol,
+			Side:            side,
+			Horizon:         horizonStr,
+			EventTimeMS:     row.EventTimeMS,
+			PreEntry: PreEntryContextSnapshot{
+				TrendRegime:      trendRegime,
+				VolatilityBucket: volRegime,
+				FundingBucket:    "neutral",
+			},
+			Cluster: ClusterContextSnapshot{
+				Key:       fmt.Sprintf("%s|%s|%d", row.Symbol, candidateSide, row.EventTimeMS),
+				Timestamp: row.EventTimeMS / 1000,
+				Size:      1,
+				Ordinal:   1,
+			},
+			Cost: CostStressSnapshot{
+				GrossOutcomeBps: retBps,
+				NetOutcome5Bps:  retBps - 5.0,
+				NetOutcome75Bps: retBps - 7.5,
+				NetOutcome10Bps: retBps - 10.0,
+				Win5Bps:         (retBps - 5.0) > 0,
+				Win75Bps:        (retBps - 7.5) > 0,
+				Win10Bps:        (retBps - 10.0) > 0,
+			},
+			Diagnostic: map[string]interface{}{
+				"atr_14":  row.ATR14,
+				"close":   row.Close,
+				"ema_50":  row.EMA50,
+				"ema_200": row.EMA200,
+			},
+		}
+		out = append(out, snapshot)
+	}
+	return out
+}
+
 func buildPhase12DTMVRInputs(ctx context.Context, workdir, market, interval, symbol string, months []string) ([]features.Row, error) {
 	fromTime, toTime, err := phase12DTMVRLoadWindow(months)
 	if err != nil {
@@ -314,6 +412,32 @@ func buildPhase12DTMVRInputs(ctx context.Context, workdir, market, interval, sym
 	if err != nil {
 		return nil, err
 	}
+
+	caps := CandidateCapabilities{
+		CandidateName:                 "DowntrendMidVolReliefLong240m",
+		FamilyName:                    phase12DTMVRFamily,
+		SupportedSymbols:              []string{"ANY"},
+		SupportedIntervals:            []string{"1m"},
+		SupportedHorizons:             []string{"240m"},
+		RequiresBTCContext:            true,
+		RequiresETHContext:            true,
+		RequiresFundingContext:        false,
+		RequiresVolumeContext:         true,
+		RequiresClusterContext:        true,
+		SupportsCompactEmission:       true,
+		ContextFreeModeAllowed:        false,
+		AllowedMissingContextBehavior: RejectMissingContext,
+		IsResearchOnly:                true,
+		IsPromotable:                  false,
+	}
+
+	hasBTC := len(btc) > 0 || symbol == "BTCUSDT"
+	hasETH := len(eth) > 0 || symbol == "ETHUSDT"
+
+	if err := ValidateCandidateInputs(caps, hasBTC, hasETH, false, true); err != nil {
+		return nil, fmt.Errorf("capability validation failed: %w", err)
+	}
+
 	rows, err := features.BuildRows(candles, features.BuildOptions{
 		Market:     market,
 		Symbol:     symbol,
