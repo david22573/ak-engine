@@ -1,4 +1,4 @@
-.PHONY: fmt test vet build ci run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 termux-worker-remote-mkdir termux-worker-push termux-worker-pull-summaries termux-worker-pull-reports phone-raw-count phone-backup-raw-to-drive phase10-9c-coverage phase10-9c-run-symbol phase10-9c-raw-files help
+.PHONY: fmt test vet build ci verify run-version proof-local proof-backtest-local proof-fast-accumulation-local proof-fast-accumulation-diagnostics-local proof-fast-accumulation-sweep-local proof-walk-forward-local proof-fast-accumulation-strict-local proof-walk-forward-strict-local proof-fast-accumulation-calibration-local proof-walk-forward-calibration-local proof-fast-accumulation-economics-local proof-fast-accumulation-entry-variants-local proof-r2 termux-worker-remote-mkdir termux-worker-push termux-worker-pull-summaries termux-worker-pull-reports phone-raw-count phone-backup-raw-to-drive phase10-9c-coverage phase10-9c-run-symbol phase10-9c-raw-files help
  
 # Default target
 all: build
@@ -21,6 +21,10 @@ build:
 
 ## ci: Run all CI checks
 ci: fmt vet test build
+
+## verify: Run deterministic standalone verification with GOWORK=off
+verify:
+	./scripts/verify.sh
 
 ## run-version: Run the version command
 run-version:
