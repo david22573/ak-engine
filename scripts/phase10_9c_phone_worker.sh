@@ -13,9 +13,7 @@ export GOMODCACHE="${GOMODCACHE:-${REPO_ROOT}/.cache/go-mod}"
 export GOWORK="${GOWORK:-off}"
 export GOTOOLCHAIN="${GOTOOLCHAIN:-local}"
 
-if [[ -z "${AK_HISTORIAN_WORKDIR:-}" && -d "${HOME}/Github/ak-historian/.ak-historian/work" ]]; then
-  export AK_HISTORIAN_WORKDIR="${HOME}/Github/ak-historian/.ak-historian/work"
-fi
+source "${SCRIPT_DIR}/historian_env.sh"
 
 usage() {
   cat <<'EOF'
@@ -75,7 +73,7 @@ run_symbol() {
   fi
 
   run_go phase10-funding-event-pipeline \
-    --workdir "${AK_HISTORIAN_WORKDIR:-.ak-historian/work}" \
+    --workdir "${HISTORIAN_WORKDIR}" \
     --symbols "${symbol}" \
     --from "${from}" \
     --to "${to}" \

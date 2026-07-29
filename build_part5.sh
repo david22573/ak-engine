@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+source "$(dirname "$0")/scripts/historian_env.sh"
 
 mkdir -p runs/features runs/regimes
 

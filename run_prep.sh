@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+source "$(dirname "$0")/scripts/historian_env.sh"
 AK_HISTORIAN_BIN="${AK_HISTORIAN_BIN:-../ak-historian/ak-historian}"
 SYMBOLS=("DOGEUSDT" "ADAUSDT" "BNBUSDT" "XRPUSDT" "ETHUSDT")
 YEARS=("2024" "2025")

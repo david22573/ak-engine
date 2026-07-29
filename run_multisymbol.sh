@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+source "$(dirname "$0")/scripts/historian_env.sh"
 
 for sym in BTCUSDT ETHUSDT SOLUSDT ADAUSDT DOGEUSDT BNBUSDT XRPUSDT AVAXUSDT; do
   echo "Running $sym"

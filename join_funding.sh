@@ -1,5 +1,5 @@
 #!/bin/bash
-HISTORIAN_WORKDIR="${AK_HISTORIAN_WORKDIR:-.ak-historian/work}"
+source "$(dirname "$0")/scripts/historian_env.sh"
 
 for SYMBOL in LINKUSDT SOLUSDT AVAXUSDT; do
   for YEAR in 2024 2025; do
