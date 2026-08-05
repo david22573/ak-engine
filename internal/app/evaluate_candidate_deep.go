@@ -15,6 +15,7 @@ import (
 	"github.com/david22573/ak-engine/internal/data"
 	"github.com/david22573/ak-engine/internal/features"
 	"github.com/david22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/researchidentity"
 	"github.com/david22573/ak-engine/internal/rifbridge"
 	"github.com/david22573/ak-engine/pkg/protocol"
 	"github.com/spf13/cobra"
@@ -45,10 +46,14 @@ var (
 	ecdMarket       string
 	ecdInterval     string
 	ecdManifest     string
+	ecdConfig       string
+	ecdDiagnostics  bool
 	erldLeaderboard string
 	erldOutDir      string
 	erldCandlePath  string
 	erldManifest    string
+	erldConfig      string
+	erldDiagnostics bool
 )
 
 type Phase103InventoryReport struct {
@@ -109,6 +114,7 @@ type DeepCandidateReport struct {
 	ComparisonMetrics          DeepComparisonMetrics         `json:"comparison_metrics"`
 	RIFReturns                 []float64                     `json:"-"`
 	RIFTimestamps              []int64                       `json:"-"`
+	researchIdentityRequest    researchidentity.DerivationRequest
 }
 
 type DeepCandidateAudit struct {
@@ -289,8 +295,9 @@ type deepCandidateEvent struct {
 }
 
 type deepReturnSet struct {
-	ReturnsBps     []float64
-	TruncatedCount int
+	ReturnsBps      []float64
+	EventTimestamps []int64
+	TruncatedCount  int
 }
 
 type deepBracketResult struct {
@@ -321,15 +328,20 @@ var evaluateCandidateDeepCmd = &cobra.Command{
 		if ecdOut == "" {
 			return errors.New("missing --out")
 		}
+		configOverride, err := readOptionalResearchConfiguration(ecdConfig)
+		if err != nil {
+			return err
+		}
 		report, err := buildDeepCandidateReport(cmd.Context(), deepCandidateRequest{
-			FeaturesPath: ecdFeatures,
-			RegimesPath:  ecdRegimes,
-			Family:       ecdFamily,
-			Side:         ecdSide,
-			Symbol:       ecdSymbol,
-			CandlePath:   ecdCandlePath,
-			Market:       ecdMarket,
-			Interval:     ecdInterval,
+			FeaturesPath:              ecdFeatures,
+			RegimesPath:               ecdRegimes,
+			Family:                    ecdFamily,
+			Side:                      ecdSide,
+			Symbol:                    ecdSymbol,
+			CandlePath:                ecdCandlePath,
+			Market:                    ecdMarket,
+			Interval:                  ecdInterval,
+			ConfigurationOverrideJSON: configOverride,
 		})
 		if err != nil {
 			return err
@@ -343,45 +355,31 @@ var evaluateCandidateDeepCmd = &cobra.Command{
 
 		manifestPath := ecdManifest
 		if manifestPath == "" && report.CandlePath != "" {
-			probe := filepath.Join(report.CandlePath, "dataset_manifest.json")
+			probe := filepath.Join(report.CandlePath, "research_identity_manifest.json")
 			if _, err := os.Stat(probe); err == nil {
 				manifestPath = probe
 			}
 		}
 
-		rifBridge := rifbridge.NewBridge()
-		isPromoted := report.FinalStatus == phase103StatusValidatedResearchLead
-		rifOut, err := rifBridge.EvaluateAndEmit(
-			stem,
-			fmt.Sprintf("%s_%s_%s", report.Symbol, report.Family, report.Side),
-			"v1.0.0",
-			"unknown",
-			[]string{},
-			[]string{},
-			"candhash",
-			"confighash",
-			report.RIFReturns,
-			report.RIFTimestamps,
-			0,
-			len(report.RIFTimestamps),
-			isPromoted,
-			manifestPath,
-		)
-		if err != nil {
-			return fmt.Errorf("rif bridge error: %w", err)
+		if err := writeDeepCandidateReport(ecdOut, report); err != nil {
+			return err
 		}
-		if !rifOut.IntegrityPassed {
-			if report.FinalStatus == phase103StatusValidatedResearchLead {
-				report.FinalStatus = phase103StatusFragile
-				report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: false, Critical: true, Actual: strings.Join(rifOut.Warnings, "; "), Threshold: "No Warnings"})
-				report.FailedGates = append(report.FailedGates, "RIF Integrity")
-			}
-		} else {
-			report.PassedGates = append(report.PassedGates, "RIF Integrity")
-			report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: true, Critical: true, Actual: "Passed", Threshold: "No Warnings"})
+		if !ecdDiagnostics {
+			return nil
 		}
 
-		return writeDeepCandidateReport(ecdOut, report)
+		bridge := rifbridge.NewBridge()
+		identityRequest := report.researchIdentityRequest
+		identityRequest.HistorianManifestPath = manifestPath
+		_, err = bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
+			Stem:            stem,
+			Classification:  report.FinalStatus,
+			IdentityRequest: identityRequest,
+		})
+		if err != nil {
+			return fmt.Errorf("emit local research diagnostics: %w", err)
+		}
+		return nil
 	},
 }
 
@@ -404,6 +402,10 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 		if err := writePhase103Inventory(outDir, inventory); err != nil {
 			return err
 		}
+		configOverride, err := readOptionalResearchConfiguration(erldConfig)
+		if err != nil {
+			return err
+		}
 
 		reports := make([]DeepCandidateReport, 0, len(inventory.Rows))
 		for _, row := range inventory.Rows {
@@ -416,12 +418,13 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 				return fmt.Errorf("missing regimes for %s", row.Symbol)
 			}
 			report, err := buildDeepCandidateReport(cmd.Context(), deepCandidateRequest{
-				FeaturesPath: featurePath,
-				RegimesPath:  regimePath,
-				Family:       row.Family,
-				Side:         row.Side,
-				Symbol:       row.Symbol,
-				CandlePath:   erldCandlePath,
+				FeaturesPath:              featurePath,
+				RegimesPath:               regimePath,
+				Family:                    row.Family,
+				Side:                      row.Side,
+				Symbol:                    row.Symbol,
+				CandlePath:                erldCandlePath,
+				ConfigurationOverrideJSON: configOverride,
 			})
 			if err != nil {
 				return err
@@ -431,47 +434,28 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 
 			manifestPath := erldManifest
 			if manifestPath == "" && report.CandlePath != "" {
-				probe := filepath.Join(report.CandlePath, "dataset_manifest.json")
+				probe := filepath.Join(report.CandlePath, "research_identity_manifest.json")
 				if _, err := os.Stat(probe); err == nil {
 					manifestPath = probe
 				}
 			}
 
-			rifBridge := rifbridge.NewBridge()
-			isPromoted := report.FinalStatus == phase103StatusValidatedResearchLead
-			rifOut, err := rifBridge.EvaluateAndEmit(
-				stem,
-				fmt.Sprintf("%s_%s_%s", report.Symbol, report.Family, report.Side),
-				"v1.0.0",
-				"unknown",
-				[]string{},
-				[]string{},
-				"candhash",
-				"confighash",
-				report.RIFReturns,
-				report.RIFTimestamps,
-				0,
-				len(report.RIFTimestamps),
-				isPromoted,
-				manifestPath,
-			)
-			if err != nil {
-				return fmt.Errorf("rif bridge error: %w", err)
-			}
-			if !rifOut.IntegrityPassed {
-				if report.FinalStatus == phase103StatusValidatedResearchLead {
-					report.FinalStatus = phase103StatusFragile
-					report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: false, Critical: true, Actual: strings.Join(rifOut.Warnings, "; "), Threshold: "No Warnings"})
-					report.FailedGates = append(report.FailedGates, "RIF Integrity")
-				}
-			} else {
-				report.PassedGates = append(report.PassedGates, "RIF Integrity")
-				report.Gates = append(report.Gates, DeepGateResult{Name: "RIF Integrity", Passed: true, Critical: true, Actual: "Passed", Threshold: "No Warnings"})
-			}
-
 			out := stem + ".md"
 			if err := writeDeepCandidateReport(out, report); err != nil {
 				return err
+			}
+			if erldDiagnostics {
+				bridge := rifbridge.NewBridge()
+				identityRequest := report.researchIdentityRequest
+				identityRequest.HistorianManifestPath = manifestPath
+				_, err = bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
+					Stem:            stem,
+					Classification:  report.FinalStatus,
+					IdentityRequest: identityRequest,
+				})
+				if err != nil {
+					return fmt.Errorf("emit local research diagnostics: %w", err)
+				}
 			}
 			reports = append(reports, report)
 		}
@@ -481,14 +465,15 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 }
 
 type deepCandidateRequest struct {
-	FeaturesPath string
-	RegimesPath  string
-	Family       string
-	Side         string
-	Symbol       string
-	CandlePath   string
-	Market       string
-	Interval     string
+	FeaturesPath              string
+	RegimesPath               string
+	Family                    string
+	Side                      string
+	Symbol                    string
+	CandlePath                string
+	Market                    string
+	Interval                  string
+	ConfigurationOverrideJSON []byte
 }
 
 func init() {
@@ -501,13 +486,17 @@ func init() {
 	evaluateCandidateDeepCmd.Flags().StringVar(&ecdCandlePath, "path", "", "Optional local parquet candle workdir")
 	evaluateCandidateDeepCmd.Flags().StringVar(&ecdMarket, "market", "", "Optional market override")
 	evaluateCandidateDeepCmd.Flags().StringVar(&ecdInterval, "interval", "", "Optional interval override")
-	evaluateCandidateDeepCmd.Flags().StringVar(&ecdManifest, "dataset-manifest", "", "Path to dataset_manifest.json")
+	evaluateCandidateDeepCmd.Flags().StringVar(&ecdManifest, "dataset-manifest", "", "Path to Historian research_identity_manifest.json")
+	evaluateCandidateDeepCmd.Flags().StringVar(&ecdConfig, "research-config", "", "Optional strict research-configuration override JSON")
+	evaluateCandidateDeepCmd.Flags().BoolVar(&ecdDiagnostics, "research-diagnostics", false, "Emit explicit Engine-local research diagnostics")
 	rootCmd.AddCommand(evaluateCandidateDeepCmd)
 
 	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldLeaderboard, "leaderboard", "", "Phase 10.2C leaderboard JSON")
 	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldOutDir, "out-dir", "", "Output directory")
 	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldCandlePath, "path", "", "Optional local parquet candle workdir")
-	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldManifest, "dataset-manifest", "", "Path to dataset_manifest.json")
+	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldManifest, "dataset-manifest", "", "Path to Historian research_identity_manifest.json")
+	evaluateResearchLeadsDeepCmd.Flags().StringVar(&erldConfig, "research-config", "", "Optional strict research-configuration override JSON")
+	evaluateResearchLeadsDeepCmd.Flags().BoolVar(&erldDiagnostics, "research-diagnostics", false, "Emit explicit Engine-local research diagnostics")
 	rootCmd.AddCommand(evaluateResearchLeadsDeepCmd)
 }
 
@@ -647,19 +636,37 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 	if interval == "" {
 		interval = rows[0].Interval
 	}
+	configuration, err := researchidentity.ResolveConfiguration(researchidentity.ConfigurationContext{
+		Symbol:            req.Symbol,
+		Market:            market,
+		Interval:          interval,
+		EvaluationStartMS: rows[0].EventTimeMS,
+		EvaluationEndMS:   rows[len(rows)-1].EventTimeMS,
+	}, req.ConfigurationOverrideJSON)
+	if err != nil {
+		return DeepCandidateReport{}, fmt.Errorf("resolve effective research configuration: %w", err)
+	}
 	candlePath, err := inferDeepCandlePath(req.CandlePath, market, interval, req.Symbol)
 	if err != nil {
 		return DeepCandidateReport{}, err
 	}
-	candles, err := loadDeepCandles(ctx, candlePath, market, interval, req.Symbol, rows)
+	candles, consumedDatasetPaths, err := loadDeepCandlesWithInventory(ctx, candlePath, market, interval, req.Symbol, rows, deepMaximumHorizon(configuration))
 	if err != nil {
 		return DeepCandidateReport{}, err
 	}
 	sort.Slice(candles, func(i, j int) bool { return candles[i].OpenTimeMS < candles[j].OpenTimeMS })
 
-	family := strings.TrimSpace(req.Family)
-	side := strings.ToUpper(strings.TrimSpace(req.Side))
-	events, audit, leakageIssues, err := generateDeepCandidateEvents(rows, labels, candles, family, side)
+	registry, err := researchidentity.DefaultRegistry()
+	if err != nil {
+		return DeepCandidateReport{}, fmt.Errorf("load candidate registry: %w", err)
+	}
+	registration, err := registry.Lookup(req.Family, req.Side)
+	if err != nil {
+		return DeepCandidateReport{}, err
+	}
+	family := registration.Family
+	side := registration.Side
+	events, audit, leakageIssues, err := generateDeepCandidateEventsConfigured(rows, labels, candles, family, side, configuration.ClusterSeparationMinutes)
 	if err != nil {
 		return DeepCandidateReport{}, err
 	}
@@ -689,14 +696,14 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 		report.LeakageIssues = leakageIssues
 	}
 
-	for _, horizon := range []int{5, 15, 30, 60, 120, 240} {
+	for _, horizon := range configuration.ForwardHorizonsMinutes {
 		set := deepReturnsForEvents(events, candles, horizon, 0, 0, 0)
 		metric := deepHorizonMetric(horizon, set)
 		report.ForwardReturns = append(report.ForwardReturns, metric)
 		report.TruncationReport.ForwardReturnTruncations += metric.TruncatedCount
 	}
-	for _, cost := range []float64{0, 2, 5, 10, 15} {
-		set := deepReturnsForEvents(events, candles, 60, cost, 0, 0)
+	for _, cost := range configuration.CostHaircutsBPS {
+		set := deepReturnsForEvents(events, candles, configuration.CostHaircutHorizonMinutes, cost, 0, 0)
 		m := deepMetricFromBps(set.ReturnsBps)
 		report.CostHaircuts = append(report.CostHaircuts, DeepCostHaircutMetric{
 			CostBps:        cost,
@@ -711,16 +718,8 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 		})
 		report.TruncationReport.ForwardReturnTruncations += set.TruncatedCount
 	}
-	for _, delay := range []int{0, 1, 3, 5, 10} {
-		set := deepReturnsForEvents(events, candles, 60, 5, delay, 0)
-		if delay == 1 {
-			// Extract RIF returns using a separate call for 1440m just to get returns
-			rifSet := deepReturnsForEvents(events, candles, 1440, 5.0, 1, candles[len(candles)-1].OpenTimeMS)
-			for i, r := range rifSet.ReturnsBps {
-				report.RIFReturns = append(report.RIFReturns, r/10000.0)
-				report.RIFTimestamps = append(report.RIFTimestamps, events[i].EventTimeMS)
-			}
-		}
+	for _, delay := range configuration.EntryDelayCandles {
+		set := deepReturnsForEvents(events, candles, configuration.EntryDelayHorizonMinutes, configuration.EntryDelayCostBPS, delay, 0)
 		m := deepMetricFromBps(set.ReturnsBps)
 		report.EntryDelays = append(report.EntryDelays, DeepEntryDelayMetric{
 			DelayCandles:   delay,
@@ -732,36 +731,30 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 		})
 		report.TruncationReport.ForwardReturnTruncations += set.TruncatedCount
 	}
-	for _, window := range []int{30, 60, 120, 240} {
+	seriesSet := deepReturnsForEvents(events, candles, configuration.SeriesHorizonMinutes, configuration.SeriesCostBPS, configuration.SeriesEntryDelayCandles, candles[len(candles)-1].OpenTimeMS)
+	for i, value := range seriesSet.ReturnsBps {
+		report.RIFReturns = append(report.RIFReturns, value/10000.0)
+		report.RIFTimestamps = append(report.RIFTimestamps, seriesSet.EventTimestamps[i])
+	}
+	for _, window := range configuration.ExcursionWindowsMinutes {
 		m := deepExcursionMetric(events, candles, window, side)
 		report.MFEMAE = append(report.MFEMAE, m)
 		report.TruncationReport.ExcursionTruncations += m.TruncatedCount
 	}
-	for _, cfg := range []struct {
-		name string
-		tp   float64
-		sl   float64
-	}{
-		{"TP 5 bps / SL 5 bps", 5, 5},
-		{"TP 10 bps / SL 5 bps", 10, 5},
-		{"TP 15 bps / SL 7.5 bps", 15, 7.5},
-		{"TP 20 bps / SL 10 bps", 20, 10},
-		{"TP 30 bps / SL 15 bps", 30, 15},
-		{"TP 50 bps / SL 25 bps", 50, 25},
-	} {
-		report.Brackets = append(report.Brackets, deepBracketMetric(events, candles, side, cfg.name, cfg.tp, cfg.sl))
+	for _, bracket := range configuration.Brackets {
+		report.Brackets = append(report.Brackets, deepBracketMetricConfigured(events, candles, side, bracket.Name, bracket.TPBPS, bracket.SLBPS, configuration.BracketWindowMinutes, configuration.BracketCostBPS, configuration.GateThresholds))
 	}
-	for _, period := range append(monthPeriods(rows), []string{"Q1", "Q2", "Q3", "Q4", "H1", "H2", "FY"}...) {
-		m := deepStabilityMetric(events, candles, period)
+	for _, period := range append(monthPeriods(rows), configuration.StabilityAggregatePeriods...) {
+		m := deepStabilityMetricConfigured(events, candles, period, configuration)
 		report.Stability = append(report.Stability, m)
 		report.TruncationReport.StabilityTruncations += m.TruncatedCount
 	}
-	for _, group := range []string{"composite", "volatility", "trend", "liquidity", "market_beta"} {
-		report.RegimeBreakdown[group] = deepRegimeBreakdown(events, candles, group)
+	for _, group := range configuration.RegimeGroups {
+		report.RegimeBreakdown[group] = deepRegimeBreakdownConfigured(events, candles, group, configuration)
 	}
 
 	report.ComparisonMetrics = buildDeepComparisonMetrics(report)
-	report.Gates = deepAcceptanceGates(report)
+	report.Gates = deepAcceptanceGatesConfigured(report, configuration.GateThresholds)
 	report.PassedGates, report.FailedGates = splitDeepGates(report.Gates)
 	report.FinalStatus = deepFinalStatus(report.Gates)
 	if !phase103AllowedStatuses[report.FinalStatus] {
@@ -769,6 +762,28 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 	}
 	if !deepAnyBracketNotCatastrophic(report.Brackets) {
 		report.FixedHoldOnlyJustification = "No bracket model cleared the not-catastrophic threshold; fixed-hold evidence is reported but bracket gate remains failed."
+	}
+	repositoryRoot, err := researchidentity.FindRepositoryRoot("")
+	if err != nil {
+		return DeepCandidateReport{}, fmt.Errorf("resolve Engine repository root: %w", err)
+	}
+	eventTimestamps := make([]int64, len(report.RIFTimestamps))
+	copy(eventTimestamps, report.RIFTimestamps)
+	report.researchIdentityRequest = researchidentity.DerivationRequest{
+		RepositoryRoot:            repositoryRoot,
+		CandidateFamily:           family,
+		CandidateSide:             side,
+		Configuration:             configuration,
+		DatasetRoot:               candlePath,
+		FeatureArtifactPath:       req.FeaturesPath,
+		RegimeArtifactPath:        req.RegimesPath,
+		ConsumedDatasetPaths:      append([]string(nil), consumedDatasetPaths...),
+		FeatureRows:               append([]features.Row(nil), rows...),
+		RegimeLabels:              append([]regime.Label(nil), labels...),
+		Candles:                   append([]protocol.Candle(nil), candles...),
+		EvaluationEventTimestamps: eventTimestamps,
+		Returns:                   append([]float64(nil), report.RIFReturns...),
+		Timestamps:                append([]int64(nil), report.RIFTimestamps...),
 	}
 	return report, nil
 }
@@ -795,12 +810,20 @@ func inferDeepCandlePath(explicit, market, interval, symbol string) (string, err
 }
 
 func loadDeepCandles(ctx context.Context, path, market, interval, symbol string, rows []features.Row) ([]protocol.Candle, error) {
+	candles, _, err := loadDeepCandlesWithInventory(ctx, path, market, interval, symbol, rows, 240)
+	return candles, err
+}
+
+func loadDeepCandlesWithInventory(ctx context.Context, path, market, interval, symbol string, rows []features.Row, maximumHorizonMinutes int) ([]protocol.Candle, []string, error) {
 	if len(rows) == 0 {
-		return nil, errors.New("features empty")
+		return nil, nil, errors.New("features empty")
+	}
+	if maximumHorizonMinutes <= 0 {
+		return nil, nil, errors.New("maximum candle horizon must be positive")
 	}
 	from := time.UnixMilli(rows[0].EventTimeMS).UTC()
-	to := time.UnixMilli(rows[len(rows)-1].EventTimeMS + 240*60*1000).UTC()
-	return data.NewLocalParquetSource().LoadCandles(ctx, data.CandleRequest{
+	to := time.UnixMilli(rows[len(rows)-1].EventTimeMS + int64(maximumHorizonMinutes)*60*1000).UTC()
+	return data.NewLocalParquetSource().LoadCandlesWithInventory(ctx, data.CandleRequest{
 		Source:   "local-parquet",
 		Path:     path,
 		Market:   market,
@@ -811,7 +834,35 @@ func loadDeepCandles(ctx context.Context, path, market, interval, symbol string,
 	})
 }
 
+func deepMaximumHorizon(config researchidentity.ResolvedResearchConfiguration) int {
+	maximum := max(config.CostHaircutHorizonMinutes, config.EntryDelayHorizonMinutes, config.SeriesHorizonMinutes, config.BracketWindowMinutes, config.StabilityHorizonMinutes, config.RegimeHorizonMinutes)
+	for _, values := range [][]int{config.ForwardHorizonsMinutes, config.ExcursionWindowsMinutes} {
+		for _, value := range values {
+			maximum = max(maximum, value)
+		}
+	}
+	return maximum
+}
+
+func readOptionalResearchConfiguration(path string) ([]byte, error) {
+	if strings.TrimSpace(path) == "" {
+		return nil, nil
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("read research configuration: %w", err)
+	}
+	return data, nil
+}
+
 func generateDeepCandidateEvents(rows []features.Row, labels []regime.Label, candles []protocol.Candle, family, side string) ([]deepCandidateEvent, DeepCandidateAudit, []string, error) {
+	return generateDeepCandidateEventsConfigured(rows, labels, candles, family, side, 60)
+}
+
+func generateDeepCandidateEventsConfigured(rows []features.Row, labels []regime.Label, candles []protocol.Candle, family, side string, clusterSeparationMinutes int) ([]deepCandidateEvent, DeepCandidateAudit, []string, error) {
+	if clusterSeparationMinutes <= 0 {
+		return nil, DeepCandidateAudit{}, nil, errors.New("cluster separation must be positive")
+	}
 	if err := validateDeepFeatureRows(rows); err != nil {
 		return nil, DeepCandidateAudit{}, nil, err
 	}
@@ -841,8 +892,8 @@ func generateDeepCandidateEvents(rows []features.Row, labels []regime.Label, can
 			continue
 		}
 		label := labels[labelIdx-1]
-		if row.EventTimeMS > row.EventTimeMS {
-			leakageIssues = append(leakageIssues, fmt.Sprintf("feature timestamp > candidate timestamp at row %d", i))
+		if row.AvailableAtMS > row.EventTimeMS {
+			leakageIssues = append(leakageIssues, fmt.Sprintf("feature available_at_ms > candidate timestamp at row %d", i))
 			continue
 		}
 		if label.AvailableAtMS > row.EventTimeMS {
@@ -880,7 +931,7 @@ func generateDeepCandidateEvents(rows []features.Row, labels []regime.Label, can
 			return nil, DeepCandidateAudit{}, leakageIssues, fmt.Errorf("missing candle for accepted candidate at %d", row.EventTimeMS)
 		}
 		audit.AcceptedCandidates++
-		if lastAccepted == 0 || row.EventTimeMS-lastAccepted >= 60*60*1000 {
+		if lastAccepted == 0 || row.EventTimeMS-lastAccepted >= int64(clusterSeparationMinutes)*60*1000 {
 			audit.UniqueEventClusters++
 		} else {
 			audit.ClusteredCandidates++
@@ -1008,6 +1059,7 @@ func deepReturnsForEvents(events []deepCandidateEvent, candles []protocol.Candle
 		}
 		ret := deepSignedReturnBps(candles[entryIdx].Close, candles[exitIdx].Close, event.Side) - costBps
 		out.ReturnsBps = append(out.ReturnsBps, ret)
+		out.EventTimestamps = append(out.EventTimestamps, event.EventTimeMS)
 	}
 	return out
 }
@@ -1187,14 +1239,19 @@ func deepThresholdFirst(candles []protocol.Candle, side string, favorableBps, ad
 }
 
 func deepBracketMetric(events []deepCandidateEvent, candles []protocol.Candle, side, name string, tpBps, slBps float64) DeepBracketMetric {
+	return deepBracketMetricConfigured(events, candles, side, name, tpBps, slBps, 240, 5, researchidentity.GateThresholds{MinimumBracketPF: 0.50, MinimumBracketExpectancyBPS: -10})
+}
+
+func deepBracketMetricConfigured(events []deepCandidateEvent, candles []protocol.Candle, side, name string, tpBps, slBps float64, windowMinutes int, costBPS float64, thresholds researchidentity.GateThresholds) DeepBracketMetric {
 	var returns []float64
 	var wins, unresolved, holdSum int
 	for _, event := range events {
-		endIdx := event.CandleIndex + 240
-		if endIdx >= len(candles) {
+		endTarget := candles[event.CandleIndex].OpenTimeMS + int64(windowMinutes)*60*1000
+		endIdx := candleIndexAtOrAfter(candles, event.CandleIndex, endTarget)
+		if endIdx < 0 {
 			endIdx = len(candles) - 1
 		}
-		res := simulateDeepBracketEvent(candles[event.CandleIndex:endIdx+1], side, tpBps, slBps, 5)
+		res := simulateDeepBracketEvent(candles[event.CandleIndex:endIdx+1], side, tpBps, slBps, costBPS)
 		returns = append(returns, res.ReturnBps)
 		if res.Outcome == "win" {
 			wins++
@@ -1219,7 +1276,7 @@ func deepBracketMetric(events []deepCandidateEvent, candles []protocol.Candle, s
 		NetExpectancyBpsAfter5bps: m.Expectancy,
 		AverageHoldMinutes:        avgHold,
 		UnresolvedCount:           unresolved,
-		NotCatastrophicAfter5bps:  m.PF >= 0.50 && m.Expectancy >= -10.0,
+		NotCatastrophicAfter5bps:  m.PF >= thresholds.MinimumBracketPF && m.Expectancy >= thresholds.MinimumBracketExpectancyBPS,
 	}
 }
 
@@ -1279,14 +1336,23 @@ func monthPeriods(rows []features.Row) []string {
 	last := time.Date(end.Year(), end.Month(), 1, 0, 0, 0, 0, time.UTC)
 	var periods []string
 	for !cur.After(last) {
-		periods = append(periods, cur.Format("Jan"))
+		periods = append(periods, cur.Format("2006-01"))
 		cur = cur.AddDate(0, 1, 0)
 	}
 	return periods
 }
 
 func deepStabilityMetric(events []deepCandidateEvent, candles []protocol.Candle, period string) DeepStabilityMetric {
-	start, end := deepPeriodBounds(period)
+	return deepStabilityMetricWithParameters(events, candles, period, 2023, 60, 5, 0)
+}
+
+func deepStabilityMetricConfigured(events []deepCandidateEvent, candles []protocol.Candle, period string, config researchidentity.ResolvedResearchConfiguration) DeepStabilityMetric {
+	year := time.UnixMilli(config.EvaluationStartMS).UTC().Year()
+	return deepStabilityMetricWithParameters(events, candles, period, year, config.StabilityHorizonMinutes, config.StabilityCostBPS, config.StabilityEntryDelay)
+}
+
+func deepStabilityMetricWithParameters(events []deepCandidateEvent, candles []protocol.Candle, period string, year, horizonMinutes int, costBPS float64, entryDelay int) DeepStabilityMetric {
+	start, end := deepPeriodBoundsForYear(period, year)
 	var filtered []deepCandidateEvent
 	for _, event := range events {
 		t := time.UnixMilli(event.EventTimeMS).UTC()
@@ -1294,9 +1360,9 @@ func deepStabilityMetric(events []deepCandidateEvent, candles []protocol.Candle,
 			filtered = append(filtered, event)
 		}
 	}
-	set := deepReturnsForEvents(filtered, candles, 60, 5, 0, end.UnixMilli())
+	set := deepReturnsForEvents(filtered, candles, horizonMinutes, costBPS, entryDelay, end.UnixMilli())
 	m := deepMetricFromBps(set.ReturnsBps)
-	monthMetrics := deepMonthNets(filtered, candles, start, end)
+	monthMetrics := deepMonthNetsWithParameters(filtered, candles, start, end, horizonMinutes, costBPS, entryDelay)
 	bestMonth, worstMonth, positiveMonths, singleMonthPct := summarizeDeepMonths(monthMetrics)
 	return DeepStabilityMetric{
 		Period:                     period,
@@ -1313,7 +1379,14 @@ func deepStabilityMetric(events []deepCandidateEvent, candles []protocol.Candle,
 }
 
 func deepPeriodBounds(period string) (time.Time, time.Time) {
-	year := 2023
+	return deepPeriodBoundsForYear(period, 2023)
+}
+
+func deepPeriodBoundsForYear(period string, year int) (time.Time, time.Time) {
+	if month, err := time.Parse("2006-01", period); err == nil {
+		start := time.Date(month.Year(), month.Month(), 1, 0, 0, 0, 0, time.UTC)
+		return start, start.AddDate(0, 1, 0).Add(-time.Millisecond)
+	}
 	monthByName := map[string]time.Month{
 		"Jan": time.January, "Feb": time.February, "Mar": time.March, "Apr": time.April,
 		"May": time.May, "Jun": time.June, "Jul": time.July, "Aug": time.August,
@@ -1347,9 +1420,13 @@ type deepMonthMetric struct {
 }
 
 func deepMonthNets(events []deepCandidateEvent, candles []protocol.Candle, start, end time.Time) []deepMonthMetric {
+	return deepMonthNetsWithParameters(events, candles, start, end, 60, 5, 0)
+}
+
+func deepMonthNetsWithParameters(events []deepCandidateEvent, candles []protocol.Candle, start, end time.Time, horizonMinutes int, costBPS float64, entryDelay int) []deepMonthMetric {
 	byMonth := make(map[string][]deepCandidateEvent)
 	for _, event := range events {
-		key := time.UnixMilli(event.EventTimeMS).UTC().Format("Jan")
+		key := time.UnixMilli(event.EventTimeMS).UTC().Format("2006-01")
 		byMonth[key] = append(byMonth[key], event)
 	}
 	var out []deepMonthMetric
@@ -1358,9 +1435,9 @@ func deepMonthNets(events []deepCandidateEvent, candles []protocol.Candle, start
 		if monthEnd.After(end) {
 			monthEnd = end
 		}
-		set := deepReturnsForEvents(byMonth[cur.Format("Jan")], candles, 60, 5, 0, monthEnd.UnixMilli())
+		set := deepReturnsForEvents(byMonth[cur.Format("2006-01")], candles, horizonMinutes, costBPS, entryDelay, monthEnd.UnixMilli())
 		m := deepMetricFromBps(set.ReturnsBps)
-		out = append(out, deepMonthMetric{Month: cur.Format("Jan"), NetBps: m.NetBps})
+		out = append(out, deepMonthMetric{Month: cur.Format("2006-01"), NetBps: m.NetBps})
 	}
 	return out
 }
@@ -1399,6 +1476,14 @@ func summarizeDeepMonths(months []deepMonthMetric) (string, string, int, float64
 }
 
 func deepRegimeBreakdown(events []deepCandidateEvent, candles []protocol.Candle, group string) []DeepRegimeMetric {
+	return deepRegimeBreakdownWithParameters(events, candles, group, 60, 5, 100)
+}
+
+func deepRegimeBreakdownConfigured(events []deepCandidateEvent, candles []protocol.Candle, group string, config researchidentity.ResolvedResearchConfiguration) []DeepRegimeMetric {
+	return deepRegimeBreakdownWithParameters(events, candles, group, config.RegimeHorizonMinutes, config.RegimeCostBPS, config.RegimeLowSampleMinimum)
+}
+
+func deepRegimeBreakdownWithParameters(events []deepCandidateEvent, candles []protocol.Candle, group string, horizonMinutes int, costBPS float64, lowSampleMinimum int) []DeepRegimeMetric {
 	byBucket := make(map[string][]deepCandidateEvent)
 	for _, event := range events {
 		bucket := deepRegimeBucket(event.Label, group)
@@ -1414,10 +1499,10 @@ func deepRegimeBreakdown(events []deepCandidateEvent, candles []protocol.Candle,
 	sort.Strings(keys)
 	out := make([]DeepRegimeMetric, 0, len(keys))
 	for _, key := range keys {
-		set := deepReturnsForEvents(byBucket[key], candles, 60, 5, 0, 0)
+		set := deepReturnsForEvents(byBucket[key], candles, horizonMinutes, costBPS, 0, 0)
 		m := deepMetricFromBps(set.ReturnsBps)
 		warn := ""
-		if len(set.ReturnsBps) < 100 {
+		if len(set.ReturnsBps) < lowSampleMinimum {
 			warn = "LOW_SAMPLE"
 		}
 		out = append(out, DeepRegimeMetric{
@@ -1528,20 +1613,29 @@ func deepCostSensitivity(costs []DeepCostHaircutMetric) string {
 }
 
 func deepAcceptanceGates(report DeepCandidateReport) []DeepGateResult {
+	return deepAcceptanceGatesConfigured(report, researchidentity.GateThresholds{
+		MinimumEvents: 300, MinimumH2PF: 1.10, MinimumH2ExpectancyBPS: 0,
+		MinimumFYPF: 1.05, MinimumFYExpectancyBPS: 0, MinimumPositiveMonths: 3,
+		MinimumDelayOneExpectancyBPS: 0, MaximumSingleMonthContribution: 50,
+		MinimumWorstQuarterPF: 0.95, MinimumBracketPF: 0.50, MinimumBracketExpectancyBPS: -10,
+	})
+}
+
+func deepAcceptanceGatesConfigured(report DeepCandidateReport, thresholds researchidentity.GateThresholds) []DeepGateResult {
 	m := report.ComparisonMetrics
 	bracketOK := deepAnyBracketNotCatastrophic(report.Brackets)
 	return []DeepGateResult{
-		{Name: "H2 PF after 5 bps", Passed: m.H2PFAfter5bps >= 1.10, Critical: true, Actual: fmt.Sprintf("%.4f", m.H2PFAfter5bps), Threshold: ">= 1.10"},
-		{Name: "H2 expectancy after 5 bps", Passed: m.H2ExpectancyBps > 0, Critical: true, Actual: fmt.Sprintf("%.4f bps", m.H2ExpectancyBps), Threshold: "> 0 bps"},
-		{Name: "FY PF after 5 bps", Passed: m.FYPFAfter5bps >= 1.05, Actual: fmt.Sprintf("%.4f", m.FYPFAfter5bps), Threshold: ">= 1.05"},
-		{Name: "FY expectancy after 5 bps", Passed: m.FYExpectancyBps > 0, Actual: fmt.Sprintf("%.4f bps", m.FYExpectancyBps), Threshold: "> 0 bps"},
-		{Name: "Worst quarter PF after 5 bps", Passed: m.WorstQuarterPFAfter5bps >= 0.95, Actual: fmt.Sprintf("%.4f", m.WorstQuarterPFAfter5bps), Threshold: ">= 0.95"},
-		{Name: "event_count", Passed: m.EventCount >= 300, Critical: true, Actual: fmt.Sprintf("%d", m.EventCount), Threshold: ">= 300"},
-		{Name: "positive_month_count", Passed: m.PositiveMonthCount >= 3, Actual: fmt.Sprintf("%d", m.PositiveMonthCount), Threshold: ">= 3"},
-		{Name: "entry_delay_1c_expectancy_bps", Passed: m.EntryDelay1cExpectancyBps > 0, Actual: fmt.Sprintf("%.4f bps", m.EntryDelay1cExpectancyBps), Threshold: "> 0 bps"},
-		{Name: "single_month_contribution_pct", Passed: m.SingleMonthContributionPct <= 50, Actual: fmt.Sprintf("%.2f%%", m.SingleMonthContributionPct), Threshold: "<= 50%"},
+		{Name: "H2 PF after 5 bps", Passed: m.H2PFAfter5bps >= thresholds.MinimumH2PF, Critical: true, Actual: fmt.Sprintf("%.4f", m.H2PFAfter5bps), Threshold: fmt.Sprintf(">= %.4f", thresholds.MinimumH2PF)},
+		{Name: "H2 expectancy after 5 bps", Passed: m.H2ExpectancyBps > thresholds.MinimumH2ExpectancyBPS, Critical: true, Actual: fmt.Sprintf("%.4f bps", m.H2ExpectancyBps), Threshold: fmt.Sprintf("> %.4f bps", thresholds.MinimumH2ExpectancyBPS)},
+		{Name: "FY PF after 5 bps", Passed: m.FYPFAfter5bps >= thresholds.MinimumFYPF, Actual: fmt.Sprintf("%.4f", m.FYPFAfter5bps), Threshold: fmt.Sprintf(">= %.4f", thresholds.MinimumFYPF)},
+		{Name: "FY expectancy after 5 bps", Passed: m.FYExpectancyBps > thresholds.MinimumFYExpectancyBPS, Actual: fmt.Sprintf("%.4f bps", m.FYExpectancyBps), Threshold: fmt.Sprintf("> %.4f bps", thresholds.MinimumFYExpectancyBPS)},
+		{Name: "Worst quarter PF after 5 bps", Passed: m.WorstQuarterPFAfter5bps >= thresholds.MinimumWorstQuarterPF, Actual: fmt.Sprintf("%.4f", m.WorstQuarterPFAfter5bps), Threshold: fmt.Sprintf(">= %.4f", thresholds.MinimumWorstQuarterPF)},
+		{Name: "event_count", Passed: m.EventCount >= thresholds.MinimumEvents, Critical: true, Actual: fmt.Sprintf("%d", m.EventCount), Threshold: fmt.Sprintf(">= %d", thresholds.MinimumEvents)},
+		{Name: "positive_month_count", Passed: m.PositiveMonthCount >= thresholds.MinimumPositiveMonths, Actual: fmt.Sprintf("%d", m.PositiveMonthCount), Threshold: fmt.Sprintf(">= %d", thresholds.MinimumPositiveMonths)},
+		{Name: "entry_delay_1c_expectancy_bps", Passed: m.EntryDelay1cExpectancyBps > thresholds.MinimumDelayOneExpectancyBPS, Actual: fmt.Sprintf("%.4f bps", m.EntryDelay1cExpectancyBps), Threshold: fmt.Sprintf("> %.4f bps", thresholds.MinimumDelayOneExpectancyBPS)},
+		{Name: "single_month_contribution_pct", Passed: m.SingleMonthContributionPct <= thresholds.MaximumSingleMonthContribution, Actual: fmt.Sprintf("%.2f%%", m.SingleMonthContributionPct), Threshold: fmt.Sprintf("<= %.2f%%", thresholds.MaximumSingleMonthContribution)},
 		{Name: "leakage_status", Passed: m.LeakageStatus == "PASS", Critical: true, Actual: m.LeakageStatus, Threshold: "PASS"},
-		{Name: "bracket_model_not_catastrophic", Passed: bracketOK, Actual: fmt.Sprintf("%t", bracketOK), Threshold: "at least one bracket PF >= 0.50 and expectancy >= -10 bps"},
+		{Name: "bracket_model_not_catastrophic", Passed: bracketOK, Actual: fmt.Sprintf("%t", bracketOK), Threshold: fmt.Sprintf("at least one bracket PF >= %.4f and expectancy >= %.4f bps", thresholds.MinimumBracketPF, thresholds.MinimumBracketExpectancyBPS)},
 	}
 }
 

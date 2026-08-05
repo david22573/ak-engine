@@ -7,7 +7,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/david22573/ak-engine/internal/features"
+	"github.com/david22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/researchidentity"
 	"github.com/david22573/ak-engine/pkg/protocol"
+	"github.com/spf13/cobra"
 )
 
 func TestPhase103InventoryExtractsOnlyResearchLeadRows(t *testing.T) {
@@ -119,7 +123,17 @@ func TestDeepH2FailureOverridesFYSuccess(t *testing.T) {
 }
 
 func TestDeepValidationStatusAllowlistExcludesRuntimePromotionTerms(t *testing.T) {
-	for _, status := range []string{"approved", "promoted", "runtime_ready", "testnet_ready"} {
+	for _, status := range []string{
+		"approved",
+		"promoted",
+		"frozen",
+		"paper_ready",
+		"paper_eligible",
+		"runtime_ready",
+		"testnet_ready",
+		"mainnet_ready",
+		"authorized",
+	} {
 		if phase103AllowedStatuses[status] {
 			t.Fatalf("forbidden status %q is allowed", status)
 		}
@@ -127,6 +141,94 @@ func TestDeepValidationStatusAllowlistExcludesRuntimePromotionTerms(t *testing.T
 	for _, status := range []string{phase103StatusRejected, phase103StatusFragile, phase103StatusValidatedResearchLead, phase103StatusNeedsMoreData} {
 		if !phase103AllowedStatuses[status] {
 			t.Fatalf("allowed status %q missing", status)
+		}
+	}
+}
+
+func TestDeepResearchOutcomeClassificationIsUnchanged(t *testing.T) {
+	passing := deepPassingGateReport()
+	if got := deepFinalStatus(deepAcceptanceGates(passing)); got != phase103StatusValidatedResearchLead {
+		t.Fatalf("passing research gates = %q, want %q", got, phase103StatusValidatedResearchLead)
+	}
+
+	rejected := deepPassingGateReport()
+	rejected.ComparisonMetrics.H2PFAfter5bps = 0.9
+	if got := deepFinalStatus(deepAcceptanceGates(rejected)); got != phase103StatusRejected {
+		t.Fatalf("critical research gate failure = %q, want %q", got, phase103StatusRejected)
+	}
+}
+
+func TestDeepConfiguredThresholdChangesGateBehavior(t *testing.T) {
+	report := deepPassingGateReport()
+	thresholds := researchidentity.GateThresholds{
+		MinimumEvents: 301, MinimumH2PF: 1.10, MinimumH2ExpectancyBPS: 0,
+		MinimumFYPF: 1.05, MinimumFYExpectancyBPS: 0, MinimumPositiveMonths: 3,
+		MinimumDelayOneExpectancyBPS: 0, MaximumSingleMonthContribution: 50,
+		MinimumWorstQuarterPF: 0.95, MinimumBracketPF: 0.50, MinimumBracketExpectancyBPS: -10,
+	}
+	gate := findDeepGate(deepAcceptanceGatesConfigured(report, thresholds), "event_count")
+	if gate.Passed || gate.Threshold != ">= 301" {
+		t.Fatalf("resolved threshold did not drive gate: %#v", gate)
+	}
+}
+
+func TestDeepReturnSeriesCarriesExactUntruncatedEventTimestamps(t *testing.T) {
+	candles := []protocol.Candle{
+		{OpenTimeMS: 1_000, Close: 100},
+		{OpenTimeMS: 61_000, Close: 101},
+		{OpenTimeMS: 121_000, Close: 102},
+	}
+	events := []deepCandidateEvent{
+		{CandleIndex: 0, EventTimeMS: 1_000, Side: "LONG"},
+		{CandleIndex: 2, EventTimeMS: 121_000, Side: "LONG"},
+	}
+	set := deepReturnsForEvents(events, candles, 1, 0, 0, 0)
+	if len(set.ReturnsBps) != 1 || len(set.EventTimestamps) != 1 || set.EventTimestamps[0] != events[0].EventTimeMS || set.TruncatedCount != 1 {
+		t.Fatalf("return/timestamp truncation alignment failed: %#v", set)
+	}
+}
+
+func TestDeepLateFeatureAvailabilityIsRejectedAsLeakage(t *testing.T) {
+	row := features.Row{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 1_001, Close: 101, EMA20: 100}
+	label := regime.Label{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 1_000, Volatility: "compressed", MarketBeta: "btc_up"}
+	candle := protocol.Candle{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", OpenTimeMS: 1_000, CloseTimeMS: 60_999, Open: 100, High: 101, Low: 99, Close: 100, Volume: 1}
+	events, _, issues, err := generateDeepCandidateEvents([]features.Row{row}, []regime.Label{label}, []protocol.Candle{candle}, "CompressionBreakout", "LONG")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(events) != 0 || len(issues) != 1 || !strings.Contains(issues[0], "feature available_at_ms") {
+		t.Fatalf("late feature was not rejected as leakage: events=%v issues=%v", events, issues)
+	}
+}
+
+func TestDeepProductionCallersUseFactOnlyResearchDiagnostics(t *testing.T) {
+	data, err := os.ReadFile("evaluate_candidate_deep.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := string(data)
+	if got := strings.Count(source, ".EmitResearchDiagnostics("); got != 2 {
+		t.Fatalf("production diagnostics call count = %d, want 2", got)
+	}
+	for _, prohibited := range []string{
+		"is" + "Promoted",
+		"Evaluate" + "AndEmit(",
+		"cand" + "hash",
+		"config" + "hash",
+		"promotion" + "_packet",
+		"RIF " + "Integrity",
+	} {
+		if strings.Contains(source, prohibited) {
+			t.Fatalf("production caller retains authority or placeholder path %q", prohibited)
+		}
+	}
+	for _, cmd := range []*cobra.Command{evaluateCandidateDeepCmd, evaluateResearchLeadsDeepCmd} {
+		flag := cmd.Flags().Lookup("research-diagnostics")
+		if flag == nil || flag.DefValue != "false" {
+			t.Fatalf("%s research diagnostics must be explicit opt-in", cmd.Use)
+		}
+		if configFlag := cmd.Flags().Lookup("research-config"); configFlag == nil {
+			t.Fatalf("%s is missing strict research configuration input", cmd.Use)
 		}
 	}
 }

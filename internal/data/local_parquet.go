@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"sort"
 
@@ -60,8 +61,16 @@ type ParquetCandleWithoutMS struct {
 }
 
 func (s *LocalParquetSource) LoadCandles(ctx context.Context, req CandleRequest) ([]protocol.Candle, error) {
+	candles, _, err := s.LoadCandlesWithInventory(ctx, req)
+	return candles, err
+}
+
+// LoadCandlesWithInventory returns the exact regular parquet paths opened to
+// produce the result. The inventory is stable, absolute, and suitable for
+// independent identity verification by the caller.
+func (s *LocalParquetSource) LoadCandlesWithInventory(ctx context.Context, req CandleRequest) ([]protocol.Candle, []string, error) {
 	if req.Path == "" {
-		return nil, fmt.Errorf("empty path")
+		return nil, nil, fmt.Errorf("empty path")
 	}
 
 	pattern1 := filepath.Join(req.Path, "candles", req.Market, req.Interval, "symbol="+req.Symbol, "year=*", "month=*", "*.parquet")
@@ -73,15 +82,19 @@ func (s *LocalParquetSource) LoadCandles(ctx context.Context, req CandleRequest)
 	var matches []string
 
 	for _, m := range append(matches1, matches2...) {
-		base := filepath.Base(m)
-		if !uniqueMatches[base] {
-			uniqueMatches[base] = true
-			matches = append(matches, m)
+		absolute, err := filepath.Abs(m)
+		if err != nil {
+			return nil, nil, fmt.Errorf("resolve parquet path %s: %w", m, err)
+		}
+		if !uniqueMatches[absolute] {
+			uniqueMatches[absolute] = true
+			matches = append(matches, absolute)
 		}
 	}
+	sort.Strings(matches)
 
 	if len(matches) == 0 {
-		return nil, fmt.Errorf("no matching files found under path: %s (tried %s and %s)", req.Path, pattern1, pattern2)
+		return nil, nil, fmt.Errorf("no matching files found under path: %s (tried %s and %s)", req.Path, pattern1, pattern2)
 	}
 
 	// Filter files by date range
@@ -102,48 +115,70 @@ func (s *LocalParquetSource) LoadCandles(ctx context.Context, req CandleRequest)
 	}
 
 	if len(candidates) == 0 {
-		return nil, fmt.Errorf("no matching files in range")
+		return nil, nil, fmt.Errorf("no matching files in range")
+	}
+	sort.Strings(candidates)
+
+	filtered, err := LoadExactParquetFiles(ctx, req, candidates)
+	if err != nil {
+		return nil, nil, err
 	}
 
+	return filtered, append([]string(nil), candidates...), nil
+}
+
+// LoadExactParquetFiles independently reconstructs the candle rows from the
+// exact object paths supplied by an identity request. It rejects symlinks,
+// duplicate paths, empty input, and any row-validation defect.
+func LoadExactParquetFiles(ctx context.Context, req CandleRequest, paths []string) ([]protocol.Candle, error) {
+	if len(paths) == 0 {
+		return nil, fmt.Errorf("exact parquet file inventory is empty")
+	}
+	ordered := append([]string(nil), paths...)
+	sort.Strings(ordered)
 	var allCandles []protocol.Candle
-	for _, file := range candidates {
+	for i, file := range ordered {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+		if i > 0 && ordered[i-1] == file {
+			return nil, fmt.Errorf("duplicate exact parquet path %s", file)
+		}
+		info, err := os.Lstat(file)
+		if err != nil {
+			return nil, fmt.Errorf("inspect parquet file %s: %w", file, err)
+		}
+		if !info.Mode().IsRegular() {
+			return nil, fmt.Errorf("parquet file %s is not a regular file", file)
+		}
 		candles, err := readParquetFile(file, req)
 		if err != nil {
 			return nil, fmt.Errorf("unreadable parquet file %s: %w", file, err)
 		}
 		allCandles = append(allCandles, candles...)
 	}
-
 	if len(allCandles) == 0 {
 		return nil, fmt.Errorf("empty candle result")
 	}
-
-	// Sort candles by OpenTimeMS before validating
-	sort.Slice(allCandles, func(i, j int) bool {
-		return allCandles[i].OpenTimeMS < allCandles[j].OpenTimeMS
-	})
-
-	// Filter candles inside the files by exact requested From/To
-	var filtered []protocol.Candle
-	for _, c := range allCandles {
-		if !req.From.IsZero() && c.OpenTimeMS < req.From.UnixMilli() {
+	sort.Slice(allCandles, func(i, j int) bool { return allCandles[i].OpenTimeMS < allCandles[j].OpenTimeMS })
+	filtered := make([]protocol.Candle, 0, len(allCandles))
+	for _, candle := range allCandles {
+		if !req.From.IsZero() && candle.OpenTimeMS < req.From.UnixMilli() {
 			continue
 		}
-		if !req.To.IsZero() && c.OpenTimeMS > req.To.UnixMilli() {
+		if !req.To.IsZero() && candle.OpenTimeMS > req.To.UnixMilli() {
 			continue
 		}
-		filtered = append(filtered, c)
+		filtered = append(filtered, candle)
 	}
-
 	if len(filtered) == 0 {
 		return nil, fmt.Errorf("empty candle result")
 	}
-
-	// Validate using existing ValidateCandles
 	if err := ValidateCandles(req.Interval, filtered); err != nil {
 		return nil, err
 	}
-
 	return filtered, nil
 }
 

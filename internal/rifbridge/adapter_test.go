@@ -2,149 +2,217 @@ package rifbridge_test
 
 import (
 	"encoding/json"
+	"errors"
+	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/david22573/ak-engine/internal/researchidentity"
 	"github.com/david22573/ak-engine/internal/rifbridge"
 )
 
-func TestEvaluateAndEmit(t *testing.T) {
-	tempDir := t.TempDir()
-	stem := filepath.Join(tempDir, "test_candidate")
+type fixtureDeriver struct {
+	assessment researchidentity.Assessment
+	err        error
+}
 
-	bridge := rifbridge.NewBridge()
+func (d fixtureDeriver) Derive(researchidentity.DerivationRequest) (researchidentity.Assessment, error) {
+	return d.assessment, d.err
+}
 
-	// Create a point-in-time universe manifest for the success case.
-	manifestPath := filepath.Join(tempDir, "dataset_manifest.json")
-	os.WriteFile(manifestPath, []byte(`{
-		"dataset_id":"test-dataset",
-		"hashes":{"dataset_hash":"hash-d","manifest_hash":"hash-m"},
-		"survivorship":{
-			"universe_id":"pit-universe",
-			"universe_hash":"hash-u",
-			"universe_manifest_hash":"hash-um",
-			"universe_policy":"POINT_IN_TIME_EXCHANGE_UNIVERSE",
-			"includes_delisted_assets":"true",
-			"survivorship_bias_risk":"LOW",
-			"lifecycle_id":"life-1",
-			"lifecycle_hash":"hash-life",
-			"lifecycle_manifest_hash":"hash-life-manifest",
-			"lifecycle_evidence_level_summary":{"HISTORICAL_SNAPSHOT_EVIDENCE":1},
-			"listing_evidence_status":"VERIFIED",
-			"delisting_evidence_status":"VERIFIED",
-			"survivorship_support_status":"LOW_SUPPORTED"
-		}
-	}`), 0644)
-
-	// 1. Success case: Should emit lock, audit, and promotion packet
-	out, err := bridge.EvaluateAndEmit(
-		stem,
-		"cand-123",
-		"v1.0.0",
-		"abcd123",
-		[]string{"d1"},
-		[]string{"f1"},
-		"c1",
-		"cfg1",
-		[]float64{0.01, 0.02, 0.03},
-		[]int64{100, 200, 300},
-		2,
-		40,   // > 30, should pass sample size
-		true, // isPromoted
-		manifestPath,
-	)
-	if err != nil {
-		t.Fatalf("EvaluateAndEmit failed: %v", err)
-	}
-
-	if !out.IntegrityPassed {
-		t.Fatalf("Expected integrity to pass, got warnings: %v", out.Warnings)
-	}
-
-	// Verify research.lock
-	lockData, err := os.ReadFile(stem + ".research.lock")
-	if err != nil {
-		t.Fatalf("Expected research.lock to be created: %v", err)
-	}
-	var lock rifbridge.ResearchLock
-	if err := json.Unmarshal(lockData, &lock); err != nil {
-		t.Fatalf("Failed to parse research.lock: %v", err)
-	}
-	if lock.GitSHA != "abcd123" {
-		t.Errorf("Expected git SHA abcd123, got %s", lock.GitSHA)
-	}
-	if lock.LifecycleHash != "hash-life" || lock.LifecycleManifestHash != "hash-life-manifest" {
-		t.Errorf("Expected lifecycle hashes in research.lock, got %#v", lock)
-	}
-	if lock.LifecycleEvidenceLevelSummary["HISTORICAL_SNAPSHOT_EVIDENCE"] != 1 {
-		t.Errorf("Expected lifecycle evidence summary in research.lock")
-	}
-
-	// Verify research_audit.json
-	if _, err := os.Stat(stem + ".research_audit.json"); err != nil {
-		t.Fatalf("Expected research_audit.json to be created: %v", err)
-	}
-
-	// Verify promotion_packet.json
-	packetData, err := os.ReadFile(stem + ".promotion_packet.json")
-	if err != nil {
-		t.Fatalf("Expected promotion_packet.json to be created: %v", err)
-	}
-	var packet rifbridge.PromotionPacket
-	if err := json.Unmarshal(packetData, &packet); err != nil {
-		t.Fatalf("Failed to parse promotion_packet: %v", err)
-	}
-	if !packet.PassedIntegrityChecks {
-		t.Errorf("Expected PassedIntegrityChecks to be true in packet")
-	}
-
-	// 2. Failure case: Integrity fails (small sample size)
-	stemFail := filepath.Join(tempDir, "fail_candidate")
-	outFail, err := bridge.EvaluateAndEmit(
-		stemFail,
-		"cand-fail",
-		"v1.0.0",
-		"abcd123",
-		[]string{},
-		[]string{},
-		"c2",
-		"cfg2",
-		[]float64{0.01},
-		[]int64{100},
-		2,
-		5, // < 30, should fail sample size
-		true,
-		"",
-	)
-	if err != nil {
-		t.Fatalf("EvaluateAndEmit failed: %v", err)
-	}
-
-	if outFail.IntegrityPassed {
-		t.Fatalf("Expected integrity to fail due to sample size")
-	}
-
-	// Promotion packet should NOT be generated if integrity fails, even if isPromoted is true
-	if _, err := os.Stat(stemFail + ".promotion_packet.json"); !os.IsNotExist(err) {
-		t.Fatalf("Expected promotion packet to NOT be created for failed integrity")
+func TestCompleteIdentityMakesOnlyEligibleResearchLeadReviewable(t *testing.T) {
+	for _, classification := range []string{
+		rifbridge.ResearchStatusValidatedResearchLead,
+		rifbridge.ResearchStatusRejected,
+		rifbridge.ResearchStatusFragile,
+		rifbridge.ResearchStatusNeedsMoreData,
+	} {
+		t.Run(classification, func(t *testing.T) {
+			input := completeBridgeInput(t, classification)
+			result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+			if err != nil {
+				t.Fatalf("EmitResearchDiagnostics: %v", err)
+			}
+			wantEligible := classification == rifbridge.ResearchStatusValidatedResearchLead
+			if result.ArtifactDisposition != rifbridge.ArtifactEmitted || result.EligibleForReview != wantEligible {
+				t.Fatalf("unexpected result: %#v", result)
+			}
+			diagnostic := readDiagnostic(t, result.ArtifactPath)
+			if diagnostic.IdentityStatus != researchidentity.StatusComplete || diagnostic.EligibleForRIFReview != wantEligible || diagnostic.ResearchEvidence == nil {
+				t.Fatalf("unexpected diagnostic: %#v", diagnostic)
+			}
+			if diagnostic.CandidateResult.Classification != classification {
+				t.Fatalf("classification changed from %q to %q", classification, diagnostic.CandidateResult.Classification)
+			}
+			if diagnostic.AuthorityStatus != rifbridge.AuthorityStatusNoneResearchOnly {
+				t.Fatalf("authority = %q", diagnostic.AuthorityStatus)
+			}
+		})
 	}
 }
 
-func TestEmitRunFinalization(t *testing.T) {
-	tempDir := t.TempDir()
-	stem := filepath.Join(tempDir, "run_summary")
+func TestIncompleteDirtyAndConflictRemainVisibleAndNonReviewable(t *testing.T) {
+	for _, status := range []researchidentity.IdentityStatus{
+		researchidentity.StatusCandidateIncomplete,
+		researchidentity.StatusDirtyEngineSource,
+		researchidentity.StatusConflict,
+	} {
+		t.Run(string(status), func(t *testing.T) {
+			input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+			derivationErr := &researchidentity.DerivationError{Status: status, Code: "FIXTURE_BLOCK", Err: errors.New("fixture identity is blocked")}
+			deriver := fixtureDeriver{
+				assessment: researchidentity.Assessment{Status: status, Findings: []researchidentity.Finding{{Code: "FIXTURE_BLOCK", Domain: "fixture", Reason: "fixture identity is blocked", Status: status, Blocking: true}}},
+				err:        derivationErr,
+			}
+			result, err := rifbridge.NewBridgeWithDeriver(deriver).EmitResearchDiagnostics(input)
+			if !errors.Is(err, derivationErr) {
+				t.Fatalf("expected derivation error, got %v", err)
+			}
+			if result.ArtifactDisposition != rifbridge.ArtifactEmitted || result.EligibleForReview || result.IdentityStatus != status {
+				t.Fatalf("unexpected result: %#v", result)
+			}
+			diagnostic := readDiagnostic(t, result.ArtifactPath)
+			if diagnostic.ResearchEvidence != nil || diagnostic.EligibleForRIFReview || diagnostic.IdentityStatus != status || len(diagnostic.IdentityFindings) == 0 {
+				t.Fatalf("unsafe incomplete diagnostic: %#v", diagnostic)
+			}
+		})
+	}
+}
 
-	bridge := rifbridge.NewBridge()
-	err := bridge.EmitRunFinalization(stem, "abcd123", []string{"d1"}, []string{"f1"}, "cfg1", "")
+func TestLocalIntegrityFailuresBlockEligibilityWithoutChangingCompleteIdentity(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	input.IdentityRequest.Returns = input.IdentityRequest.Returns[:2]
+	input.IdentityRequest.Timestamps = input.IdentityRequest.Timestamps[:2]
+	input.IdentityRequest.EvaluationEventTimestamps = input.IdentityRequest.EvaluationEventTimestamps[:2]
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
 	if err != nil {
-		t.Fatalf("EmitRunFinalization failed: %v", err)
+		t.Fatalf("local integrity finding should not become identity error: %v", err)
 	}
+	if result.IdentityStatus != researchidentity.StatusComplete || result.LocalIntegrity != rifbridge.LocalIntegrityFailed || result.EligibleForReview {
+		t.Fatalf("unexpected result: %#v", result)
+	}
+}
 
-	if _, err := os.Stat(stem + ".research.lock"); err != nil {
-		t.Fatalf("Expected research.lock to exist")
+func TestBoundModelParameterCountControlsMiningRisk(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	input.IdentityRequest.Configuration.ModelParameterCount = 3
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+	if err != nil {
+		t.Fatalf("parameter-risk finding should remain a local integrity result: %v", err)
 	}
-	if _, err := os.Stat(stem + ".research_audit.json"); err != nil {
-		t.Fatalf("Expected research_audit.json to exist")
+	if result.IdentityStatus != researchidentity.StatusComplete || result.LocalIntegrity != rifbridge.LocalIntegrityFailed || result.EligibleForReview || result.BlockingFindings == 0 {
+		t.Fatalf("bound parameter count did not block review eligibility: %#v", result)
 	}
+	diagnostic := readDiagnostic(t, result.ArtifactPath)
+	found := false
+	for _, finding := range diagnostic.BlockingFindings {
+		if finding.Code == "RESEARCH_PARAMETER_MINING_RISK" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("parameter-risk finding is absent: %#v", diagnostic.BlockingFindings)
+	}
+}
+
+func TestNonFiniteMetricInputIsBlockedBeforeSerialization(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	input.IdentityRequest.Returns[0] = math.NaN()
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+	var derivation *researchidentity.DerivationError
+	if !errors.As(err, &derivation) || derivation.Status != researchidentity.StatusSeriesIncomplete {
+		t.Fatalf("NaN metric input must return typed series failure: %v", err)
+	}
+	if result.ArtifactDisposition != rifbridge.ArtifactEmitted || result.Failure != rifbridge.DiagnosticsFailureIdentityDerivation || result.IdentityStatus != researchidentity.StatusSeriesIncomplete || result.EligibleForReview {
+		t.Fatalf("unexpected result: %#v", result)
+	}
+	diagnostic := readDiagnostic(t, result.ArtifactPath)
+	if diagnostic.ResearchEvidence != nil || diagnostic.EligibleForRIFReview {
+		t.Fatalf("unsafe NaN values or complete identity were emitted: %#v", diagnostic)
+	}
+}
+
+func TestUnknownClassificationAndMissingStemSuppressArtifact(t *testing.T) {
+	for _, mutate := range []func(*rifbridge.ResearchAssessment){
+		func(input *rifbridge.ResearchAssessment) { input.Classification = "unexpected" },
+		func(input *rifbridge.ResearchAssessment) { input.Stem = "" },
+	} {
+		input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+		mutate(&input)
+		result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+		if !errors.Is(err, rifbridge.ErrInvalidResearchInput) || result.ArtifactDisposition != rifbridge.ArtifactSuppressed {
+			t.Fatalf("invalid input did not fail closed: result=%#v err=%v", result, err)
+		}
+	}
+}
+
+func TestPersistenceFailureSuppressesArtifact(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	input.Stem = filepath.Join(t.TempDir(), "missing", "candidate")
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+	if !errors.Is(err, rifbridge.ErrResearchDiagnosticsPersistence) || result.ArtifactDisposition != rifbridge.ArtifactSuppressed || result.Failure != rifbridge.DiagnosticsFailurePersistence {
+		t.Fatalf("unexpected persistence result: %#v err=%v", result, err)
+	}
+}
+
+func TestDiagnosticContainsNoAcceptanceOrLifecycleAuthority(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(result.ArtifactPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lower := strings.ToLower(string(data))
+	for _, prohibited := range []string{`"is_promoted"`, `"approved"`, `"frozen"`, `"paper_ready"`, `"paper_eligible"`, `"runtime_ready"`, `"authorized"`} {
+		if strings.Contains(lower, prohibited) {
+			t.Fatalf("diagnostic contains prohibited authority field/status %q", prohibited)
+		}
+	}
+	for _, suffix := range []string{".research.lock", ".research_audit.json", ".promotion_packet.json"} {
+		if _, err := os.Stat(input.Stem + suffix); !os.IsNotExist(err) {
+			t.Fatalf("legacy artifact exists: %s", input.Stem+suffix)
+		}
+	}
+}
+
+func completeBridgeInput(t *testing.T, classification string) rifbridge.ResearchAssessment {
+	t.Helper()
+	fixture, err := researchidentity.BuildDiagnosticSmokeFixture(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(fixture.Cleanup)
+	return rifbridge.ResearchAssessment{
+		Stem:            filepath.Join(t.TempDir(), "candidate"),
+		Classification:  classification,
+		IdentityRequest: fixture.Request,
+	}
+}
+
+func completeFixtureDeriver(t *testing.T) rifbridge.IdentityDeriver {
+	t.Helper()
+	fixture, err := researchidentity.BuildDiagnosticSmokeFixture(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(fixture.Cleanup)
+	return fixture.Deriver
+}
+
+func readDiagnostic(t *testing.T, path string) rifbridge.LocalResearchDiagnostics {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var diagnostic rifbridge.LocalResearchDiagnostics
+	if err := json.Unmarshal(data, &diagnostic); err != nil {
+		t.Fatal(err)
+	}
+	return diagnostic
 }

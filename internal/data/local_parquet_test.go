@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 
@@ -223,5 +224,24 @@ func TestLocalParquetSourceLoadsFixture(t *testing.T) {
 	}
 	if candles[1].OpenTimeMS != t2 || candles[1].Open != o2 || candles[1].Close != cl2 {
 		t.Errorf("second candle data mismatch: %+v", candles[1])
+	}
+
+	inventoried, paths, err := src.LoadCandlesWithInventory(context.Background(), req)
+	if err != nil {
+		t.Fatalf("load with inventory: %v", err)
+	}
+	absFile, err := filepath.Abs(filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) != 1 || paths[0] != absFile || !reflect.DeepEqual(inventoried, candles) {
+		t.Fatalf("exact file inventory mismatch: paths=%v candles=%#v", paths, inventoried)
+	}
+	reloaded, err := LoadExactParquetFiles(context.Background(), req, paths)
+	if err != nil || !reflect.DeepEqual(reloaded, candles) {
+		t.Fatalf("exact reload mismatch: %#v err=%v", reloaded, err)
+	}
+	if _, err := LoadExactParquetFiles(context.Background(), req, []string{absFile, absFile}); err == nil {
+		t.Fatal("duplicate exact file inventory passed")
 	}
 }

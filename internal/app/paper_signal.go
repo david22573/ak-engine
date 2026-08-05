@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/david22573/ak-engine/internal/papersignal"
-	"github.com/david22573/ak-engine/internal/rifbridge"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +36,9 @@ var paperSignalCmd = &cobra.Command{
 		}
 
 		// 1. Read Research Lock (if provided)
-		var rLock rifbridge.ResearchLock
+		var rLock struct {
+			GitSHA string `json:"git_sha"`
+		}
 		rLockHash := ""
 		if psResearchLock != "" {
 			data, err := os.ReadFile(psResearchLock)

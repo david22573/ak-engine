@@ -9,8 +9,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/david22573/ak-engine/internal/rifbridge"
 )
 
 type fundingAggregationConfig struct {
@@ -1336,9 +1334,7 @@ func writeFundingAggregationReports(cfg fundingAggregationConfig, report Funding
 		return err
 	}
 
-	bridge := rifbridge.NewBridge()
-	stem := filepath.Join(cfg.ReportsDir, "phase10_7d_funding_candidate_leaderboard")
-	return bridge.EmitRunFinalization(stem, "unknown", []string{}, []string{}, "confighash", "")
+	return nil
 }
 
 func writeFundingJSONReport(path string, value interface{}) error {
