@@ -130,7 +130,7 @@ github.com/aws/smithy-go/time
 github.com/aws/smithy-go/transport/http
 github.com/aws/smithy-go/transport/http/internal/io
 github.com/aws/smithy-go/waiter
-# github.com/david22573/ak-rif v0.0.0-20260720214045-23be9a8ef9b7 => ../ak-rif
+# github.com/david22573/ak-rif v0.0.0-20260720214045-23be9a8ef9b7
 ## explicit; go 1.25.6
 github.com/david22573/ak-rif/core
 github.com/david22573/ak-rif/persistence
@@ -190,4 +190,3 @@ golang.org/x/text/unicode/norm
 ## explicit; go 1.11
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# github.com/david22573/ak-rif => ../ak-rif
