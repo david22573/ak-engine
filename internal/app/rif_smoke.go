@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/david22573/ak-engine/internal/executionseries"
 	"github.com/david22573/ak-engine/internal/researchidentity"
 	"github.com/david22573/ak-engine/internal/rifbridge"
 	"github.com/spf13/cobra"
@@ -32,9 +33,11 @@ var researchDiagnosticsSmokeCmd = &cobra.Command{
 		bridge := rifbridge.NewBridgeWithDeriver(fixture.Deriver)
 
 		complete, err := bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
-			Stem:            filepath.Join(researchDiagnosticsSmokeOutDir, "complete_candidate"),
-			Classification:  rifbridge.ResearchStatusValidatedResearchLead,
-			IdentityRequest: fixture.Request,
+			Stem:                      filepath.Join(researchDiagnosticsSmokeOutDir, "complete_candidate"),
+			Classification:            rifbridge.ResearchStatusValidatedResearchLead,
+			ClassificationGates:       []rifbridge.ClassificationGate{{Name: "execution_series_identity", Passed: true, Critical: true}},
+			ExecutionSeriesGeneration: executionseries.GenerationVersion,
+			IdentityRequest:           fixture.Request,
 		})
 		if err != nil {
 			return fmt.Errorf("complete exact-identity diagnostic: %w", err)
@@ -46,9 +49,11 @@ var researchDiagnosticsSmokeCmd = &cobra.Command{
 		incompleteRequest := fixture.Request
 		incompleteRequest.HistorianManifestPath = ""
 		incomplete, err := bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
-			Stem:            filepath.Join(researchDiagnosticsSmokeOutDir, "incomplete_candidate"),
-			Classification:  rifbridge.ResearchStatusValidatedResearchLead,
-			IdentityRequest: incompleteRequest,
+			Stem:                      filepath.Join(researchDiagnosticsSmokeOutDir, "incomplete_candidate"),
+			Classification:            rifbridge.ResearchStatusValidatedResearchLead,
+			ClassificationGates:       []rifbridge.ClassificationGate{{Name: "execution_series_identity", Passed: true, Critical: true}},
+			ExecutionSeriesGeneration: executionseries.GenerationVersion,
+			IdentityRequest:           incompleteRequest,
 		})
 		var derivationErr *researchidentity.DerivationError
 		if !errors.As(err, &derivationErr) {
@@ -59,9 +64,14 @@ var researchDiagnosticsSmokeCmd = &cobra.Command{
 		}
 
 		rejected, err := bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
-			Stem:            filepath.Join(researchDiagnosticsSmokeOutDir, "rejected_candidate"),
-			Classification:  rifbridge.ResearchStatusRejected,
-			IdentityRequest: fixture.Request,
+			Stem:           filepath.Join(researchDiagnosticsSmokeOutDir, "rejected_candidate"),
+			Classification: rifbridge.ResearchStatusRejected,
+			ClassificationGates: []rifbridge.ClassificationGate{
+				{Name: "execution_series_identity", Passed: true, Critical: true},
+				{Name: "fixture_rejection", Passed: false, Critical: true},
+			},
+			ExecutionSeriesGeneration: executionseries.GenerationVersion,
+			IdentityRequest:           fixture.Request,
 		})
 		if err != nil {
 			return fmt.Errorf("rejected complete-identity diagnostic: %w", err)

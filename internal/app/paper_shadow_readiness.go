@@ -65,14 +65,28 @@ func buildShadowReadinessReport(rows []papersignal.PaperJournalRow, candidateFil
 	}
 
 	var returns []float64
+	identitySet := false
 	for _, row := range rows {
 		if candidateFilter != "" && row.CandidateID != candidateFilter {
 			continue
 		}
-		if candidateFilter == "" && rep.CandidateID == "ALL" && row.CandidateID != "" {
+		if !identitySet {
 			rep.CandidateID = row.CandidateID
+			rep.CandidateVersion = row.CandidateVersion
+			rep.CandidateHash = row.CandidateHash
+			rep.ConfigurationHash = row.ConfigurationHash
+			rep.ResearchEvidenceHash = row.ResearchEvidenceHash
+			identitySet = true
+		}
+		if err := validatePaperObservationIdentity(row); err != nil || row.CandidateID != rep.CandidateID || row.CandidateVersion != rep.CandidateVersion || row.CandidateHash != rep.CandidateHash || row.ConfigurationHash != rep.ConfigurationHash || row.ResearchEvidenceHash != rep.ResearchEvidenceHash {
+			rep.IdentityConflicts++
+			continue
 		}
 		rep.TotalSignals++
+		if row.SignalStatus == papersignal.StatusWait {
+			rep.WaitObservations++
+			continue
+		}
 		if papersignal.IsBlockedStatus(row.SignalStatus) {
 			rep.BlockedSignals++
 			key := firstNonEmpty(row.SignalReason, string(row.SignalStatus))
@@ -91,12 +105,17 @@ func buildShadowReadinessReport(rows []papersignal.PaperJournalRow, candidateFil
 		case "":
 		case papersignal.OutcomeInsufficientData:
 			rep.OutcomeDistribution[string(row.OutcomeStatus)]++
+		case papersignal.OutcomeAmbiguousIntrabar:
+			rep.AmbiguousOutcomes++
+			rep.OutcomeDistribution[string(row.OutcomeStatus)]++
 		default:
+			if row.OutcomeReturnBPS == nil {
+				rep.IdentityConflicts++
+				continue
+			}
 			rep.GradedSignals++
 			rep.OutcomeDistribution[string(row.OutcomeStatus)]++
-			if row.OutcomeReturnBPS != nil {
-				returns = append(returns, *row.OutcomeReturnBPS)
-			}
+			returns = append(returns, *row.OutcomeReturnBPS)
 			if row.MaxAdverseExcursionBPS != nil {
 				rep.MaxAdverseExcursion = maxFloatPtr(rep.MaxAdverseExcursion, *row.MaxAdverseExcursionBPS)
 			}
@@ -132,6 +151,18 @@ func applyShadowReadinessRules(rep *papersignal.ShadowReadinessReport) {
 		rep.SampleSizeLabel = papersignal.SampleReady
 	}
 
+	if rep.IdentityConflicts > 0 {
+		rep.ReadinessLabel = papersignal.ReadinessBlockedByResults
+		rep.Blockers = append(rep.Blockers, "Journal contains missing or mixed candidate/version/config/evidence identity")
+		rep.Recommendation = "Regenerate an identity-isolated canonical paper journal."
+		return
+	}
+	if rep.AmbiguousOutcomes > 0 {
+		rep.ReadinessLabel = papersignal.ReadinessBlockedByResults
+		rep.Blockers = append(rep.Blockers, "Intrabar-ambiguous outcomes are not gradeable")
+		rep.Recommendation = "Collect deterministic observations with an execution model that resolves ordering."
+		return
+	}
 	if rep.TotalSignals > 0 && rep.AllowedSignals == 0 && rep.BlockedSignals > 0 {
 		rep.ReadinessLabel = papersignal.ReadinessBlockedByRIF
 		rep.Blockers = append(rep.Blockers, "All observed signals are blocked by RIF")
@@ -182,7 +213,7 @@ func paperResultsSupportShadow(rep *papersignal.ShadowReadinessReport) bool {
 	if rep.WinRatePaper < 0.50 {
 		return false
 	}
-	return rep.ExpectancyPaper == nil || *rep.ExpectancyPaper > 0
+	return rep.ExpectancyPaper != nil && *rep.ExpectancyPaper > 0
 }
 
 func maxFloatPtr(current *float64, next float64) *float64 {

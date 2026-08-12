@@ -6,7 +6,6 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 
@@ -87,6 +86,9 @@ var paperForwardGradePendingCmd = &cobra.Command{
 				summary.AlreadyFinal++
 				continue
 			}
+			if err := validateCanonicalPaperJournalRow(*row); err != nil {
+				return fmt.Errorf("signal %s is not a canonical paper observation: %w", row.SignalID, err)
+			}
 			if gradeAttempts >= pfgMaxGrade {
 				break
 			}
@@ -154,6 +156,40 @@ var paperForwardGradePendingCmd = &cobra.Command{
 
 var errPaperInsufficientData = fmt.Errorf("insufficient paper market data")
 
+func validateCanonicalPaperJournalRow(row papersignal.PaperJournalRow) error {
+	if err := validatePaperObservationIdentity(row); err != nil {
+		return err
+	}
+	if row.Side != papersignal.SideLong && row.Side != papersignal.SideShort {
+		return fmt.Errorf("actionable side must be LONG or SHORT")
+	}
+	if row.EntryReferencePrice <= 0 || row.TargetReferencePrice == nil || row.StopReferencePrice == nil {
+		return fmt.Errorf("canonical entry/target/stop references are required")
+	}
+	return nil
+}
+
+func validatePaperObservationIdentity(row papersignal.PaperJournalRow) error {
+	if row.SignalID == "" || row.CandidateID == "" || row.CandidateVersion == "" || row.CandidateHash == "" || row.ConfigurationHash == "" || row.ResearchEvidenceHash == "" || row.DecisionInputHash == "" {
+		return fmt.Errorf("exact signal/candidate/configuration/evidence/input identity is required")
+	}
+	if row.Symbol == "" || row.MarketType == "" || row.Timeframe == "" || row.DecisionTimeUTC == "" || row.FillTimeUTC == "" || row.DatasetHash == "" || row.PitCoverageHash == "" {
+		return fmt.Errorf("exact scope/time/dataset/PIT identity is required")
+	}
+	decision, err := time.Parse(time.RFC3339Nano, row.DecisionTimeUTC)
+	if err != nil {
+		return fmt.Errorf("invalid decision time: %w", err)
+	}
+	fill, err := time.Parse(time.RFC3339Nano, row.FillTimeUTC)
+	if err != nil {
+		return fmt.Errorf("invalid fill time: %w", err)
+	}
+	if fill.UnixMilli() != decision.UnixMilli()+1 {
+		return fmt.Errorf("fill is not the canonical first tradable observation")
+	}
+	return nil
+}
+
 func paperOutcomeDueTime(row papersignal.PaperJournalRow) (time.Time, error) {
 	if row.OutcomeDueAtUTC != "" {
 		return time.Parse(time.RFC3339, row.OutcomeDueAtUTC)
@@ -184,9 +220,9 @@ func loadPaperMarketCandles(marketDataRoot, snapshotDir string, row papersignal.
 		if err != nil {
 			return nil, "", fmt.Errorf("parse market data %s: %w", path, err)
 		}
-		sort.Slice(candles, func(i, j int) bool {
-			return candles[i].OpenTimeMS < candles[j].OpenTimeMS
-		})
+		if err := data.ValidateCandlesForRequest(req, candles); err != nil {
+			return nil, "", fmt.Errorf("validate market data %s: %w", path, err)
+		}
 		return candles, path, nil
 	}
 	return nil, "", os.ErrNotExist
@@ -222,7 +258,8 @@ func resolvePaperMarketDataPath(rootOrFile, symbol, timeframe string) (string, b
 }
 
 func gradePaperOutcome(row papersignal.PaperJournalRow, candles []protocol.Candle, dueTime time.Time) (papersignal.PaperJournalRow, error) {
-	generatedAt, err := time.Parse(time.RFC3339, row.GeneratedAtUTC)
+	fillTimeRaw := firstNonEmpty(row.FillTimeUTC, row.GeneratedAtUTC)
+	generatedAt, err := time.Parse(time.RFC3339Nano, fillTimeRaw)
 	if err != nil {
 		return row, err
 	}
@@ -240,16 +277,15 @@ func gradePaperOutcome(row papersignal.PaperJournalRow, candles []protocol.Candl
 
 	window := make([]protocol.Candle, 0, len(candles))
 	for _, candle := range candles {
-		candleTime := paperCandleTime(candle)
-		if candleTime.After(generatedAt) && !candleTime.After(dueTime) {
+		openTime := time.UnixMilli(candle.OpenTimeMS).UTC()
+		if !openTime.Before(generatedAt) && openTime.Before(dueTime) {
 			window = append(window, candle)
 		}
 	}
 	if len(window) == 0 {
 		return row, errPaperInsufficientData
 	}
-	lastTime := paperCandleTime(window[len(window)-1])
-	if lastTime.Before(dueTime) {
+	if window[0].OpenTimeMS != generatedAt.UnixMilli() || window[len(window)-1].CloseTimeMS != dueTime.UnixMilli()-1 {
 		return row, errPaperInsufficientData
 	}
 
@@ -268,37 +304,37 @@ func gradePaperOutcome(row papersignal.PaperJournalRow, candles []protocol.Candl
 			targetHit := candle.Low <= *target
 			stopHit := candle.High >= *stop
 			if targetHit && stopHit {
-				row.OutcomeStatus = papersignal.OutcomeNoEdgeChop
+				row.OutcomeStatus = papersignal.OutcomeAmbiguousIntrabar
 				row.OutcomeReason = "target and stop touched in same candle; intrabar order unknown"
-				return finalizePaperOutcome(row, entry, window[len(window)-1].Close, high, low), nil
+				return finalizePaperExcursions(row, entry, high, low), nil
 			}
 			if targetHit {
 				row.OutcomeStatus = papersignal.OutcomeShortTPFirst
 				row.OutcomeReason = "short target touched before stop"
-				return finalizePaperOutcome(row, entry, candle.Close, high, low), nil
+				return finalizePaperOutcome(row, entry, *target, high, low), nil
 			}
 			if stopHit {
 				row.OutcomeStatus = papersignal.OutcomeShortStopFirst
 				row.OutcomeReason = "short stop touched before target"
-				return finalizePaperOutcome(row, entry, candle.Close, high, low), nil
+				return finalizePaperOutcome(row, entry, *stop, high, low), nil
 			}
 		default:
 			targetHit := candle.High >= *target
 			stopHit := candle.Low <= *stop
 			if targetHit && stopHit {
-				row.OutcomeStatus = papersignal.OutcomeNoEdgeChop
+				row.OutcomeStatus = papersignal.OutcomeAmbiguousIntrabar
 				row.OutcomeReason = "target and stop touched in same candle; intrabar order unknown"
-				return finalizePaperOutcome(row, entry, window[len(window)-1].Close, high, low), nil
+				return finalizePaperExcursions(row, entry, high, low), nil
 			}
 			if targetHit {
 				row.OutcomeStatus = papersignal.OutcomeLongTPFirst
 				row.OutcomeReason = "long target touched before stop"
-				return finalizePaperOutcome(row, entry, candle.Close, high, low), nil
+				return finalizePaperOutcome(row, entry, *target, high, low), nil
 			}
 			if stopHit {
 				row.OutcomeStatus = papersignal.OutcomeLongStopFirst
 				row.OutcomeReason = "long stop touched before target"
-				return finalizePaperOutcome(row, entry, candle.Close, high, low), nil
+				return finalizePaperOutcome(row, entry, *stop, high, low), nil
 			}
 		}
 	}
@@ -316,8 +352,12 @@ func paperCandleTime(candle protocol.Candle) time.Time {
 
 func finalizePaperOutcome(row papersignal.PaperJournalRow, entry, exit, high, low float64) papersignal.PaperJournalRow {
 	ret := paperSignedReturnBPS(row.Side, entry, exit)
-	mfe, mae := paperExcursionsBPS(row.Side, entry, high, low)
 	row.OutcomeReturnBPS = &ret
+	return finalizePaperExcursions(row, entry, high, low)
+}
+
+func finalizePaperExcursions(row papersignal.PaperJournalRow, entry, high, low float64) papersignal.PaperJournalRow {
+	mfe, mae := paperExcursionsBPS(row.Side, entry, high, low)
 	row.MaxFavorableExcursionBPS = &mfe
 	row.MaxAdverseExcursionBPS = &mae
 	return row

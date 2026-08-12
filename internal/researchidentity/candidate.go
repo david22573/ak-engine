@@ -96,10 +96,20 @@ func DefaultRegistry() (*Registry, error) {
 				Side:                  side,
 				Aliases:               []string{family.alias},
 				ImplementationLocator: "path:internal/app/evaluate_candidate_deep.go#deepCandidateRule",
-				ImplementationFiles: []ImplementationFile{{
-					Path:            "internal/app/evaluate_candidate_deep.go",
-					InclusionReason: "candidate rules, evaluation series, metrics, gates, and classification",
-				}},
+				ImplementationFiles: []ImplementationFile{
+					{
+						Path:            "internal/app/evaluate_candidate_deep.go",
+						InclusionReason: "candidate rules, evaluation series, metrics, gates, and classification",
+					},
+					{
+						Path:            "internal/temporal/contract.go",
+						InclusionReason: "canonical source availability and decision-time ordering",
+					},
+					{
+						Path:            "internal/executionseries/spec.go",
+						InclusionReason: "canonical fill, range, and horizon semantics",
+					},
+				},
 				UsesRegimes: true,
 			})
 		}

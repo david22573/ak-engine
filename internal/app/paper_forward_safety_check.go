@@ -56,8 +56,12 @@ func defaultPaperForwardSafetyFiles() []string {
 	return []string{
 		filepath.Join("internal", "app", "paper_forward.go"),
 		filepath.Join("internal", "app", "paper_forward_common.go"),
+		filepath.Join("internal", "app", "paper_forward_canonical.go"),
 		filepath.Join("internal", "app", "paper_forward_grade_pending.go"),
 		filepath.Join("internal", "app", "paper_shadow_readiness.go"),
+		filepath.Join("internal", "app", "paper_signal.go"),
+		filepath.Join("internal", "app", "paper_signal_grade.go"),
+		filepath.Join("internal", "app", "paper_signal_review.go"),
 		filepath.Join("internal", "papersignal", "types.go"),
 	}
 }

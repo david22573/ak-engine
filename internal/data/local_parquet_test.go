@@ -245,3 +245,15 @@ func TestLocalParquetSourceLoadsFixture(t *testing.T) {
 		t.Fatal("duplicate exact file inventory passed")
 	}
 }
+
+func TestLoadExactParquetFilesRejectsEmbeddedScopeMismatch(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "BTCUSDT-1m-2024-01.parquet")
+	market, embeddedSymbol, interval := "futures-um", "ETHUSDT", "1m"
+	openTime, closeTime := int64(1704067200000), int64(1704067259999)
+	open, high, low, close, volume := 100.0, 101.0, 99.0, 100.0, 1.0
+	createTestParquetFile(t, path, []ParquetCandle{{Market: &market, Symbol: &embeddedSymbol, Interval: &interval, OpenTimeMS: &openTime, CloseTimeMS: &closeTime, Open: &open, High: &high, Low: &low, Close: &close, Volume: &volume}})
+	_, err := LoadExactParquetFiles(context.Background(), CandleRequest{Market: market, Symbol: "BTCUSDT", Interval: interval}, []string{path})
+	if err == nil {
+		t.Fatal("embedded wrong symbol was accepted")
+	}
+}

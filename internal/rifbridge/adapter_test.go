@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/david22573/ak-engine/internal/executionseries"
 	"github.com/david22573/ak-engine/internal/researchidentity"
 	"github.com/david22573/ak-engine/internal/rifbridge"
 )
@@ -27,7 +28,6 @@ func TestCompleteIdentityMakesOnlyEligibleResearchLeadReviewable(t *testing.T) {
 		rifbridge.ResearchStatusValidatedResearchLead,
 		rifbridge.ResearchStatusRejected,
 		rifbridge.ResearchStatusFragile,
-		rifbridge.ResearchStatusNeedsMoreData,
 	} {
 		t.Run(classification, func(t *testing.T) {
 			input := completeBridgeInput(t, classification)
@@ -50,6 +50,30 @@ func TestCompleteIdentityMakesOnlyEligibleResearchLeadReviewable(t *testing.T) {
 				t.Fatalf("authority = %q", diagnostic.AuthorityStatus)
 			}
 		})
+	}
+}
+
+func TestCallerClassificationMustMatchGateDerivation(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	input.Classification = rifbridge.ResearchStatusRejected
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+	if !errors.Is(err, rifbridge.ErrInvalidResearchInput) {
+		t.Fatalf("classification mismatch error = %v, want invalid research input", err)
+	}
+	if result.ArtifactDisposition != rifbridge.ArtifactSuppressed || result.EligibleForReview {
+		t.Fatalf("classification mismatch emitted evidence: %#v", result)
+	}
+}
+
+func TestClassificationFromDifferentExecutionSeriesIsRejected(t *testing.T) {
+	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
+	input.ExecutionSeriesGeneration = "deep-return-series.v1"
+	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
+	if !errors.Is(err, rifbridge.ErrInvalidResearchInput) {
+		t.Fatalf("series mismatch error = %v, want invalid research input", err)
+	}
+	if result.ArtifactDisposition != rifbridge.ArtifactSuppressed || result.EligibleForReview {
+		t.Fatalf("series mismatch emitted reviewable evidence: %#v", result)
 	}
 }
 
@@ -150,7 +174,12 @@ func TestUnknownClassificationAndMissingStemSuppressArtifact(t *testing.T) {
 
 func TestPersistenceFailureSuppressesArtifact(t *testing.T) {
 	input := completeBridgeInput(t, rifbridge.ResearchStatusValidatedResearchLead)
-	input.Stem = filepath.Join(t.TempDir(), "missing", "candidate")
+	root := t.TempDir()
+	blockedParent := filepath.Join(root, "not-a-directory")
+	if err := os.WriteFile(blockedParent, []byte("file"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	input.Stem = filepath.Join(blockedParent, "candidate")
 	result, err := rifbridge.NewBridgeWithDeriver(completeFixtureDeriver(t)).EmitResearchDiagnostics(input)
 	if !errors.Is(err, rifbridge.ErrResearchDiagnosticsPersistence) || result.ArtifactDisposition != rifbridge.ArtifactSuppressed || result.Failure != rifbridge.DiagnosticsFailurePersistence {
 		t.Fatalf("unexpected persistence result: %#v err=%v", result, err)
@@ -187,10 +216,19 @@ func completeBridgeInput(t *testing.T, classification string) rifbridge.Research
 		t.Fatal(err)
 	}
 	t.Cleanup(fixture.Cleanup)
+	gates := []rifbridge.ClassificationGate{{Name: "execution_series_identity", Passed: true, Critical: true}}
+	switch classification {
+	case rifbridge.ResearchStatusFragile:
+		gates = append(gates, rifbridge.ClassificationGate{Name: "fixture_noncritical", Passed: false})
+	case rifbridge.ResearchStatusRejected:
+		gates = append(gates, rifbridge.ClassificationGate{Name: "fixture_critical", Passed: false, Critical: true})
+	}
 	return rifbridge.ResearchAssessment{
-		Stem:            filepath.Join(t.TempDir(), "candidate"),
-		Classification:  classification,
-		IdentityRequest: fixture.Request,
+		Stem:                      filepath.Join(t.TempDir(), "candidate"),
+		Classification:            classification,
+		ClassificationGates:       gates,
+		ExecutionSeriesGeneration: executionseries.GenerationVersion,
+		IdentityRequest:           fixture.Request,
 	}
 }
 

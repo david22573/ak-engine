@@ -225,16 +225,19 @@ func TestLocalJSONFiltersByDateRange(t *testing.T) {
 		{
 			"open_time_ms": 1704067200000,
 			"open": 42000.0, "high": 42100.0, "low": 41900.0, "close": 42050.0,
+			"close_time_ms": 1704067499999,
 			"interval": "5m"
 		},
 		{
 			"open_time_ms": 1704067500000,
 			"open": 42050.0, "high": 42150.0, "low": 42000.0, "close": 42100.0,
+			"close_time_ms": 1704067799999,
 			"interval": "5m"
 		},
 		{
 			"open_time_ms": 1704067800000,
 			"open": 42100.0, "high": 42200.0, "low": 42050.0, "close": 42150.0,
+			"close_time_ms": 1704068099999,
 			"interval": "5m"
 		}
 	]`

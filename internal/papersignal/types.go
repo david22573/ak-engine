@@ -36,16 +36,17 @@ const (
 type OutcomeStatus string
 
 const (
-	OutcomePending          OutcomeStatus = "PENDING"
-	OutcomeLongTPFirst      OutcomeStatus = "LONG_TP_FIRST"
-	OutcomeLongStopFirst    OutcomeStatus = "LONG_STOP_FIRST"
-	OutcomeShortTPFirst     OutcomeStatus = "SHORT_TP_FIRST"
-	OutcomeShortStopFirst   OutcomeStatus = "SHORT_STOP_FIRST"
-	OutcomeCorrectWait      OutcomeStatus = "CORRECT_WAIT"
-	OutcomeBadWaitLongRan   OutcomeStatus = "BAD_WAIT_LONG_RAN"
-	OutcomeBadWaitShortRan  OutcomeStatus = "BAD_WAIT_SHORT_RAN"
-	OutcomeNoEdgeChop       OutcomeStatus = "NO_EDGE_CHOP"
-	OutcomeInsufficientData OutcomeStatus = "INSUFFICIENT_DATA"
+	OutcomePending           OutcomeStatus = "PENDING"
+	OutcomeLongTPFirst       OutcomeStatus = "LONG_TP_FIRST"
+	OutcomeLongStopFirst     OutcomeStatus = "LONG_STOP_FIRST"
+	OutcomeShortTPFirst      OutcomeStatus = "SHORT_TP_FIRST"
+	OutcomeShortStopFirst    OutcomeStatus = "SHORT_STOP_FIRST"
+	OutcomeCorrectWait       OutcomeStatus = "CORRECT_WAIT"
+	OutcomeBadWaitLongRan    OutcomeStatus = "BAD_WAIT_LONG_RAN"
+	OutcomeBadWaitShortRan   OutcomeStatus = "BAD_WAIT_SHORT_RAN"
+	OutcomeNoEdgeChop        OutcomeStatus = "NO_EDGE_CHOP"
+	OutcomeAmbiguousIntrabar OutcomeStatus = "AMBIGUOUS_INTRABAR"
+	OutcomeInsufficientData  OutcomeStatus = "INSUFFICIENT_DATA"
 )
 
 const (
@@ -67,34 +68,39 @@ const (
 
 // PaperSignal represents a paper signal output
 type PaperSignal struct {
-	SchemaVersion       string        `json:"schema_version"`
-	SignalID            string        `json:"signal_id"`
-	GeneratedAtUTC      string        `json:"generated_at_utc"`
-	CandidateID         string        `json:"candidate_id"`
-	CandidateVersion    string        `json:"candidate_version"`
-	CandidateHash       string        `json:"candidate_hash"`
-	Symbol              string        `json:"symbol"`
-	MarketType          string        `json:"market_type"`
-	Timeframe           string        `json:"timeframe"`
-	Side                SignalSide    `json:"side"`
-	SignalStatus        SignalStatus  `json:"signal_status"`
-	SignalReason        string        `json:"signal_reason"`
-	DataAsOfUTC         string        `json:"data_as_of_utc"`
-	ResearchLockPath    string        `json:"research_lock_path"`
-	ResearchLockHash    string        `json:"research_lock_hash"`
-	DatasetManifestHash string        `json:"dataset_manifest_hash"`
-	UniverseHash        string        `json:"universe_hash"`
-	LifecycleHash       string        `json:"lifecycle_hash"`
-	PitCoverageHash     string        `json:"pit_coverage_hash"`
-	RIFStatus           string        `json:"rif_status"`
-	RIFWarnings         []string      `json:"rif_warnings"`
-	EntryModel          string        `json:"entry_model"`
-	ExitModel           string        `json:"exit_model"`
-	InvalidationModel   string        `json:"invalidation_model"`
-	ObservationWindow   int           `json:"observation_window"`
-	OutcomeStatus       OutcomeStatus `json:"outcome_status"`
-	OutcomeDueAtUTC     string        `json:"outcome_due_at_utc"`
-	Notes               string        `json:"notes"`
+	SchemaVersion        string        `json:"schema_version"`
+	SignalID             string        `json:"signal_id"`
+	GeneratedAtUTC       string        `json:"generated_at_utc"`
+	CandidateID          string        `json:"candidate_id"`
+	CandidateVersion     string        `json:"candidate_version"`
+	CandidateHash        string        `json:"candidate_hash"`
+	ConfigurationHash    string        `json:"configuration_hash"`
+	ResearchEvidenceHash string        `json:"research_evidence_hash"`
+	DecisionInputHash    string        `json:"decision_input_hash"`
+	Symbol               string        `json:"symbol"`
+	MarketType           string        `json:"market_type"`
+	Timeframe            string        `json:"timeframe"`
+	Side                 SignalSide    `json:"side"`
+	SignalStatus         SignalStatus  `json:"signal_status"`
+	SignalReason         string        `json:"signal_reason"`
+	DataAsOfUTC          string        `json:"data_as_of_utc"`
+	DecisionTimeUTC      string        `json:"decision_time_utc"`
+	FillTimeUTC          string        `json:"fill_time_utc"`
+	ResearchLockPath     string        `json:"research_lock_path"`
+	ResearchLockHash     string        `json:"research_lock_hash"`
+	DatasetManifestHash  string        `json:"dataset_manifest_hash"`
+	UniverseHash         string        `json:"universe_hash"`
+	LifecycleHash        string        `json:"lifecycle_hash"`
+	PitCoverageHash      string        `json:"pit_coverage_hash"`
+	RIFStatus            string        `json:"rif_status"`
+	RIFWarnings          []string      `json:"rif_warnings"`
+	EntryModel           string        `json:"entry_model"`
+	ExitModel            string        `json:"exit_model"`
+	InvalidationModel    string        `json:"invalidation_model"`
+	ObservationWindow    int           `json:"observation_window"`
+	OutcomeStatus        OutcomeStatus `json:"outcome_status"`
+	OutcomeDueAtUTC      string        `json:"outcome_due_at_utc"`
+	Notes                string        `json:"notes"`
 }
 
 // PaperJournalRow represents a single row in the JSONL journal
@@ -103,7 +109,12 @@ type PaperJournalRow struct {
 	CandidateID                string        `json:"candidate_id"`
 	CandidateVersion           string        `json:"candidate_version,omitempty"`
 	CandidateHash              string        `json:"candidate_hash,omitempty"`
+	ConfigurationHash          string        `json:"configuration_hash,omitempty"`
+	ResearchEvidenceHash       string        `json:"research_evidence_hash,omitempty"`
+	DecisionInputHash          string        `json:"decision_input_hash,omitempty"`
 	GeneratedAtUTC             string        `json:"generated_at_utc"`
+	DecisionTimeUTC            string        `json:"decision_time_utc,omitempty"`
+	FillTimeUTC                string        `json:"fill_time_utc,omitempty"`
 	Symbol                     string        `json:"symbol"`
 	MarketType                 string        `json:"market_type,omitempty"`
 	Timeframe                  string        `json:"timeframe,omitempty"`
@@ -300,23 +311,25 @@ func HashFile(path string) (string, error) {
 
 // ForwardObservationRun represents the summary of a paper-forward generation run
 type ForwardObservationRun struct {
-	SchemaVersion       string            `json:"schema_version"`
-	RunID               string            `json:"run_id"`
-	GeneratedAtUTC      string            `json:"generated_at_utc"`
-	Mode                string            `json:"mode"`
-	Candidates          []string          `json:"candidates"`
-	Symbols             []string          `json:"symbols"`
-	Timeframes          []string          `json:"timeframes"`
-	DatasetManifestPath string            `json:"dataset_manifest_path"`
-	RIFStatus           string            `json:"rif_status"`
-	GeneratedSignals    int               `json:"generated_signals"`
-	AllowedSignals      int               `json:"allowed_signals,omitempty"`
-	BlockedSignals      int               `json:"blocked_signals"`
-	PendingOutcomes     int               `json:"pending_outcomes"`
-	GradedOutcomes      int               `json:"graded_outcomes"`
-	JournalPath         string            `json:"journal_path"`
-	Warnings            []string          `json:"warnings"`
-	Hashes              map[string]string `json:"hashes"`
+	SchemaVersion        string            `json:"schema_version"`
+	RunID                string            `json:"run_id"`
+	GeneratedAtUTC       string            `json:"generated_at_utc"`
+	Mode                 string            `json:"mode"`
+	Candidates           []string          `json:"candidates"`
+	Symbols              []string          `json:"symbols"`
+	Timeframes           []string          `json:"timeframes"`
+	DatasetManifestPath  string            `json:"dataset_manifest_path"`
+	ResearchEvidencePath string            `json:"research_evidence_path,omitempty"`
+	RIFStatus            string            `json:"rif_status"`
+	GeneratedSignals     int               `json:"generated_signals"`
+	AllowedSignals       int               `json:"allowed_signals,omitempty"`
+	BlockedSignals       int               `json:"blocked_signals"`
+	WaitObservations     int               `json:"wait_observations"`
+	PendingOutcomes      int               `json:"pending_outcomes"`
+	GradedOutcomes       int               `json:"graded_outcomes"`
+	JournalPath          string            `json:"journal_path"`
+	Warnings             []string          `json:"warnings"`
+	Hashes               map[string]string `json:"hashes"`
 }
 
 // ShadowReadinessReport represents the readiness of a candidate for shadow mode
@@ -324,9 +337,16 @@ type ShadowReadinessReport struct {
 	SchemaVersion         string         `json:"schema_version"`
 	GeneratedAtUTC        string         `json:"generated_at_utc"`
 	CandidateID           string         `json:"candidate_id"`
+	CandidateVersion      string         `json:"candidate_version,omitempty"`
+	CandidateHash         string         `json:"candidate_hash,omitempty"`
+	ConfigurationHash     string         `json:"configuration_hash,omitempty"`
+	ResearchEvidenceHash  string         `json:"research_evidence_hash,omitempty"`
 	TotalSignals          int            `json:"total_signals"`
 	AllowedSignals        int            `json:"allowed_signals"`
 	BlockedSignals        int            `json:"blocked_signals"`
+	WaitObservations      int            `json:"wait_observations"`
+	IdentityConflicts     int            `json:"identity_conflicts"`
+	AmbiguousOutcomes     int            `json:"ambiguous_outcomes"`
 	GradedSignals         int            `json:"graded_signals"`
 	PendingSignals        int            `json:"pending_signals"`
 	OutcomeDistribution   map[string]int `json:"outcome_distribution"`

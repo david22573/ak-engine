@@ -710,7 +710,7 @@ func newTestEngineWithConfig(t *testing.T, candles []protocol.Candle, strat stra
 }
 
 func testCandle(index int, open, high, low, close float64) protocol.Candle {
-	openTime := time.Unix(0, 0).Add(time.Duration(index) * 5 * time.Minute)
+	openTime := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).Add(time.Duration(index) * 5 * time.Minute)
 	closeTime := openTime.Add(5*time.Minute - time.Millisecond)
 	return protocol.Candle{
 		Market:      "futures-um",

@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"sort"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -191,11 +190,6 @@ func (s *R2ParquetSource) LoadCandles(ctx context.Context, req CandleRequest) ([
 		return nil, fmt.Errorf("empty candle result")
 	}
 
-	// Sort candles by OpenTimeMS before validating
-	sort.Slice(allCandles, func(i, j int) bool {
-		return allCandles[i].OpenTimeMS < allCandles[j].OpenTimeMS
-	})
-
 	// Filter candles inside the files by exact requested From/To
 	var filtered []protocol.Candle
 	for _, c := range allCandles {
@@ -213,7 +207,7 @@ func (s *R2ParquetSource) LoadCandles(ctx context.Context, req CandleRequest) ([
 	}
 
 	// Validate using existing ValidateCandles
-	if err := ValidateCandles(req.Interval, filtered); err != nil {
+	if err := ValidateCandlesForRequest(req, filtered); err != nil {
 		return nil, err
 	}
 

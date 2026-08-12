@@ -147,6 +147,8 @@ type FundingLeaderboardRow struct {
 }
 
 type FundingReportSummary struct {
+	AggregationContract                   string         `json:"aggregation_contract"`
+	AggregationHash                       string         `json:"aggregation_hash"`
 	SymbolsEvaluated                      int            `json:"symbols_evaluated"`
 	MonthsEvaluated                       int            `json:"months_evaluated"`
 	EventFilesExpected                    int            `json:"event_files_expected"`
@@ -271,7 +273,14 @@ func buildFundingAggregationReports(cfg fundingAggregationConfig) (FundingLeader
 		return FundingLeaderboardReport{}, FundingJoinAuditReport{}, FundingEventIntegrityAudit{}, err
 	}
 
-	var allEvents []FundingEventRow
+	canonicalRows, err := canonicalFundingAlphaRows(loaded)
+	if err != nil {
+		return FundingLeaderboardReport{}, FundingJoinAuditReport{}, FundingEventIntegrityAudit{}, err
+	}
+	allEvents, err := canonicalFundingEvents(canonicalRows)
+	if err != nil {
+		return FundingLeaderboardReport{}, FundingJoinAuditReport{}, FundingEventIntegrityAudit{}, err
+	}
 	var summaries []FundingChunkSummary
 	var missingFiles []string
 	var zeroMonths []string
@@ -285,13 +294,23 @@ func buildFundingAggregationReports(cfg fundingAggregationConfig) (FundingLeader
 		if !item.EventMissing && len(item.Events) == 0 {
 			zeroMonths = append(zeroMonths, item.Symbol+"|"+item.Month)
 		}
-		allEvents = append(allEvents, item.Events...)
 	}
 
 	groups := buildFundingAggregateRows(allEvents)
-	retained := buildFundingRetainedSummary(loaded)
-	leaderboard := buildFundingLeaderboardRows(allEvents, loaded, cfg)
+	retained, err := buildFundingRetainedSummary(canonicalRows)
+	if err != nil {
+		return FundingLeaderboardReport{}, FundingJoinAuditReport{}, FundingEventIntegrityAudit{}, err
+	}
+	leaderboard, err := buildFundingLeaderboardRows(canonicalRows, loaded, cfg)
+	if err != nil {
+		return FundingLeaderboardReport{}, FundingJoinAuditReport{}, FundingEventIntegrityAudit{}, err
+	}
 	summary := buildFundingReportSummary(cfg, loaded, allEvents, leaderboard, missingFiles, zeroMonths)
+	summary.AggregationContract = fundingSufficientStatisticsContract
+	summary.AggregationHash, err = canonicalFundingAggregationHash(canonicalRows)
+	if err != nil {
+		return FundingLeaderboardReport{}, FundingJoinAuditReport{}, FundingEventIntegrityAudit{}, err
+	}
 	report := FundingLeaderboardReport{
 		Summary:           summary,
 		Leaderboard:       leaderboard,
@@ -301,7 +320,7 @@ func buildFundingAggregationReports(cfg fundingAggregationConfig) (FundingLeader
 		ZeroEventMonths:   zeroMonths,
 	}
 	joinAudit := FundingJoinAuditReport{Summary: summary, Rows: summaries}
-	integrity := buildFundingEventIntegrityAudit(report, loaded, allEvents, cfg)
+	integrity := buildFundingEventIntegrityAudit(report, loaded, canonicalRows, allEvents, cfg)
 	return report, joinAudit, integrity, nil
 }
 
@@ -479,16 +498,20 @@ func buildFundingAggregateRows(events []FundingEventRow) []FundingAggregateRow {
 	return rows
 }
 
-func buildFundingRetainedSummary(loaded []fundingLoadedEventFile) FundingRetainedSummary {
-	var alphaRows []FundingAlphaSummaryRow
-	for _, item := range loaded {
-		alphaRows = append(alphaRows, item.AlphaSummary...)
+func buildFundingRetainedSummary(alphaRows []FundingAlphaSummaryRow) (FundingRetainedSummary, error) {
+	bySymbol, err := buildFundingRetainedRows(alphaRows, retainedGroupSymbol)
+	if err != nil {
+		return FundingRetainedSummary{}, err
 	}
-	return FundingRetainedSummary{
-		BySymbol:  buildFundingRetainedRows(alphaRows, retainedGroupSymbol),
-		ByMonth:   buildFundingRetainedRows(alphaRows, retainedGroupMonth),
-		ByQuarter: buildFundingRetainedRows(alphaRows, retainedGroupQuarter),
+	byMonth, err := buildFundingRetainedRows(alphaRows, retainedGroupMonth)
+	if err != nil {
+		return FundingRetainedSummary{}, err
 	}
+	byQuarter, err := buildFundingRetainedRows(alphaRows, retainedGroupQuarter)
+	if err != nil {
+		return FundingRetainedSummary{}, err
+	}
+	return FundingRetainedSummary{BySymbol: bySymbol, ByMonth: byMonth, ByQuarter: byQuarter}, nil
 }
 
 type fundingRetainedGroupLevel string
@@ -499,7 +522,7 @@ const (
 	retainedGroupQuarter fundingRetainedGroupLevel = "quarter"
 )
 
-func buildFundingRetainedRows(alphaRows []FundingAlphaSummaryRow, level fundingRetainedGroupLevel) []FundingAggregateRow {
+func buildFundingRetainedRows(alphaRows []FundingAlphaSummaryRow, level fundingRetainedGroupLevel) ([]FundingAggregateRow, error) {
 	byKey := make(map[fundingGroupKey][]FundingAlphaSummaryRow)
 	for _, row := range alphaRows {
 		key := fundingGroupKey{
@@ -522,6 +545,10 @@ func buildFundingRetainedRows(alphaRows []FundingAlphaSummaryRow, level fundingR
 
 	rows := make([]FundingAggregateRow, 0, len(byKey))
 	for key, groupRows := range byKey {
+		metrics, err := aggregateFundingSufficientStatistics(groupRows, key.Horizon)
+		if err != nil {
+			return nil, err
+		}
 		rows = append(rows, FundingAggregateRow{
 			Symbol:         key.Symbol,
 			Family:         key.Family,
@@ -530,13 +557,13 @@ func buildFundingRetainedRows(alphaRows []FundingAlphaSummaryRow, level fundingR
 			Year:           key.Year,
 			Quarter:        key.Quarter,
 			Month:          key.Month,
-			FundingMetrics: aggregateMetricsFromAlphaSummaries(groupRows),
+			FundingMetrics: metrics,
 		})
 	}
 	sort.Slice(rows, func(i, j int) bool {
 		return fundingAggregateSortKey(rows[i]) < fundingAggregateSortKey(rows[j])
 	})
-	return rows
+	return rows, nil
 }
 
 func fundingAggregateSortKey(row FundingAggregateRow) string {
@@ -1123,7 +1150,7 @@ func fundingVerdict(row FundingLeaderboardRow, missingData, unsupportedContext b
 	return "research_lead", nil
 }
 
-func buildFundingEventIntegrityAudit(report FundingLeaderboardReport, loaded []fundingLoadedEventFile, events []FundingEventRow, cfg fundingAggregationConfig) FundingEventIntegrityAudit {
+func buildFundingEventIntegrityAudit(report FundingLeaderboardReport, loaded []fundingLoadedEventFile, canonicalRows []FundingAlphaSummaryRow, events []FundingEventRow, cfg fundingAggregationConfig) FundingEventIntegrityAudit {
 	audit := FundingEventIntegrityAudit{
 		Status:                              "PASS",
 		SymbolsEvaluated:                    len(cfg.Symbols),
@@ -1135,7 +1162,7 @@ func buildFundingEventIntegrityAudit(report FundingLeaderboardReport, loaded []f
 		EventFilesExpected:                  report.Summary.EventFilesExpected,
 		EventFilesFound:                     report.Summary.EventFilesFound,
 		AlphaSummaryFilesFound:              alphaSummaryFilesFound(loaded),
-		NativeSummaryRows:                   nativeSummaryRowCount(loaded),
+		NativeSummaryRows:                   len(canonicalRows),
 		RetainedSummaryBySymbolRows:         len(report.RetainedSummary.BySymbol),
 		RetainedSummaryByMonthRows:          len(report.RetainedSummary.ByMonth),
 		RetainedSummaryByQuarterRows:        len(report.RetainedSummary.ByQuarter),
@@ -1168,7 +1195,7 @@ func buildFundingEventIntegrityAudit(report FundingLeaderboardReport, loaded []f
 	audit.NativeSummaryCountsMatch = nativeSummaryCountsMatch(loaded)
 	audit.MalformedSummaryRecords = nativeSummaryRecordProblems(loaded)
 	audit.AggregationMismatches = retainedSummaryAggregationMismatches(report)
-	audit.CoverageMismatches = retainedSummaryCoverageMismatches(loaded, report)
+	audit.CoverageMismatches = retainedSummaryCoverageMismatches(canonicalRows, report)
 	audit.EventCountRowsMissing = eventCountRowsMissing(loaded)
 	if audit.EventCountRowsMissing {
 		audit.Failures = append(audit.Failures, "event_count exists but event rows are missing")
@@ -1209,7 +1236,7 @@ func buildFundingEventIntegrityAudit(report FundingLeaderboardReport, loaded []f
 	addIntegrityCheck("zero-event months reported", true, fmt.Sprintf("zero_event_months=%d", len(report.ZeroEventMonths)))
 	addIntegrityCheck("event rows by symbol reported", true, fmt.Sprintf("symbols=%d", len(audit.EventRowsBySymbol)))
 	addIntegrityCheck("event rows by month reported", true, fmt.Sprintf("months=%d", len(audit.EventRowsByMonth)))
-	addIntegrityCheck("native alpha summaries present", audit.NativeSummaryRows > 0, fmt.Sprintf("alpha_files=%d rows=%d", audit.AlphaSummaryFilesFound, audit.NativeSummaryRows))
+	addIntegrityCheck("canonical sufficient summaries present", audit.NativeSummaryRows > 0, fmt.Sprintf("retained_alpha_files=%d canonical_rows=%d", audit.AlphaSummaryFilesFound, audit.NativeSummaryRows))
 	addIntegrityCheck("native alpha summary counts match funding summaries", audit.NativeSummaryCountsMatch, fmt.Sprintf("malformed=%d", len(audit.MalformedSummaryRecords)))
 	addIntegrityCheck("retained summary by-symbol rows present", audit.RetainedSummaryBySymbolRows > 0, fmt.Sprintf("rows=%d", audit.RetainedSummaryBySymbolRows))
 	addIntegrityCheck("retained summary by-month rows present", audit.RetainedSummaryByMonthRows > 0, fmt.Sprintf("rows=%d", audit.RetainedSummaryByMonthRows))
@@ -1311,6 +1338,12 @@ func missingRealInputs(loaded []fundingLoadedEventFile) bool {
 }
 
 func writeFundingAggregationReports(cfg fundingAggregationConfig, report FundingLeaderboardReport, join FundingJoinAuditReport, integrity FundingEventIntegrityAudit) error {
+	if integrity.Status != "PASS" {
+		return fmt.Errorf("funding aggregation integrity status %q blocks authoritative publication", integrity.Status)
+	}
+	if report.Summary.AggregationContract != fundingSufficientStatisticsContract || report.Summary.AggregationHash == "" || join.Summary.AggregationHash != report.Summary.AggregationHash {
+		return fmt.Errorf("funding aggregation identity is incomplete or inconsistent")
+	}
 	cfg = normalizeFundingAggregationConfig(cfg)
 	if err := os.MkdirAll(cfg.ReportsDir, 0755); err != nil {
 		return err
@@ -1452,14 +1485,6 @@ func alphaSummaryFilesFound(loaded []fundingLoadedEventFile) int {
 	return count
 }
 
-func nativeSummaryRowCount(loaded []fundingLoadedEventFile) int {
-	count := 0
-	for _, item := range loaded {
-		count += len(item.AlphaSummary)
-	}
-	return count
-}
-
 func nativeSummaryCountsMatch(loaded []fundingLoadedEventFile) bool {
 	for _, item := range loaded {
 		if item.AlphaMissing {
@@ -1480,13 +1505,7 @@ func alphaSummaryProofAvailable(item fundingLoadedEventFile) bool {
 		return false
 	}
 	for _, row := range item.AlphaSummary {
-		if row.SummarySchemaVersion == "" || row.ClusterKeyVersion == "" {
-			return false
-		}
-		if row.Symbol == "" || row.Family == "" || row.Side == "" || row.Horizon == "" || row.Month == "" || row.Quarter == "" || row.Year == "" {
-			return false
-		}
-		if len(row.Stats.CostStress) < 4 || len(row.Stats.DelayStress) < 2 || len(row.Stats.BucketMetrics) == 0 {
+		if validateFundingAlphaSummaryRow(row) != nil {
 			return false
 		}
 	}
@@ -1494,17 +1513,22 @@ func alphaSummaryProofAvailable(item fundingLoadedEventFile) bool {
 }
 
 func alphaSummaryEventCount(rows []FundingAlphaSummaryRow) int {
-	count := 0
+	seen := make(map[string]struct{})
 	for _, row := range rows {
-		count += row.Stats.EventCount
+		for _, event := range row.SufficientStatistics.Events {
+			seen[sufficientEventKey(event)] = struct{}{}
+		}
 	}
-	return count
+	return len(seen)
 }
 
 func nativeSummaryRecordProblems(loaded []fundingLoadedEventFile) []string {
 	var problems []string
 	for _, item := range loaded {
 		for i, row := range item.AlphaSummary {
+			if err := validateFundingAlphaSummaryRow(row); err != nil {
+				problems = append(problems, fmt.Sprintf("%s|%s alpha[%d] invalid sufficient statistics: %v", item.Symbol, item.Month, i, err))
+			}
 			if row.Symbol == "" || row.Family == "" || row.Side == "" || row.Horizon == "" || row.Month == "" || row.Quarter == "" || row.Year == "" {
 				problems = append(problems, fmt.Sprintf("%s|%s alpha[%d] missing key fields", item.Symbol, item.Month, i))
 			}
@@ -1550,17 +1574,15 @@ func retainedSummaryAggregationMismatches(report FundingLeaderboardReport) []str
 	return mismatches
 }
 
-func retainedSummaryCoverageMismatches(loaded []fundingLoadedEventFile, report FundingLeaderboardReport) []string {
+func retainedSummaryCoverageMismatches(canonicalRows []FundingAlphaSummaryRow, report FundingLeaderboardReport) []string {
 	var mismatches []string
 	expSymbol := make(map[string]struct{})
 	expMonth := make(map[string]struct{})
 	expQuarter := make(map[string]struct{})
-	for _, item := range loaded {
-		for _, row := range item.AlphaSummary {
-			expSymbol[row.Symbol+"|"+row.Family+"|"+strings.ToLower(row.Side)+"|"+row.Horizon] = struct{}{}
-			expMonth[row.Symbol+"|"+row.Family+"|"+strings.ToLower(row.Side)+"|"+row.Horizon+"|"+row.Month] = struct{}{}
-			expQuarter[row.Symbol+"|"+row.Family+"|"+strings.ToLower(row.Side)+"|"+row.Horizon+"|"+row.Quarter] = struct{}{}
-		}
+	for _, row := range canonicalRows {
+		expSymbol[row.Symbol+"|"+row.Family+"|"+strings.ToLower(row.Side)+"|"+row.Horizon] = struct{}{}
+		expMonth[row.Symbol+"|"+row.Family+"|"+strings.ToLower(row.Side)+"|"+row.Horizon+"|"+row.Month] = struct{}{}
+		expQuarter[row.Symbol+"|"+row.Family+"|"+strings.ToLower(row.Side)+"|"+row.Horizon+"|"+row.Quarter] = struct{}{}
 	}
 	if len(report.RetainedSummary.BySymbol) != len(expSymbol) {
 		mismatches = append(mismatches, fmt.Sprintf("by_symbol rows=%d expected=%d", len(report.RetainedSummary.BySymbol), len(expSymbol)))
@@ -1573,272 +1595,11 @@ func retainedSummaryCoverageMismatches(loaded []fundingLoadedEventFile, report F
 	}
 	return mismatches
 }
-func aggregateMetricsFromAlphaSummaries(rows []FundingAlphaSummaryRow) FundingMetrics {
-	var m FundingMetrics
-	m.BaselineCostBps = 5
-	m.FundingBucketCounts = make(map[string]int)
-	m.RegimeBucketCounts = make(map[string]int)
-	m.MarketBetaBucketCounts = make(map[string]int)
-
-	var gross2024Profit, gross2024Loss float64
-	var gross2025Profit, gross2025Loss float64
-
-	monthPositiveContrib := make(map[string]float64)
-	quarterReturnsProfit := make(map[string]float64)
-	quarterReturnsLoss := make(map[string]float64)
-	costs := make(map[float64]FundingCostStressMetric)
-	delays := make(map[int]FundingDelayStressMetric)
-	buckets := make(map[string]FundingBucketMetric)
-
-	for _, row := range rows {
-		if row.Stats.BaselineCostBps > 0 {
-			m.BaselineCostBps = row.Stats.BaselineCostBps
-		}
-		m.EventCount += row.Stats.EventCount
-		m.RawEventCount += row.Stats.RawEventCount
-		m.DeClusteredEventCount += row.Stats.DeClusteredEventCount
-		m.WinCount += row.Stats.WinCount
-		m.LossCount += row.Stats.LossCount
-
-		profit, loss := row.Stats.GrossProfitBps, row.Stats.GrossLossBps
-
-		// approximateGross bridge removed for Phase 10.7I native reports.
-
-		m.GrossProfitBps += profit
-		m.GrossLossBps += loss
-		m.ClusterCount += row.Stats.ClusterCount
-
-		net := profit - loss
-		if net > 0 {
-			monthPositiveContrib[row.Month] += net
-		}
-
-		q := quarterFromMonth(row.Month)
-		quarterReturnsProfit[q] += profit
-		quarterReturnsLoss[q] += loss
-
-		if row.Year == "2024" {
-			gross2024Profit += profit
-			gross2024Loss += loss
-		} else if row.Year == "2025" {
-			gross2025Profit += profit
-			gross2025Loss += loss
-		}
-
-		if row.Stats.EntryDelay1cAvailable {
-			m.EntryDelay1cAvailable = true
-		}
-		if row.Stats.LeakageStatus != "PASS" && row.Stats.LeakageStatus != "" {
-			m.LeakageStatus = row.Stats.LeakageStatus
-		}
-		for k, v := range row.Stats.FundingBucketCounts {
-			m.FundingBucketCounts[k] += v
-		}
-		for k, v := range row.Stats.RegimeBucketCounts {
-			m.RegimeBucketCounts[k] += v
-		}
-		for k, v := range row.Stats.MarketBetaBucketCounts {
-			m.MarketBetaBucketCounts[k] += v
-		}
-		mergeFundingCostMetrics(costs, row.Stats.CostStress)
-		mergeFundingDelayMetrics(delays, row.Stats.DelayStress)
-		mergeFundingBucketMetrics(buckets, row.Stats.BucketMetrics)
+func aggregateFundingAlphaRowsExact(rows []FundingAlphaSummaryRow) (FundingMetrics, error) {
+	if len(rows) == 0 {
+		return FundingMetrics{}, nil
 	}
-
-	m.PFCombined_5bps = roundMetric(safePF(m.GrossProfitBps, m.GrossLossBps))
-	m.PF2024_5bps = roundMetric(safePF(gross2024Profit, gross2024Loss))
-	m.PF2025_5bps = roundMetric(safePF(gross2025Profit, gross2025Loss))
-	m.PFAfter5Bps = m.PFCombined_5bps
-	m.PF = m.PFCombined_5bps
-	m.NetBps = roundMetric(m.GrossProfitBps - m.GrossLossBps)
-
-	if m.EventCount > 0 {
-		m.ExpectancyCombined_5bpsBps = roundMetric((m.GrossProfitBps - m.GrossLossBps) / float64(m.EventCount))
-		m.ExpectancyBpsAfter5Bps = m.ExpectancyCombined_5bpsBps
-		m.AverageReturnBps = m.ExpectancyBpsAfter5Bps
-		m.ExpectancyBps = m.ExpectancyBpsAfter5Bps
-		m.WinRate = roundMetric(float64(m.WinCount) / float64(m.EventCount) * 100)
-	}
-	var count2025 int
-	for _, row := range rows {
-		if row.Year == "2025" {
-			count2025 += row.Stats.EventCount
-		}
-	}
-	if count2025 > 0 {
-		m.Expectancy2025_5bpsBps = roundMetric((gross2025Profit - gross2025Loss) / float64(count2025))
-	}
-	m.CostStress = sortedMergedFundingCostMetrics(costs)
-	for _, cost := range m.CostStress {
-		switch cost.CostBps {
-		case 5:
-			m.CostAdjustedExpectancyBps5 = cost.ExpectancyBps
-			m.CostAdjustedProfitFactor5 = cost.PF
-		case 7.5:
-			m.PFAfter7_5Bps = cost.PF
-		case 10:
-			m.PFAfter10Bps = cost.PF
-		case 15:
-			m.PFAfter15Bps = cost.PF
-		}
-	}
-	m.DelayStress = sortedMergedFundingDelayMetrics(delays)
-	for _, delay := range m.DelayStress {
-		if delay.DelayCandles == 1 && delay.Available {
-			m.EntryDelay1cExpectancyBps = delay.ExpectancyBps
-			break
-		}
-	}
-	m.BucketMetrics = sortedMergedFundingBucketMetrics(buckets)
-
-	for _, net := range monthPositiveContrib {
-		if net > 0 {
-			m.PositiveMonthCount++
-		}
-	}
-	top1, top2 := topFundingMonthContributions(monthPositiveContrib)
-	m.Top1MonthContributionPct = roundMetric(top1)
-	m.Top2MonthContributionPct = roundMetric(top2)
-
-	worstQ, bestQ := quarterPFRangeFromProfitLoss(quarterReturnsProfit, quarterReturnsLoss)
-	m.WorstQuarterPF5Bps = roundMetric(worstQ)
-	m.BestQuarterPF5Bps = roundMetric(bestQ)
-
-	if m.LeakageStatus == "" {
-		m.LeakageStatus = "PASS"
-	}
-	if m.GrossProfitBps-m.GrossLossBps > 0 {
-		m.PriceOnlyResult = "positive"
-	} else if m.EventCount > 0 {
-		m.PriceOnlyResult = "negative"
-	} else {
-		m.PriceOnlyResult = "unavailable"
-	}
-
-	return m
-}
-
-func mergeFundingCostMetrics(acc map[float64]FundingCostStressMetric, rows []FundingCostStressMetric) {
-	for _, row := range rows {
-		current := acc[row.CostBps]
-		current.CostBps = row.CostBps
-		current.EventCount += row.EventCount
-		current.DeClusteredEventCount += row.DeClusteredEventCount
-		current.GrossProfitBps += row.GrossProfitBps
-		current.GrossLossBps += row.GrossLossBps
-		current.WinCount += row.WinCount
-		current.LossCount += row.LossCount
-		acc[row.CostBps] = finalizeFundingCostMetric(current)
-	}
-}
-
-func finalizeFundingCostMetric(row FundingCostStressMetric) FundingCostStressMetric {
-	row.GrossProfitBps = roundMetric(row.GrossProfitBps)
-	row.GrossLossBps = roundMetric(row.GrossLossBps)
-	row.NetBps = roundMetric(row.GrossProfitBps - row.GrossLossBps)
-	row.PF = roundMetric(safePF(row.GrossProfitBps, row.GrossLossBps))
-	if row.EventCount > 0 {
-		row.ExpectancyBps = roundMetric(row.NetBps / float64(row.EventCount))
-		row.WinRate = roundMetric(float64(row.WinCount) / float64(row.EventCount) * 100)
-	}
-	return row
-}
-
-func sortedMergedFundingCostMetrics(values map[float64]FundingCostStressMetric) []FundingCostStressMetric {
-	keys := make([]float64, 0, len(values))
-	for key := range values {
-		keys = append(keys, key)
-	}
-	sort.Float64s(keys)
-	out := make([]FundingCostStressMetric, 0, len(keys))
-	for _, key := range keys {
-		out = append(out, finalizeFundingCostMetric(values[key]))
-	}
-	return out
-}
-
-func mergeFundingDelayMetrics(acc map[int]FundingDelayStressMetric, rows []FundingDelayStressMetric) {
-	for _, row := range rows {
-		current := acc[row.DelayCandles]
-		current.DelayCandles = row.DelayCandles
-		current.Label = row.Label
-		current.Available = current.Available || row.Available
-		current.EventCount += row.EventCount
-		current.DeClusteredEventCount += row.DeClusteredEventCount
-		current.GrossProfitBps += row.GrossProfitBps
-		current.GrossLossBps += row.GrossLossBps
-		current.WinCount += row.WinCount
-		current.LossCount += row.LossCount
-		acc[row.DelayCandles] = finalizeFundingDelayMetric(current)
-	}
-}
-
-func finalizeFundingDelayMetric(row FundingDelayStressMetric) FundingDelayStressMetric {
-	row.GrossProfitBps = roundMetric(row.GrossProfitBps)
-	row.GrossLossBps = roundMetric(row.GrossLossBps)
-	row.NetBps = roundMetric(row.GrossProfitBps - row.GrossLossBps)
-	row.PF = roundMetric(safePF(row.GrossProfitBps, row.GrossLossBps))
-	if row.EventCount > 0 {
-		row.ExpectancyBps = roundMetric(row.NetBps / float64(row.EventCount))
-		row.WinRate = roundMetric(float64(row.WinCount) / float64(row.EventCount) * 100)
-	}
-	return row
-}
-
-func sortedMergedFundingDelayMetrics(values map[int]FundingDelayStressMetric) []FundingDelayStressMetric {
-	keys := make([]int, 0, len(values))
-	for key := range values {
-		keys = append(keys, key)
-	}
-	sort.Ints(keys)
-	out := make([]FundingDelayStressMetric, 0, len(keys))
-	for _, key := range keys {
-		out = append(out, finalizeFundingDelayMetric(values[key]))
-	}
-	return out
-}
-
-func mergeFundingBucketMetrics(acc map[string]FundingBucketMetric, rows []FundingBucketMetric) {
-	for _, row := range rows {
-		key := row.BucketType + "|" + row.Bucket
-		current := acc[key]
-		current.BucketType = row.BucketType
-		current.Bucket = row.Bucket
-		current.FundingBucket = row.FundingBucket
-		current.RegimeBucket = row.RegimeBucket
-		current.EventCount += row.EventCount
-		current.DeClusteredEventCount += row.DeClusteredEventCount
-		current.GrossProfitBps += row.GrossProfitBps
-		current.GrossLossBps += row.GrossLossBps
-		current.WinCount += row.WinCount
-		current.LossCount += row.LossCount
-		acc[key] = finalizeFundingBucketMetric(current)
-	}
-}
-
-func finalizeFundingBucketMetric(row FundingBucketMetric) FundingBucketMetric {
-	row.GrossProfitBps = roundMetric(row.GrossProfitBps)
-	row.GrossLossBps = roundMetric(row.GrossLossBps)
-	row.NetBps = roundMetric(row.GrossProfitBps - row.GrossLossBps)
-	row.PF = roundMetric(safePF(row.GrossProfitBps, row.GrossLossBps))
-	if row.EventCount > 0 {
-		row.ExpectancyBps = roundMetric(row.NetBps / float64(row.EventCount))
-		row.WinRate = roundMetric(float64(row.WinCount) / float64(row.EventCount) * 100)
-	}
-	return row
-}
-
-func sortedMergedFundingBucketMetrics(values map[string]FundingBucketMetric) []FundingBucketMetric {
-	keys := make([]string, 0, len(values))
-	for key := range values {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	out := make([]FundingBucketMetric, 0, len(keys))
-	for _, key := range keys {
-		out = append(out, finalizeFundingBucketMetric(values[key]))
-	}
-	return out
+	return aggregateFundingSufficientStatistics(rows, rows[0].Horizon)
 }
 
 func safePF(profit, loss float64) float64 {
@@ -1869,25 +1630,11 @@ func quarterPFRangeFromProfitLoss(profits, losses map[string]float64) (float64, 
 	return worst, best
 }
 
-func buildFundingLeaderboardRows(events []FundingEventRow, loaded []fundingLoadedEventFile, cfg fundingAggregationConfig) []FundingLeaderboardRow {
-	eventsByCandidateHorizon := make(map[string][]FundingEventRow)
+func buildFundingLeaderboardRows(summaryRows []FundingAlphaSummaryRow, loaded []fundingLoadedEventFile, cfg fundingAggregationConfig) ([]FundingLeaderboardRow, error) {
 	alphaSummaryByCandidateHorizon := make(map[string][]FundingAlphaSummaryRow)
-
-	// Add all events
-	for _, event := range events {
-		for _, horizon := range defaultFundingHorizons {
-			key := candidateHorizonKey(event.Symbol, event.Family, event.Side, horizon)
-			eventsByCandidateHorizon[key] = append(eventsByCandidateHorizon[key], event)
-		}
-	}
-	// Add all alpha summaries for items that have no raw events
-	for _, item := range loaded {
-		if len(item.Events) == 0 && len(item.AlphaSummary) > 0 {
-			for _, row := range item.AlphaSummary {
-				key := candidateHorizonKey(row.Symbol, row.Family, strings.ToLower(row.Side), row.Horizon)
-				alphaSummaryByCandidateHorizon[key] = append(alphaSummaryByCandidateHorizon[key], row)
-			}
-		}
+	for _, row := range summaryRows {
+		key := candidateHorizonKey(row.Symbol, row.Family, strings.ToLower(row.Side), row.Horizon)
+		alphaSummaryByCandidateHorizon[key] = append(alphaSummaryByCandidateHorizon[key], row)
 	}
 
 	missingEventBySymbol, missingInputBySymbol, zeroBySymbol, unsupportedBySymbol := fundingInputCountsBySymbol(loaded)
@@ -1902,9 +1649,6 @@ func buildFundingLeaderboardRows(events []FundingEventRow, loaded []fundingLoade
 		}
 	}
 	for key := range alphaSummaryByCandidateHorizon {
-		keys = append(keys, key)
-	}
-	for key := range eventsByCandidateHorizon {
 		keys = append(keys, key)
 	}
 
@@ -1923,37 +1667,15 @@ func buildFundingLeaderboardRows(events []FundingEventRow, loaded []fundingLoade
 		var best FundingLeaderboardRow
 		bestSet := false
 		for _, horizon := range defaultFundingHorizons {
-			var metrics FundingMetrics
 			hKey := candidateHorizonKey(symbol, family, side, horizon)
-
-			groupEvents := eventsByCandidateHorizon[hKey]
 			groupSummaries := alphaSummaryByCandidateHorizon[hKey]
-
-			if len(groupEvents) > 0 {
-				metrics = computeFundingMetrics(groupEvents, horizon)
-				// Merge with summaries if any
-				if len(groupSummaries) > 0 {
-					m2 := aggregateMetricsFromAlphaSummaries(groupSummaries)
-					// extremely hacky merge
-					metrics.EventCount += m2.EventCount
-					metrics.RawEventCount += m2.RawEventCount
-					metrics.DeClusteredEventCount += m2.DeClusteredEventCount
-					metrics.WinCount += m2.WinCount
-					metrics.LossCount += m2.LossCount
-					metrics.GrossProfitBps += m2.GrossProfitBps
-					metrics.GrossLossBps += m2.GrossLossBps
-					metrics.PFCombined_5bps = roundMetric(safePF(metrics.GrossProfitBps, metrics.GrossLossBps))
-					metrics.PFAfter5Bps = metrics.PFCombined_5bps
-					if metrics.EventCount > 0 {
-						metrics.ExpectancyCombined_5bpsBps = roundMetric((metrics.GrossProfitBps - metrics.GrossLossBps) / float64(metrics.EventCount))
-						metrics.ExpectancyBpsAfter5Bps = metrics.ExpectancyCombined_5bpsBps
-						metrics.AverageReturnBps = metrics.ExpectancyBpsAfter5Bps
-						metrics.WinRate = roundMetric(float64(metrics.WinCount) / float64(metrics.EventCount) * 100)
-					}
-					// just roughly
+			var metrics FundingMetrics
+			if len(groupSummaries) > 0 {
+				var err error
+				metrics, err = aggregateFundingSufficientStatistics(groupSummaries, horizon)
+				if err != nil {
+					return nil, err
 				}
-			} else if len(groupSummaries) > 0 {
-				metrics = aggregateMetricsFromAlphaSummaries(groupSummaries)
 			}
 
 			row := FundingLeaderboardRow{
@@ -1981,7 +1703,7 @@ func buildFundingLeaderboardRows(events []FundingEventRow, loaded []fundingLoade
 			rows = append(rows, best)
 		}
 	}
-	return rows
+	return rows, nil
 }
 
 func buildFundingReportSummary(cfg fundingAggregationConfig, loaded []fundingLoadedEventFile, events []FundingEventRow, leaderboard []FundingLeaderboardRow, missingFiles, zeroMonths []string) FundingReportSummary {
@@ -1989,18 +1711,6 @@ func buildFundingReportSummary(cfg fundingAggregationConfig, loaded []fundingLoa
 	var leads []string
 	totalEvents := len(events)
 	deClustered := len(deClusterFundingEvents(events))
-
-	if len(events) == 0 {
-		for _, item := range loaded {
-			totalEvents += item.Summary.EventCount
-			// We can't sum declustered exactly, but we can approximate from summary
-			for _, row := range item.AlphaSummary {
-				if row.Family == "NegativeFundingLong" && row.Horizon == "60m" { // Just a rough proxy
-					deClustered += row.Stats.DeClusteredEventCount
-				}
-			}
-		}
-	}
 
 	for _, row := range leaderboard {
 		counts[row.Verdict]++
@@ -2026,31 +1736,8 @@ func buildFundingReportSummary(cfg fundingAggregationConfig, loaded []fundingLoa
 		SummaryOnlySafe:                       true,
 		NativeGrossMetrics:                    true,
 		NativeClusterMetrics:                  true,
-		ApproximateGrossAvailableForLegacy:    true,
+		ApproximateGrossAvailableForLegacy:    false,
 		ApproximateGrossUsedForCurrentReports: false,
 		NativeGrossProfitLossAvailable:        true,
 	}
-}
-
-func approximateGross(pf, expectancy float64, count int) (float64, float64) {
-	if count == 0 {
-		return 0, 0
-	}
-	net := expectancy * float64(count)
-	if pf == 1.0 {
-		return net, 0 // Approximation
-	}
-	if pf == 0 {
-		return 0, -net
-	}
-	if pf > 99999 {
-		return net, 0
-	}
-	loss := net / (pf - 1.0)
-	profit := pf * loss
-	if loss < 0 {
-		loss = -loss
-		profit = -profit
-	}
-	return profit, loss
 }

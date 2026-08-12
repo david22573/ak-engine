@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 
@@ -41,17 +42,12 @@ func ParseIntervalToMS(interval string) (int64, error) {
 	}
 }
 
-// ValidateCandles validates a slice of candles according to roadmap requirements.
-// It sorts the candles by OpenTimeMS first.
+// ValidateCandles validates candles in their original order. Validation never
+// normalizes input because doing so would hide source disorder.
 func ValidateCandles(interval string, candles []protocol.Candle) error {
 	if len(candles) == 0 {
 		return fmt.Errorf("reject empty dataset")
 	}
-
-	// 1. Sort by OpenTimeMS
-	sort.Slice(candles, func(i, j int) bool {
-		return candles[i].OpenTimeMS < candles[j].OpenTimeMS
-	})
 
 	expectedDuration, err := ParseIntervalToMS(interval)
 	if err != nil {
@@ -60,7 +56,22 @@ func ValidateCandles(interval string, candles []protocol.Candle) error {
 
 	for i := 0; i < len(candles); i++ {
 		c := candles[i]
-		// 2. Reject malformed OHLC
+		if c.OpenTimeMS <= 0 {
+			return fmt.Errorf("invalid open time at index %d: %d", i, c.OpenTimeMS)
+		}
+		if c.CloseTimeMS != c.OpenTimeMS+expectedDuration-1 {
+			return fmt.Errorf("invalid close time at index %d: got %d want %d", i, c.CloseTimeMS, c.OpenTimeMS+expectedDuration-1)
+		}
+		if c.Interval != "" && c.Interval != interval {
+			return fmt.Errorf("interval mismatch at index %d: got %q want %q", i, c.Interval, interval)
+		}
+		if !finitePositive(c.Open) || !finitePositive(c.High) || !finitePositive(c.Low) || !finitePositive(c.Close) {
+			return fmt.Errorf("non-finite or nonpositive OHLC at index %d", i)
+		}
+		if !finiteNonnegative(c.Volume) || !finiteNonnegative(c.QuoteAssetVolume) || !finiteNonnegative(c.TakerBuyBaseVolume) || !finiteNonnegative(c.TakerBuyQuoteVolume) {
+			return fmt.Errorf("non-finite or negative volume at index %d", i)
+		}
+		// Reject malformed OHLC.
 		if c.High < c.Low {
 			return fmt.Errorf("malformed OHLC at index %d: High (%f) < Low (%f)", i, c.High, c.Low)
 		}
@@ -73,22 +84,46 @@ func ValidateCandles(interval string, candles []protocol.Candle) error {
 
 		if i > 0 {
 			prev := candles[i-1]
-			// 3. Reject duplicate OpenTimeMS
+			// Reject duplicate OpenTimeMS.
 			if c.OpenTimeMS == prev.OpenTimeMS {
 				return fmt.Errorf("duplicate OpenTimeMS detected: %d", c.OpenTimeMS)
 			}
-			// 4. Reject gaps for fixed intervals
-			if c.OpenTimeMS-prev.OpenTimeMS > expectedDuration {
-				return fmt.Errorf("gap detected: OpenTimeMS jumped from %d to %d (expected step %d)", prev.OpenTimeMS, c.OpenTimeMS, expectedDuration)
-			}
-			// Additional safety: if order is somehow reversed, fail
 			if c.OpenTimeMS < prev.OpenTimeMS {
 				return fmt.Errorf("out of order OpenTimeMS detected: prev %d, current %d", prev.OpenTimeMS, c.OpenTimeMS)
+			}
+			if c.OpenTimeMS-prev.OpenTimeMS != expectedDuration {
+				return fmt.Errorf("cadence mismatch: OpenTimeMS jumped from %d to %d (expected exact step %d)", prev.OpenTimeMS, c.OpenTimeMS, expectedDuration)
 			}
 		}
 	}
 
 	return nil
+}
+
+func ValidateCandlesForRequest(req CandleRequest, candles []protocol.Candle) error {
+	if err := ValidateCandles(req.Interval, candles); err != nil {
+		return err
+	}
+	for i, candle := range candles {
+		if candle.Market != req.Market {
+			return fmt.Errorf("market mismatch at index %d: got %q want %q", i, candle.Market, req.Market)
+		}
+		if candle.Symbol != req.Symbol {
+			return fmt.Errorf("symbol mismatch at index %d: got %q want %q", i, candle.Symbol, req.Symbol)
+		}
+		if candle.Interval != req.Interval {
+			return fmt.Errorf("interval mismatch at index %d: got %q want %q", i, candle.Interval, req.Interval)
+		}
+	}
+	return nil
+}
+
+func finitePositive(value float64) bool {
+	return value > 0 && !math.IsNaN(value) && !math.IsInf(value, 0)
+}
+
+func finiteNonnegative(value float64) bool {
+	return value >= 0 && !math.IsNaN(value) && !math.IsInf(value, 0)
 }
 
 // AnalyzeCandles analyzes a slice of candles and returns metrics.

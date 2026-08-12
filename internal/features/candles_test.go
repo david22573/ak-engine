@@ -7,6 +7,7 @@ import (
 )
 
 func TestBuildRows_WarmupAndFuture(t *testing.T) {
+	const baseMS = int64(1_700_000_000_000)
 	// Create 210 candles (minimum 200 needed for EMA200)
 	var candles []protocol.Candle
 	for i := 0; i < 210; i++ {
@@ -14,8 +15,8 @@ func TestBuildRows_WarmupAndFuture(t *testing.T) {
 			Market:              "futures-um",
 			Symbol:              "LINKUSDT",
 			Interval:            "1m",
-			OpenTimeMS:          int64(i * 60000),
-			CloseTimeMS:         int64((i * 60000) + 59999),
+			OpenTimeMS:          baseMS + int64(i*60000),
+			CloseTimeMS:         baseMS + int64(i*60000) + 59999,
 			Open:                100,
 			High:                101,
 			Low:                 99,
@@ -79,24 +80,25 @@ func TestBuildRows_WarmupAndFuture(t *testing.T) {
 }
 
 func TestBuildRows_ContextReturns(t *testing.T) {
+	const baseMS = int64(1_700_000_000_000)
 	var candles []protocol.Candle
 	var btcCandles []protocol.Candle
 	var ethCandles []protocol.Candle
 	for i := 0; i < 210; i++ {
 		candles = append(candles, protocol.Candle{
 			Market: "futures-um", Symbol: "LINKUSDT", Interval: "1m",
-			OpenTimeMS: int64(i * 60000), CloseTimeMS: int64((i * 60000) + 59999),
+			OpenTimeMS: baseMS + int64(i*60000), CloseTimeMS: baseMS + int64(i*60000) + 59999,
 			Open: 10, High: 11, Low: 9, Close: 10,
 		})
 
 		btcCandles = append(btcCandles, protocol.Candle{
 			Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m",
-			OpenTimeMS: int64(i * 60000), CloseTimeMS: int64((i * 60000) + 59999),
+			OpenTimeMS: baseMS + int64(i*60000), CloseTimeMS: baseMS + int64(i*60000) + 59999,
 			Open: 1000, High: 1100, Low: 900, Close: 1000 + float64(i),
 		})
 		ethCandles = append(ethCandles, protocol.Candle{
 			Market: "futures-um", Symbol: "ETHUSDT", Interval: "1m",
-			OpenTimeMS: int64(i * 60000), CloseTimeMS: int64((i * 60000) + 59999),
+			OpenTimeMS: baseMS + int64(i*60000), CloseTimeMS: baseMS + int64(i*60000) + 59999,
 			Open: 100, High: 110, Low: 90, Close: 100 - float64(i),
 		})
 	}
@@ -124,4 +126,57 @@ func TestBuildRows_ContextReturns(t *testing.T) {
 
 	// btc prev=1040, curr=1100 -> return = 60/1040 = 0.0576923
 	// eth prev=60, curr=0 -> return = -60/60 = -1
+}
+
+func TestBuildRowsUsesTruthfulCloseAvailabilityAcrossIntervals(t *testing.T) {
+	const openMS = int64(1_700_000_000_000)
+	for _, tt := range []struct {
+		interval   string
+		durationMS int64
+	}{
+		{interval: "1m", durationMS: 60_000},
+		{interval: "5m", durationMS: 5 * 60_000},
+		{interval: "1h", durationMS: 60 * 60_000},
+	} {
+		t.Run(tt.interval, func(t *testing.T) {
+			closeMS := openMS + tt.durationMS - 1
+			rows, err := BuildRows([]protocol.Candle{{
+				Market: "futures-um", Symbol: "BTCUSDT", Interval: tt.interval,
+				OpenTimeMS: openMS, CloseTimeMS: closeMS,
+				Open: 100, High: 101, Low: 99, Close: 100, Volume: 1,
+			}}, BuildOptions{Market: "futures-um", Symbol: "BTCUSDT", Interval: tt.interval})
+			if err != nil {
+				t.Fatalf("BuildRows() error = %v", err)
+			}
+			if len(rows) != 1 || rows[0].EventTimeMS != openMS || rows[0].AvailableAtMS != closeMS {
+				t.Fatalf("feature time = %#v, want event=%d availability=%d", rows, openMS, closeMS)
+			}
+		})
+	}
+}
+
+func TestBuildRowsRejectsInvalidCloseTimeWithoutFallback(t *testing.T) {
+	const openMS = int64(1_700_000_000_000)
+	for _, tt := range []struct {
+		name        string
+		interval    string
+		closeTimeMS int64
+	}{
+		{name: "missing 1m", interval: "1m", closeTimeMS: 0},
+		{name: "backdated 1m", interval: "1m", closeTimeMS: openMS - 1},
+		{name: "short 5m", interval: "5m", closeTimeMS: openMS + 60_000 - 1},
+		{name: "short 1h", interval: "1h", closeTimeMS: openMS + 5*60_000 - 1},
+		{name: "exclusive close", interval: "1m", closeTimeMS: openMS + 60_000},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := BuildRows([]protocol.Candle{{
+				Market: "futures-um", Symbol: "BTCUSDT", Interval: tt.interval,
+				OpenTimeMS: openMS, CloseTimeMS: tt.closeTimeMS,
+				Open: 100, High: 101, Low: 99, Close: 100, Volume: 1,
+			}}, BuildOptions{Market: "futures-um", Symbol: "BTCUSDT", Interval: tt.interval})
+			if err == nil {
+				t.Fatal("invalid close time passed")
+			}
+		})
+	}
 }

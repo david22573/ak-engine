@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -280,7 +281,7 @@ func TestFundingFlipConditionsWork(t *testing.T) {
 	}
 }
 
-func TestFundingAggregatorReadsEventJSONLNotDummySummaries(t *testing.T) {
+func TestFundingAggregatorRejectsRawSummaryDisagreement(t *testing.T) {
 	dir := t.TempDir()
 	chunkDir := filepath.Join(dir, "chunks", "AAAUSDT")
 	if err := os.MkdirAll(chunkDir, 0755); err != nil {
@@ -297,17 +298,131 @@ func TestFundingAggregatorReadsEventJSONLNotDummySummaries(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(chunkDir, "2025-01-alpha-summary.json"), []byte(dummy), 0644); err != nil {
 		t.Fatal(err)
 	}
-	report, _, _, err := buildFundingAggregationReports(fundingAggregationConfig{
+	_, _, _, err := buildFundingAggregationReports(fundingAggregationConfig{
 		Symbols:   []string{"AAAUSDT"},
 		Months:    []string{"2025-01"},
 		ChunksDir: filepath.Join(dir, "chunks"),
 	})
+	if err == nil || !strings.Contains(err.Error(), "raw/summary disagreement") {
+		t.Fatalf("conflicting summary was accepted: %v", err)
+	}
+}
+
+func TestFundingAggregationIsPartitionInvariant(t *testing.T) {
+	jan := []FundingEventRow{
+		fundingTestEvent("AAAUSDT", "NegativeFundingLong", "long", fundingTestBaseMS, 25),
+		fundingTestEvent("AAAUSDT", "NegativeFundingLong", "long", fundingTestBaseMS+2*fundingClusterWindowMS, -8),
+	}
+	febBaseMS := int64(1738368000000)
+	feb := []FundingEventRow{
+		fundingTestEvent("AAAUSDT", "NegativeFundingLong", "long", febBaseMS, 14),
+		fundingTestEvent("AAAUSDT", "NegativeFundingLong", "long", febBaseMS+2*fundingClusterWindowMS, -3),
+	}
+	janSummary, err := fundingAlphaRowsFromEvents(jan, "2025-01")
 	if err != nil {
 		t.Fatal(err)
 	}
-	row := findFundingLeaderboardRow(t, report.Leaderboard, "AAAUSDT", "NegativeFundingLong")
-	if row.EventCount != 2 {
-		t.Fatalf("aggregator used dummy summary count, got %d", row.EventCount)
+	febSummary, err := fundingAlphaRowsFromEvents(feb, "2025-02")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	allRaw := []fundingLoadedEventFile{
+		{Symbol: "AAAUSDT", Month: "2025-01", Events: jan},
+		{Symbol: "AAAUSDT", Month: "2025-02", Events: feb},
+	}
+	allSummary := []fundingLoadedEventFile{
+		{Symbol: "AAAUSDT", Month: "2025-01", AlphaSummary: janSummary, EventMissing: true},
+		{Symbol: "AAAUSDT", Month: "2025-02", AlphaSummary: febSummary, EventMissing: true},
+	}
+	mixed := []fundingLoadedEventFile{
+		{Symbol: "AAAUSDT", Month: "2025-01", Events: jan},
+		{Symbol: "AAAUSDT", Month: "2025-02", AlphaSummary: febSummary, EventMissing: true},
+	}
+	reverseMixed := []fundingLoadedEventFile{
+		{Symbol: "AAAUSDT", Month: "2025-02", Events: feb},
+		{Symbol: "AAAUSDT", Month: "2025-01", AlphaSummary: janSummary, EventMissing: true},
+	}
+
+	wantRow, wantHash := fundingPartitionOutcome(t, allRaw)
+	for name, partition := range map[string][]fundingLoadedEventFile{
+		"all_summary":   allSummary,
+		"mixed":         mixed,
+		"reverse_mixed": reverseMixed,
+	} {
+		t.Run(name, func(t *testing.T) {
+			gotRow, gotHash := fundingPartitionOutcome(t, partition)
+			if !reflect.DeepEqual(gotRow.FundingMetrics, wantRow.FundingMetrics) {
+				t.Fatalf("partition changed metrics\ngot:  %+v\nwant: %+v", gotRow.FundingMetrics, wantRow.FundingMetrics)
+			}
+			if gotRow.Verdict != wantRow.Verdict || !reflect.DeepEqual(gotRow.FailedGates, wantRow.FailedGates) {
+				t.Fatalf("partition changed verdict: got %s %v, want %s %v", gotRow.Verdict, gotRow.FailedGates, wantRow.Verdict, wantRow.FailedGates)
+			}
+			if gotHash != wantHash {
+				t.Fatalf("partition changed canonical hash: got %s, want %s", gotHash, wantHash)
+			}
+		})
+	}
+}
+
+func TestFundingSufficientStatisticsRejectTamperingAndDuplicates(t *testing.T) {
+	events := []FundingEventRow{
+		fundingTestEvent("AAAUSDT", "NegativeFundingLong", "long", fundingTestBaseMS, 20),
+	}
+	rows, err := fundingAlphaRowsFromEvents(events, "2025-01")
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := fundingFindAlphaSummary(t, rows, "60m")
+
+	tamperedMetrics := row
+	tamperedMetrics.Stats.EventCount++
+	if err := validateFundingAlphaSummaryRow(tamperedMetrics); err == nil || !strings.Contains(err.Error(), "metrics do not match") {
+		t.Fatalf("tampered metrics were accepted: %v", err)
+	}
+
+	tamperedPayload := row
+	tamperedPayload.SufficientStatistics.Events = append([]FundingSufficientEventV1(nil), row.SufficientStatistics.Events...)
+	tamperedPayload.SufficientStatistics.Events[0].Return60mBps++
+	if err := validateFundingAlphaSummaryRow(tamperedPayload); err == nil || !strings.Contains(err.Error(), "hash mismatch") {
+		t.Fatalf("tampered sufficient statistics were accepted: %v", err)
+	}
+
+	if _, err := aggregateFundingSufficientStatistics([]FundingAlphaSummaryRow{row, row}, "60m"); err == nil || !strings.Contains(err.Error(), "duplicate sufficient event") {
+		t.Fatalf("duplicate partition event was accepted: %v", err)
+	}
+
+	wrongHorizon := row
+	wrongHorizon.Horizon = "61m"
+	wrongHorizon.Stats = computeFundingMetrics(events, wrongHorizon.Horizon)
+	if err := validateFundingAlphaSummaryRow(wrongHorizon); err == nil || !strings.Contains(err.Error(), "calendar or horizon") {
+		t.Fatalf("non-canonical horizon was accepted: %v", err)
+	}
+
+	if _, err := canonicalFundingAlphaRows([]fundingLoadedEventFile{{
+		Symbol: "BBBUSDT", Month: "2025-01", AlphaSummary: rows,
+	}}); err == nil || !strings.Contains(err.Error(), "file partition identity") {
+		t.Fatalf("summary under wrong file partition was accepted: %v", err)
+	}
+}
+
+func TestFundingAggregationPublicationFailsClosed(t *testing.T) {
+	for _, status := range []string{"FAIL", "UNKNOWN"} {
+		t.Run(status, func(t *testing.T) {
+			reportsDir := filepath.Join(t.TempDir(), "reports")
+			err := writeFundingAggregationReports(
+				fundingAggregationConfig{ReportsDir: reportsDir},
+				FundingLeaderboardReport{},
+				FundingJoinAuditReport{},
+				FundingEventIntegrityAudit{Status: status},
+			)
+			if err == nil || !strings.Contains(err.Error(), "blocks authoritative publication") {
+				t.Fatalf("%s integrity audit did not block publication: %v", status, err)
+			}
+			if _, statErr := os.Stat(reportsDir); !os.IsNotExist(statErr) {
+				t.Fatalf("blocked publication created output directory: %v", statErr)
+			}
+		})
 	}
 }
 
@@ -353,7 +468,7 @@ func TestFundingIdenticalPerSymbolDummyMetricsTriggerIntegrityFailure(t *testing
 		{Symbol: "DDDUSDT", Month: "2025-01", Summary: FundingChunkSummary{EventCount: 10}},
 	}
 	report := FundingLeaderboardReport{Summary: FundingReportSummary{EventFilesExpected: 4, EventFilesFound: 4}}
-	audit := buildFundingEventIntegrityAudit(report, loaded, nil, fundingAggregationConfig{})
+	audit := buildFundingEventIntegrityAudit(report, loaded, nil, nil, fundingAggregationConfig{})
 	if audit.Status != "FAIL" || !audit.EventCountRowsMissing {
 		t.Fatalf("dummy metrics not rejected: %+v", audit)
 	}
@@ -605,6 +720,37 @@ func findFundingLeaderboardRow(t *testing.T, rows []FundingLeaderboardRow, symbo
 	}
 	t.Fatalf("row not found for %s %s", symbol, family)
 	return FundingLeaderboardRow{}
+}
+
+func fundingFindAlphaSummary(t *testing.T, rows []FundingAlphaSummaryRow, horizon string) FundingAlphaSummaryRow {
+	t.Helper()
+	for _, row := range rows {
+		if row.Horizon == horizon {
+			return row
+		}
+	}
+	t.Fatalf("alpha summary not found for horizon %s", horizon)
+	return FundingAlphaSummaryRow{}
+}
+
+func fundingPartitionOutcome(t *testing.T, loaded []fundingLoadedEventFile) (FundingLeaderboardRow, string) {
+	t.Helper()
+	rows, err := canonicalFundingAlphaRows(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	leaderboard, err := buildFundingLeaderboardRows(rows, loaded, fundingAggregationConfig{
+		Symbols: []string{"AAAUSDT"},
+		Months:  []string{"2025-01", "2025-02"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	hash, err := canonicalFundingAggregationHash(rows)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return findFundingLeaderboardRow(t, leaderboard, "AAAUSDT", "NegativeFundingLong"), hash
 }
 
 func assertFundingFloatClose(t *testing.T, got, want float64) {

@@ -28,7 +28,7 @@ func TestDefaultRegistryDerivesStableCanonicalIdentity(t *testing.T) {
 	if err != nil || registration.Family != "CompressionBreakout" || registration.Side != "LONG" {
 		t.Fatalf("alias did not resolve to canonical evaluation rule: %#v %v", registration, err)
 	}
-	if canonical.CandidateVersion == "" || canonical.RegistryVersion == "" || len(canonical.Implementation.Files) != 1 {
+	if canonical.CandidateVersion == "" || canonical.RegistryVersion == "" || len(canonical.Implementation.Files) != 3 {
 		t.Fatalf("candidate identity is incomplete: %#v", canonical)
 	}
 	if _, err := registry.Resolve(root, "not-registered", "LONG"); err == nil {
@@ -225,7 +225,10 @@ func TestConfigurationChangesAndStrictParsing(t *testing.T) {
 func implementationRepositoryFixture(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
-	paths := map[string]struct{}{"internal/app/evaluate_candidate_deep.go": {}}
+	paths := map[string]struct{}{
+		"internal/app/evaluate_candidate_deep.go": {},
+		"internal/executionseries/spec.go":        {},
+	}
 	for _, file := range append(append([]ImplementationFile(nil), featureImplementationFiles...), regimeImplementationFiles...) {
 		paths[file.Path] = struct{}{}
 	}

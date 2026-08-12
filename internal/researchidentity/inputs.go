@@ -13,17 +13,20 @@ import (
 
 	"github.com/david22573/ak-engine/internal/canonicalcontract"
 	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/executionseries"
 	"github.com/david22573/ak-engine/internal/features"
 	"github.com/david22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/temporal"
 )
 
 const (
 	consumedInputEncoding   = "ak.canonical.json.v1"
 	seriesEncoding          = "ak.canonical.json.v1"
-	seriesGenerationVersion = "deep-return-series.v1"
+	seriesGenerationVersion = executionseries.GenerationVersion
 )
 
 var featureImplementationFiles = []ImplementationFile{
+	{Path: "internal/temporal/contract.go", InclusionReason: "canonical feature-time ordering and candle-close availability"},
 	{Path: "internal/features/candles.go", InclusionReason: "feature generation from candle inputs"},
 	{Path: "internal/features/correlation.go", InclusionReason: "cross-asset feature behavior"},
 	{Path: "internal/features/liquidity.go", InclusionReason: "liquidity feature behavior"},
@@ -35,6 +38,7 @@ var featureImplementationFiles = []ImplementationFile{
 }
 
 var regimeImplementationFiles = []ImplementationFile{
+	{Path: "internal/temporal/contract.go", InclusionReason: "canonical regime source-time and availability ordering"},
 	{Path: "internal/regime/classifier.go", InclusionReason: "regime classification behavior"},
 	{Path: "internal/regime/reader.go", InclusionReason: "regime artifact decoding"},
 	{Path: "internal/regime/report.go", InclusionReason: "regime artifact encoding"},
@@ -173,8 +177,11 @@ func validateFeatureRows(rows []features.Row, config ResolvedResearchConfigurati
 		return err
 	}
 	for i, row := range rows {
-		if row.EventTimeMS <= 0 || row.AvailableAtMS <= 0 || row.AvailableAtMS > row.EventTimeMS || time.UnixMilli(row.AvailableAtMS).After(cutoff) {
-			return fmt.Errorf("feature row %d has invalid or late availability", i)
+		if err := (temporal.Observation{SourceEventMS: row.EventTimeMS, SourceAvailableMS: row.AvailableAtMS, DecisionMS: row.AvailableAtMS}).Validate(); err != nil {
+			return fmt.Errorf("feature row %d temporal contract: %w", i, err)
+		}
+		if time.UnixMilli(row.AvailableAtMS).After(cutoff) {
+			return fmt.Errorf("feature row %d is unavailable at point-in-time cutoff", i)
 		}
 		if i > 0 && row.EventTimeMS <= rows[i-1].EventTimeMS {
 			return fmt.Errorf("feature timestamps are not strictly increasing")
@@ -205,8 +212,11 @@ func validateRegimeRows(labels []regime.Label, config ResolvedResearchConfigurat
 		return err
 	}
 	for i, label := range labels {
-		if label.EventTimeMS <= 0 || label.AvailableAtMS <= 0 || label.AvailableAtMS > label.EventTimeMS || time.UnixMilli(label.AvailableAtMS).After(cutoff) {
-			return fmt.Errorf("regime row %d has invalid or late availability", i)
+		if err := (temporal.Observation{SourceEventMS: label.EventTimeMS, SourceAvailableMS: label.AvailableAtMS, DecisionMS: label.AvailableAtMS}).Validate(); err != nil {
+			return fmt.Errorf("regime row %d temporal contract: %w", i, err)
+		}
+		if time.UnixMilli(label.AvailableAtMS).After(cutoff) {
+			return fmt.Errorf("regime row %d is unavailable at point-in-time cutoff", i)
 		}
 		if i > 0 && label.AvailableAtMS <= labels[i-1].AvailableAtMS {
 			return fmt.Errorf("regime availability timestamps are not strictly increasing")
@@ -371,6 +381,9 @@ func validateActualConsumedInputs(request DerivationRequest, dataset DatasetIden
 			return fmt.Errorf("evaluation event timestamp %d has no consumed candle", i)
 		}
 	}
+	if err := validateCanonicalEvaluationSeries(request); err != nil {
+		return err
+	}
 	start, err := parseUTC(dataset.StartUTC)
 	if err != nil {
 		return err
@@ -396,6 +409,45 @@ func validateActualConsumedInputs(request DerivationRequest, dataset DatasetIden
 		return fmt.Errorf("claimed consumed candle rows differ from exact parquet objects")
 	}
 	return nil
+}
+
+func validateCanonicalEvaluationSeries(request DerivationRequest) error {
+	if len(request.Returns) != len(request.EvaluationEventTimestamps) || len(request.Timestamps) != len(request.EvaluationEventTimestamps) {
+		return fmt.Errorf("canonical evaluation series counts do not match evaluation events")
+	}
+	featuresByEvent := make(map[int64]features.Row, len(request.FeatureRows))
+	for _, row := range request.FeatureRows {
+		featuresByEvent[row.EventTimeMS] = row
+	}
+	for i, eventTimeMS := range request.EvaluationEventTimestamps {
+		row, exists := featuresByEvent[eventTimeMS]
+		if !exists {
+			return fmt.Errorf("canonical series event %d has no feature row", i)
+		}
+		window, err := executionseries.Resolve(
+			eventTimeMS, row.AvailableAtMS, row.AvailableAtMS,
+			request.Candles, request.Configuration.SeriesEntryDelayCandles,
+			request.Configuration.SeriesHorizonMinutes, 0,
+		)
+		if err != nil {
+			return fmt.Errorf("canonical series event %d: %w", i, err)
+		}
+		expected := canonicalSignedReturn(window.EntryPrice, window.ExitPrice, request.CandidateSide) - request.Configuration.SeriesCostBPS/10_000.0
+		if math.Abs(request.Returns[i]-expected) > 1e-12 {
+			return fmt.Errorf("canonical series return %d differs from execution specification", i)
+		}
+		if request.Timestamps[i] != eventTimeMS {
+			return fmt.Errorf("canonical series timestamp %d differs from evaluation event", i)
+		}
+	}
+	return nil
+}
+
+func canonicalSignedReturn(entry, exit float64, side string) float64 {
+	if strings.EqualFold(side, "SHORT") {
+		return (entry - exit) / entry
+	}
+	return (exit - entry) / entry
 }
 
 func deriveSeriesIdentity(returns []float64, timestamps []int64, startMS, endMS int64) (EvaluationSeriesIdentity, error) {

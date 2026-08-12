@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/david22573/ak-engine/internal/canonicalcontract"
+	"github.com/david22573/ak-engine/internal/executionseries"
 	"github.com/david22573/ak-engine/internal/researchidentity"
 )
 
@@ -51,6 +52,9 @@ func (b *Bridge) EmitResearchDiagnostics(input ResearchAssessment) (ResearchDiag
 
 	identityAssessment, identityErr := b.identityDeriver.Derive(input.IdentityRequest)
 	identityAssessment, identityErr = normalizeIdentityAssessment(identityAssessment, identityErr)
+	if identityAssessment.Status == researchidentity.StatusComplete && (identityAssessment.Identity == nil || identityAssessment.Identity.Series.SeriesGenerationVersion != input.ExecutionSeriesGeneration) {
+		return result, fmt.Errorf("%w: classification series does not match derived evaluation series", ErrInvalidResearchInput)
+	}
 	if seriesErr := validateBridgeMetricSeries(input.IdentityRequest.Returns, input.IdentityRequest.Timestamps); seriesErr != nil && identityAssessment.Status == researchidentity.StatusComplete {
 		identityAssessment = researchidentity.Assessment{Status: researchidentity.StatusSeriesIncomplete, Findings: []researchidentity.Finding{{
 			Code: "BRIDGE_SERIES_VALIDATION_FAILED", Domain: "series", Reason: seriesErr.Error(), Status: researchidentity.StatusSeriesIncomplete, Blocking: true,
@@ -280,7 +284,57 @@ func validateResearchAssessment(input ResearchAssessment) error {
 	if !isKnownResearchClassification(input.Classification) {
 		return fmt.Errorf("%w: unknown research classification %q", ErrInvalidResearchInput, input.Classification)
 	}
+	derivedClassification, err := classificationFromGates(input.ClassificationGates)
+	if err != nil {
+		return fmt.Errorf("%w: %v", ErrInvalidResearchInput, err)
+	}
+	if input.Classification != derivedClassification {
+		return fmt.Errorf("%w: classification %q disagrees with gate-derived %q", ErrInvalidResearchInput, input.Classification, derivedClassification)
+	}
+	if input.ExecutionSeriesGeneration != executionseries.GenerationVersion {
+		return fmt.Errorf("%w: execution series generation %q is not canonical %q", ErrInvalidResearchInput, input.ExecutionSeriesGeneration, executionseries.GenerationVersion)
+	}
 	return nil
+}
+
+func classificationFromGates(gates []ClassificationGate) (string, error) {
+	if len(gates) == 0 {
+		return "", fmt.Errorf("classification gates are required")
+	}
+	seen := make(map[string]struct{}, len(gates))
+	failed := 0
+	criticalFailed := false
+	seriesGatePassed := false
+	for _, gate := range gates {
+		name := strings.TrimSpace(gate.Name)
+		if name == "" {
+			return "", fmt.Errorf("classification gate name is required")
+		}
+		if _, exists := seen[name]; exists {
+			return "", fmt.Errorf("duplicate classification gate %q", name)
+		}
+		seen[name] = struct{}{}
+		if name == "execution_series_identity" && gate.Passed && gate.Critical {
+			seriesGatePassed = true
+		}
+		if !gate.Passed {
+			failed++
+			criticalFailed = criticalFailed || gate.Critical
+		}
+	}
+	if !seriesGatePassed {
+		return "", fmt.Errorf("passing critical execution_series_identity gate is required")
+	}
+	if failed == 0 {
+		return ResearchStatusValidatedResearchLead, nil
+	}
+	if criticalFailed {
+		return ResearchStatusRejected, nil
+	}
+	if failed <= 2 {
+		return ResearchStatusFragile, nil
+	}
+	return ResearchStatusRejected, nil
 }
 
 func isKnownResearchClassification(classification string) bool {

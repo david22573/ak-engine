@@ -128,7 +128,11 @@ func BuildDiagnosticSmokeFixture(parent string) (DiagnosticSmokeFixture, error) 
 	if err != nil {
 		return DiagnosticSmokeFixture{}, err
 	}
-	earliestAvailableUTC, err := canonicalcontract.FormatTimestampMillis(startMS + 60_000)
+	earliestAvailableUTC, err := canonicalcontract.FormatTimestampMillis(startMS + 59_999)
+	if err != nil {
+		return DiagnosticSmokeFixture{}, err
+	}
+	latestAvailableUTC, err := canonicalcontract.FormatTimestampMillis(endMS + 59_999)
 	if err != nil {
 		return DiagnosticSmokeFixture{}, err
 	}
@@ -155,7 +159,7 @@ func BuildDiagnosticSmokeFixture(parent string) (DiagnosticSmokeFixture, error) 
 		Objects: []DatasetObjectIdentity{{
 			RelativePath: objectRelative, Symbol: "BTCUSDT", Interval: "1m", SizeBytes: objectSize,
 			SHA256: objectHash, RowCount: rowCount, WindowRowCount: rowCount,
-			EarliestEventUTC: startUTC, LatestEventUTC: endUTC, LatestAvailableUTC: cutoffUTC,
+			EarliestEventUTC: startUTC, LatestEventUTC: endUTC, LatestAvailableUTC: latestAvailableUTC,
 		}},
 	}
 	dataset.ArtifactHash, err = artifactHash(historianDatasetSchemaName, historianDatasetRole, dataset)
@@ -179,7 +183,7 @@ func BuildDiagnosticSmokeFixture(parent string) (DiagnosticSmokeFixture, error) 
 		SourceArchiveHash: archive.ArtifactHash, AvailabilityPolicyHash: availability.ArtifactHash,
 		CoveragePolicyHash: coveragePolicy.ArtifactHash, EvaluationCutoffUTC: cutoffUTC,
 		EarliestEventUTC: startUTC, LatestEventUTC: endUTC, EarliestAvailableUTC: earliestAvailableUTC,
-		LatestAvailableUTC: cutoffUTC, FullWindowCoverage: true, AvailabilityDelayNS: int64(time.Minute),
+		LatestAvailableUTC: latestAvailableUTC, FullWindowCoverage: true, AvailabilityDelayNS: int64(time.Minute),
 	}
 	pit.ArtifactHash, err = artifactHash(historianPITSchemaName, historianPITRole, pit)
 	if err != nil {
@@ -219,15 +223,18 @@ func BuildDiagnosticSmokeFixture(parent string) (DiagnosticSmokeFixture, error) 
 	featureRows := make([]features.Row, rowCount)
 	labels := make([]regime.Label, rowCount)
 	candles := make([]protocol.Candle, rowCount)
-	timestamps := make([]int64, rowCount)
-	returns := make([]float64, rowCount)
+	timestamps := make([]int64, 0, rowCount-1)
+	returns := make([]float64, 0, rowCount-1)
 	for i := 0; i < rowCount; i++ {
 		timestamp := startMS + int64(i)*60_000
-		featureRows[i] = features.Row{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: timestamp, AvailableAtMS: timestamp, Close: float64(100 + i), EMA20: 99, EMA50: 98}
-		labels[i] = regime.Label{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: timestamp, AvailableAtMS: timestamp, Volatility: "compressed", Trend: "bull_trend", Liquidity: "normal", MarketBeta: "btc_up", Sentiment: "unknown", Composite: "compressed_range"}
+		availableAtMS := timestamp + 59_999
+		featureRows[i] = features.Row{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: timestamp, AvailableAtMS: availableAtMS, Close: float64(100 + i), EMA20: 99, EMA50: 98}
+		labels[i] = regime.Label{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: timestamp, AvailableAtMS: availableAtMS, Volatility: "compressed", Trend: "bull_trend", Liquidity: "normal", MarketBeta: "btc_up", Sentiment: "unknown", Composite: "compressed_range"}
 		candles[i] = protocol.Candle{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", OpenTimeMS: timestamp, CloseTimeMS: timestamp + 59_999, Open: 100, High: 101, Low: 99, Close: 100.5, Volume: 1, QuoteAssetVolume: 100, NumberOfTrades: 1, TakerBuyBaseVolume: 0.5, TakerBuyQuoteVolume: 50}
-		timestamps[i] = timestamp
-		returns[i] = float64((i%5)-2) / 1000
+		if i < rowCount-1 {
+			timestamps = append(timestamps, timestamp)
+			returns = append(returns, 0.0045)
+		}
 	}
 	featurePath := filepath.Join(evidenceRoot, "features.json")
 	regimePath := filepath.Join(evidenceRoot, "regimes.json")
@@ -241,6 +248,7 @@ func BuildDiagnosticSmokeFixture(parent string) (DiagnosticSmokeFixture, error) 
 	if err != nil {
 		return DiagnosticSmokeFixture{}, err
 	}
+	config.SeriesHorizonMinutes = 1
 	request := DerivationRequest{
 		RepositoryRoot: repositoryRoot, CandidateFamily: "CompressionBreakout", CandidateSide: "LONG", Configuration: config,
 		HistorianManifestPath: manifestPath, DatasetRoot: datasetRoot, FeatureArtifactPath: featurePath, RegimeArtifactPath: regimePath,
@@ -259,6 +267,7 @@ func BuildDiagnosticSmokeFixture(parent string) (DiagnosticSmokeFixture, error) 
 func writeSmokeImplementationFiles(root string) error {
 	paths := map[string]struct{}{}
 	paths["internal/app/evaluate_candidate_deep.go"] = struct{}{}
+	paths["internal/executionseries/spec.go"] = struct{}{}
 	for _, file := range featureImplementationFiles {
 		paths[file.Path] = struct{}{}
 	}

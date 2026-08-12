@@ -22,6 +22,11 @@ var (
 	jrfOut         string
 )
 
+const (
+	researchDerivativeAvailabilityPolicyID      = "ak.historian.derivatives.observed_ingestion"
+	researchDerivativeAvailabilityPolicyVersion = "1"
+)
+
 var joinResearchFeaturesCmd = &cobra.Command{
 	Use:   "join-research-features",
 	Short: "Join research-only derivatives features by as-of availability",
@@ -71,19 +76,23 @@ func init() {
 }
 
 type researchDerivativeRow struct {
-	Source        string  `json:"source"`
-	Dataset       string  `json:"dataset"`
-	Market        string  `json:"market"`
-	Symbol        string  `json:"symbol"`
-	Interval      string  `json:"interval"`
-	EventTimeMS   int64   `json:"event_time_ms"`
-	AvailableAtMS int64   `json:"available_at_ms"`
-	IngestedAtMS  int64   `json:"ingested_at_ms"`
-	Value         float64 `json:"value"`
-	Extra1        float64 `json:"extra_1"`
-	Extra2        float64 `json:"extra_2"`
-	SourceVersion string  `json:"source_version"`
+	Source                    string  `json:"source"`
+	Dataset                   string  `json:"dataset"`
+	Market                    string  `json:"market"`
+	Symbol                    string  `json:"symbol"`
+	Interval                  string  `json:"interval"`
+	EventTimeMS               int64   `json:"event_time_ms"`
+	AvailableAtMS             int64   `json:"available_at_ms"`
+	IngestedAtMS              int64   `json:"ingested_at_ms"`
+	Value                     float64 `json:"value"`
+	Extra1                    float64 `json:"extra_1"`
+	Extra2                    float64 `json:"extra_2"`
+	SourceVersion             string  `json:"source_version"`
+	AvailabilityPolicyID      string  `json:"availability_policy_id"`
+	AvailabilityPolicyVersion string  `json:"availability_policy_version"`
 }
+
+type ResearchDerivativeProvenance researchDerivativeRow
 
 type ResearchFeatureRow struct {
 	features.Row
@@ -91,29 +100,39 @@ type ResearchFeatureRow struct {
 }
 
 type ResearchDerivativeFeatures struct {
-	FundingRate                *float64 `json:"funding_rate"`
-	FundingRateUnknown         bool     `json:"funding_rate_unknown"`
-	FundingRateZScore          *float64 `json:"funding_rate_zscore"`
-	FundingRateZScoreUnknown   bool     `json:"funding_rate_zscore_unknown"`
-	FundingRateChange          *float64 `json:"funding_rate_change"`
-	FundingRateChangeUnknown   bool     `json:"funding_rate_change_unknown"`
-	OpenInterestChange         *float64 `json:"open_interest_change"`
-	OpenInterestChangeUnknown  bool     `json:"open_interest_change_unknown"`
-	TakerBuySellImbalance      *float64 `json:"taker_buy_sell_imbalance"`
-	TakerBuySellUnknown        bool     `json:"taker_buy_sell_imbalance_unknown"`
-	LongShortRatio             *float64 `json:"long_short_ratio"`
-	LongShortRatioUnknown      bool     `json:"long_short_ratio_unknown"`
-	TopTraderLongShortRatio    *float64 `json:"top_trader_long_short_ratio"`
-	TopTraderLongShortUnknown  bool     `json:"top_trader_long_short_ratio_unknown"`
-	PositioningCrowdedLong     *bool    `json:"positioning_crowded_long"`
-	PositioningCrowdedShort    *bool    `json:"positioning_crowded_short"`
-	PositioningUnwindCandidate *bool    `json:"positioning_unwind_candidate"`
-	PositioningUnknown         bool     `json:"positioning_unknown"`
+	Provenance                 []ResearchDerivativeProvenance `json:"provenance"`
+	FundingRate                *float64                       `json:"funding_rate"`
+	FundingRateUnknown         bool                           `json:"funding_rate_unknown"`
+	FundingRateZScore          *float64                       `json:"funding_rate_zscore"`
+	FundingRateZScoreUnknown   bool                           `json:"funding_rate_zscore_unknown"`
+	FundingRateChange          *float64                       `json:"funding_rate_change"`
+	FundingRateChangeUnknown   bool                           `json:"funding_rate_change_unknown"`
+	OpenInterestChange         *float64                       `json:"open_interest_change"`
+	OpenInterestChangeUnknown  bool                           `json:"open_interest_change_unknown"`
+	TakerBuySellImbalance      *float64                       `json:"taker_buy_sell_imbalance"`
+	TakerBuySellUnknown        bool                           `json:"taker_buy_sell_imbalance_unknown"`
+	LongShortRatio             *float64                       `json:"long_short_ratio"`
+	LongShortRatioUnknown      bool                           `json:"long_short_ratio_unknown"`
+	TopTraderLongShortRatio    *float64                       `json:"top_trader_long_short_ratio"`
+	TopTraderLongShortUnknown  bool                           `json:"top_trader_long_short_ratio_unknown"`
+	PositioningCrowdedLong     *bool                          `json:"positioning_crowded_long"`
+	PositioningCrowdedShort    *bool                          `json:"positioning_crowded_short"`
+	PositioningUnwindCandidate *bool                          `json:"positioning_unwind_candidate"`
+	PositioningUnknown         bool                           `json:"positioning_unknown"`
 }
 
 func joinResearchFeatureRows(rows []features.Row, derivativesRows []researchDerivativeRow) ([]ResearchFeatureRow, error) {
 	if err := validateResearchDerivativeRows(derivativesRows); err != nil {
 		return nil, err
+	}
+	allowedScopes := make(map[string]struct{}, len(rows))
+	for _, row := range rows {
+		allowedScopes[row.Market+"|"+strings.ToUpper(row.Symbol)] = struct{}{}
+	}
+	for i, row := range derivativesRows {
+		if _, ok := allowedScopes[row.Market+"|"+strings.ToUpper(row.Symbol)]; !ok {
+			return nil, fmt.Errorf("derivative row %d: market/symbol does not match feature input", i)
+		}
 	}
 	byKey := make(map[string][]researchDerivativeRow)
 	for _, row := range derivativesRows {
@@ -133,6 +152,7 @@ func joinResearchFeatureRows(rows []features.Row, derivativesRows []researchDeri
 			return asOfDerivative(byKey[researchDerivativeKey(row.Market, row.Symbol, dataset)], row.AvailableAtMS)
 		}
 		features := ResearchDerivativeFeatures{
+			Provenance:                []ResearchDerivativeProvenance{},
 			FundingRateUnknown:        true,
 			FundingRateZScoreUnknown:  true,
 			FundingRateChangeUnknown:  true,
@@ -143,6 +163,7 @@ func joinResearchFeatureRows(rows []features.Row, derivativesRows []researchDeri
 			PositioningUnknown:        true,
 		}
 		if current, idx, ok := lookup("funding_rate"); ok {
+			features.Provenance = appendDerivativeProvenance(features.Provenance, current)
 			features.FundingRate = floatPtr(current.Value)
 			features.FundingRateUnknown = false
 			if idx > 0 {
@@ -156,11 +177,13 @@ func joinResearchFeatureRows(rows []features.Row, derivativesRows []researchDeri
 			}
 		}
 		if current, idx, ok := lookup("open_interest"); ok && idx > 0 {
+			features.Provenance = appendDerivativeProvenance(features.Provenance, current)
 			prev := byKey[researchDerivativeKey(row.Market, row.Symbol, "open_interest")][idx-1]
 			features.OpenInterestChange = floatPtr(current.Value - prev.Value)
 			features.OpenInterestChangeUnknown = false
 		}
 		if current, _, ok := lookup("taker_buy_sell_volume"); ok {
+			features.Provenance = appendDerivativeProvenance(features.Provenance, current)
 			total := current.Extra1 + current.Extra2
 			if total != 0 {
 				features.TakerBuySellImbalance = floatPtr((current.Extra1 - current.Extra2) / total)
@@ -168,10 +191,12 @@ func joinResearchFeatureRows(rows []features.Row, derivativesRows []researchDeri
 			}
 		}
 		if current, _, ok := lookup("long_short_ratio"); ok {
+			features.Provenance = appendDerivativeProvenance(features.Provenance, current)
 			features.LongShortRatio = floatPtr(current.Value)
 			features.LongShortRatioUnknown = false
 		}
 		if current, _, ok := lookup("top_trader_long_short_ratio"); ok {
+			features.Provenance = appendDerivativeProvenance(features.Provenance, current)
 			features.TopTraderLongShortRatio = floatPtr(current.Value)
 			features.TopTraderLongShortUnknown = false
 		}
@@ -179,6 +204,10 @@ func joinResearchFeatureRows(rows []features.Row, derivativesRows []researchDeri
 		out = append(out, ResearchFeatureRow{Row: row, Derivatives: features})
 	}
 	return out, nil
+}
+
+func appendDerivativeProvenance(current []ResearchDerivativeProvenance, row researchDerivativeRow) []ResearchDerivativeProvenance {
+	return append(current, ResearchDerivativeProvenance(row))
 }
 
 func applyPositioningFlags(f *ResearchDerivativeFeatures) {
@@ -221,6 +250,32 @@ func validateResearchDerivativeRows(rows []researchDerivativeRow) error {
 		}
 		if row.AvailableAtMS < row.EventTimeMS {
 			return fmt.Errorf("derivative row %d: available_at_ms < event_time_ms", i)
+		}
+		if row.IngestedAtMS <= 0 {
+			return fmt.Errorf("derivative row %d: ingested_at_ms <= 0", i)
+		}
+		if row.AvailableAtMS != row.IngestedAtMS {
+			return fmt.Errorf("derivative row %d: observed-ingestion availability must equal ingested_at_ms", i)
+		}
+		if row.Source == "" || row.Dataset == "" || row.Market == "" || row.Symbol == "" || row.Interval == "" || row.SourceVersion == "" {
+			return fmt.Errorf("derivative row %d: incomplete source provenance", i)
+		}
+		if row.Source != "binance" || row.Market != "futures-um" {
+			return fmt.Errorf("derivative row %d: unsupported source/market %q/%q", i, row.Source, row.Market)
+		}
+		if row.Dataset == "funding_rate" && row.Interval != "8h" {
+			return fmt.Errorf("derivative row %d: funding_rate interval %q is not 8h", i, row.Interval)
+		}
+		switch row.Dataset {
+		case "funding_rate", "open_interest", "long_short_ratio", "top_trader_long_short_ratio", "taker_buy_sell_volume":
+		default:
+			return fmt.Errorf("derivative row %d: unsupported dataset %q", i, row.Dataset)
+		}
+		if row.AvailabilityPolicyID != researchDerivativeAvailabilityPolicyID || row.AvailabilityPolicyVersion != researchDerivativeAvailabilityPolicyVersion {
+			return fmt.Errorf("derivative row %d: unsupported availability policy %q version %q", i, row.AvailabilityPolicyID, row.AvailabilityPolicyVersion)
+		}
+		if math.IsNaN(row.Value) || math.IsInf(row.Value, 0) || math.IsNaN(row.Extra1) || math.IsInf(row.Extra1, 0) || math.IsNaN(row.Extra2) || math.IsInf(row.Extra2, 0) {
+			return fmt.Errorf("derivative row %d: non-finite value", i)
 		}
 	}
 	return nil
@@ -360,18 +415,20 @@ func readResearchDerivativeRowsCSV(path string) ([]researchDerivativeRow, error)
 	var rows []researchDerivativeRow
 	for _, record := range records[1:] {
 		rows = append(rows, researchDerivativeRow{
-			Source:        csvString(record, header, "source"),
-			Dataset:       csvString(record, header, "dataset"),
-			Market:        csvString(record, header, "market"),
-			Symbol:        csvString(record, header, "symbol"),
-			Interval:      csvString(record, header, "interval"),
-			EventTimeMS:   csvInt64(record, header, "event_time_ms"),
-			AvailableAtMS: csvInt64(record, header, "available_at_ms"),
-			IngestedAtMS:  csvInt64(record, header, "ingested_at_ms"),
-			Value:         csvFloat(record, header, "value"),
-			Extra1:        csvFloat(record, header, "extra_1"),
-			Extra2:        csvFloat(record, header, "extra_2"),
-			SourceVersion: csvString(record, header, "source_version"),
+			Source:                    csvString(record, header, "source"),
+			Dataset:                   csvString(record, header, "dataset"),
+			Market:                    csvString(record, header, "market"),
+			Symbol:                    csvString(record, header, "symbol"),
+			Interval:                  csvString(record, header, "interval"),
+			EventTimeMS:               csvInt64(record, header, "event_time_ms"),
+			AvailableAtMS:             csvInt64(record, header, "available_at_ms"),
+			IngestedAtMS:              csvInt64(record, header, "ingested_at_ms"),
+			Value:                     csvFloat(record, header, "value"),
+			Extra1:                    csvFloat(record, header, "extra_1"),
+			Extra2:                    csvFloat(record, header, "extra_2"),
+			SourceVersion:             csvString(record, header, "source_version"),
+			AvailabilityPolicyID:      csvString(record, header, "availability_policy_id"),
+			AvailabilityPolicyVersion: csvString(record, header, "availability_policy_version"),
 		})
 	}
 	return rows, nil
@@ -385,7 +442,7 @@ func readResearchDerivativeRowsParquet(files []string) ([]researchDerivativeRow,
 	for _, file := range files {
 		quoted = append(quoted, "'"+strings.ReplaceAll(file, "'", "''")+"'")
 	}
-	query := fmt.Sprintf(`SELECT source, dataset, market, symbol, interval, event_time_ms, available_at_ms, ingested_at_ms, value, extra_1, extra_2, source_version FROM read_parquet([%s]) ORDER BY symbol, dataset, available_at_ms;`, strings.Join(quoted, ","))
+	query := fmt.Sprintf(`SELECT source, dataset, market, symbol, interval, event_time_ms, available_at_ms, ingested_at_ms, value, extra_1, extra_2, source_version, availability_policy_id, availability_policy_version FROM read_parquet([%s]) ORDER BY symbol, dataset, available_at_ms;`, strings.Join(quoted, ","))
 	cmd := exec.Command("duckdb", "-json", "-c", query)
 	out, err := cmd.CombinedOutput()
 	if err != nil {

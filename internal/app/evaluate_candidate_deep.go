@@ -13,10 +13,12 @@ import (
 	"time"
 
 	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/executionseries"
 	"github.com/david22573/ak-engine/internal/features"
 	"github.com/david22573/ak-engine/internal/regime"
 	"github.com/david22573/ak-engine/internal/researchidentity"
 	"github.com/david22573/ak-engine/internal/rifbridge"
+	"github.com/david22573/ak-engine/internal/temporal"
 	"github.com/david22573/ak-engine/pkg/protocol"
 	"github.com/spf13/cobra"
 )
@@ -112,6 +114,8 @@ type DeepCandidateReport struct {
 	FinalStatus                string                        `json:"final_status"`
 	FixedHoldOnlyJustification string                        `json:"fixed_hold_only_justification,omitempty"`
 	ComparisonMetrics          DeepComparisonMetrics         `json:"comparison_metrics"`
+	ExecutionSeriesID          string                        `json:"execution_series_id"`
+	ExecutionSeriesVersion     string                        `json:"execution_series_version"`
 	RIFReturns                 []float64                     `json:"-"`
 	RIFTimestamps              []int64                       `json:"-"`
 	researchIdentityRequest    researchidentity.DerivationRequest
@@ -286,12 +290,13 @@ type Phase103ComparisonRow struct {
 }
 
 type deepCandidateEvent struct {
-	FeatureIndex int
-	CandleIndex  int
-	EventTimeMS  int64
-	Family       string
-	Side         string
-	Label        regime.Label
+	FeatureIndex   int
+	CandleIndex    int
+	EventTimeMS    int64
+	DecisionTimeMS int64
+	Family         string
+	Side           string
+	Label          regime.Label
 }
 
 type deepReturnSet struct {
@@ -372,9 +377,11 @@ var evaluateCandidateDeepCmd = &cobra.Command{
 		identityRequest := report.researchIdentityRequest
 		identityRequest.HistorianManifestPath = manifestPath
 		_, err = bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
-			Stem:            stem,
-			Classification:  report.FinalStatus,
-			IdentityRequest: identityRequest,
+			Stem:                      stem,
+			Classification:            report.FinalStatus,
+			ClassificationGates:       rifClassificationGates(report.Gates),
+			ExecutionSeriesGeneration: report.ExecutionSeriesID + ".v" + report.ExecutionSeriesVersion,
+			IdentityRequest:           identityRequest,
 		})
 		if err != nil {
 			return fmt.Errorf("emit local research diagnostics: %w", err)
@@ -449,9 +456,11 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 				identityRequest := report.researchIdentityRequest
 				identityRequest.HistorianManifestPath = manifestPath
 				_, err = bridge.EmitResearchDiagnostics(rifbridge.ResearchAssessment{
-					Stem:            stem,
-					Classification:  report.FinalStatus,
-					IdentityRequest: identityRequest,
+					Stem:                      stem,
+					Classification:            report.FinalStatus,
+					ClassificationGates:       rifClassificationGates(report.Gates),
+					ExecutionSeriesGeneration: report.ExecutionSeriesID + ".v" + report.ExecutionSeriesVersion,
+					IdentityRequest:           identityRequest,
 				})
 				if err != nil {
 					return fmt.Errorf("emit local research diagnostics: %w", err)
@@ -462,6 +471,14 @@ var evaluateResearchLeadsDeepCmd = &cobra.Command{
 		comparison := buildPhase103Comparison(reports)
 		return writePhase103Comparison(outDir, comparison)
 	},
+}
+
+func rifClassificationGates(gates []DeepGateResult) []rifbridge.ClassificationGate {
+	out := make([]rifbridge.ClassificationGate, len(gates))
+	for i, gate := range gates {
+		out[i] = rifbridge.ClassificationGate{Name: gate.Name, Passed: gate.Passed, Critical: gate.Critical}
+	}
+	return out
 }
 
 type deepCandidateRequest struct {
@@ -686,6 +703,8 @@ func buildDeepCandidateReport(ctx context.Context, req deepCandidateRequest) (De
 		CandidateGenerationAudit: audit,
 		RegimeBreakdown:          make(map[string][]DeepRegimeMetric),
 		LeakageStatus:            "PASS",
+		ExecutionSeriesID:        executionseries.ID,
+		ExecutionSeriesVersion:   executionseries.Version,
 	}
 	if len(candles) > 0 {
 		report.TruncationReport.LoadedFirstCandleMS = candles[0].OpenTimeMS
@@ -885,19 +904,16 @@ func generateDeepCandidateEventsConfigured(rows []features.Row, labels []regime.
 		if row.Warmup {
 			continue
 		}
+		decisionTimeMS := row.AvailableAtMS
 		labelIdx := sort.Search(len(labels), func(k int) bool {
-			return labels[k].AvailableAtMS > row.EventTimeMS
+			return labels[k].AvailableAtMS > decisionTimeMS
 		})
 		if labelIdx == 0 {
 			continue
 		}
 		label := labels[labelIdx-1]
-		if row.AvailableAtMS > row.EventTimeMS {
-			leakageIssues = append(leakageIssues, fmt.Sprintf("feature available_at_ms > candidate timestamp at row %d", i))
-			continue
-		}
-		if label.AvailableAtMS > row.EventTimeMS {
-			leakageIssues = append(leakageIssues, fmt.Sprintf("regime available_at_ms > candidate event time at row %d", i))
+		if label.AvailableAtMS > decisionTimeMS {
+			leakageIssues = append(leakageIssues, fmt.Sprintf("regime available_at_ms > decision time at row %d", i))
 			continue
 		}
 
@@ -938,12 +954,13 @@ func generateDeepCandidateEventsConfigured(rows []features.Row, labels []regime.
 		}
 		lastAccepted = row.EventTimeMS
 		events = append(events, deepCandidateEvent{
-			FeatureIndex: i,
-			CandleIndex:  ci,
-			EventTimeMS:  row.EventTimeMS,
-			Family:       family,
-			Side:         side,
-			Label:        label,
+			FeatureIndex:   i,
+			CandleIndex:    ci,
+			EventTimeMS:    row.EventTimeMS,
+			DecisionTimeMS: decisionTimeMS,
+			Family:         family,
+			Side:           side,
+			Label:          label,
 		})
 	}
 	return events, audit, leakageIssues, nil
@@ -1011,8 +1028,18 @@ func deepCandidateRule(row features.Row, label regime.Label, family, side string
 
 func validateDeepFeatureRows(rows []features.Row) error {
 	for i := range rows {
+		if err := (temporal.Observation{
+			SourceEventMS:     rows[i].EventTimeMS,
+			SourceAvailableMS: rows[i].AvailableAtMS,
+			DecisionMS:        rows[i].AvailableAtMS,
+		}).Validate(); err != nil {
+			return fmt.Errorf("feature row %d temporal contract: %w", i, err)
+		}
 		if i > 0 && rows[i].EventTimeMS <= rows[i-1].EventTimeMS {
 			return fmt.Errorf("duplicate timestamps break evaluation")
+		}
+		if i > 0 && rows[i].AvailableAtMS <= rows[i-1].AvailableAtMS {
+			return fmt.Errorf("feature availability timestamps are not strictly increasing")
 		}
 	}
 	return nil
@@ -1020,8 +1047,12 @@ func validateDeepFeatureRows(rows []features.Row) error {
 
 func validateDeepLabels(labels []regime.Label) error {
 	for i := range labels {
-		if labels[i].AvailableAtMS > 0 && labels[i].EventTimeMS > 0 && labels[i].AvailableAtMS < labels[i].EventTimeMS {
-			return fmt.Errorf("regime available_at_ms < event_time_ms at index %d", i)
+		if err := (temporal.Observation{
+			SourceEventMS:     labels[i].EventTimeMS,
+			SourceAvailableMS: labels[i].AvailableAtMS,
+			DecisionMS:        labels[i].AvailableAtMS,
+		}).Validate(); err != nil {
+			return fmt.Errorf("regime row %d temporal contract: %w", i, err)
 		}
 		if i > 0 && labels[i].AvailableAtMS <= labels[i-1].AvailableAtMS {
 			return fmt.Errorf("duplicate timestamps break evaluation")
@@ -1042,22 +1073,15 @@ func validateDeepCandles(candles []protocol.Candle) error {
 func deepReturnsForEvents(events []deepCandidateEvent, candles []protocol.Candle, horizonMinutes int, costBps float64, entryDelayCandles int, periodEndMS int64) deepReturnSet {
 	var out deepReturnSet
 	for _, event := range events {
-		entryIdx := event.CandleIndex + entryDelayCandles
-		if entryIdx >= len(candles) {
+		window, err := executionseries.Resolve(
+			event.EventTimeMS, event.DecisionTimeMS, event.DecisionTimeMS,
+			candles, entryDelayCandles, horizonMinutes, periodEndMS,
+		)
+		if err != nil {
 			out.TruncatedCount++
 			continue
 		}
-		exitTarget := candles[event.CandleIndex].OpenTimeMS + int64(horizonMinutes)*60*1000
-		if periodEndMS > 0 && exitTarget > periodEndMS {
-			out.TruncatedCount++
-			continue
-		}
-		exitIdx := candleIndexAtOrAfter(candles, event.CandleIndex, exitTarget)
-		if exitIdx < 0 {
-			out.TruncatedCount++
-			continue
-		}
-		ret := deepSignedReturnBps(candles[entryIdx].Close, candles[exitIdx].Close, event.Side) - costBps
+		ret := deepSignedReturnBps(window.EntryPrice, window.ExitPrice, event.Side) - costBps
 		out.ReturnsBps = append(out.ReturnsBps, ret)
 		out.EventTimestamps = append(out.EventTimestamps, event.EventTimeMS)
 	}
@@ -1160,22 +1184,22 @@ func deepExcursionMetric(events []deepCandidateEvent, candles []protocol.Candle,
 	var reach5, reach10, reach15 float64
 	truncated := 0
 	for _, event := range events {
-		endMS := candles[event.CandleIndex].OpenTimeMS + int64(windowMinutes)*60*1000
-		endIdx := candleIndexAtOrAfter(candles, event.CandleIndex, endMS)
-		if endIdx < 0 {
+		window, err := executionseries.Resolve(event.EventTimeMS, event.DecisionTimeMS, event.DecisionTimeMS, candles, 0, windowMinutes, 0)
+		if err != nil {
 			truncated++
 			continue
 		}
-		mfe, mae := deepMFEAndMAEForWindow(candles[event.CandleIndex:endIdx+1], side)
+		executionCandles := candles[window.EntryIndex : window.EndIndex+1]
+		mfe, mae := deepMFEAndMAEForWindowAtEntry(executionCandles, window.EntryPrice, side)
 		mfes = append(mfes, mfe)
 		maes = append(maes, mae)
-		if deepThresholdFirst(candles[event.CandleIndex:endIdx+1], side, 5, 5) {
+		if deepThresholdFirstAtEntry(executionCandles, window.EntryPrice, side, 5, 5) {
 			reach5++
 		}
-		if deepThresholdFirst(candles[event.CandleIndex:endIdx+1], side, 10, 5) {
+		if deepThresholdFirstAtEntry(executionCandles, window.EntryPrice, side, 10, 5) {
 			reach10++
 		}
-		if deepThresholdFirst(candles[event.CandleIndex:endIdx+1], side, 15, 10) {
+		if deepThresholdFirstAtEntry(executionCandles, window.EntryPrice, side, 15, 10) {
 			reach15++
 		}
 	}
@@ -1210,7 +1234,13 @@ func deepMFEAndMAEForWindow(candles []protocol.Candle, side string) (float64, fl
 	if len(candles) == 0 || candles[0].Close == 0 {
 		return 0, 0
 	}
-	entry := candles[0].Close
+	return deepMFEAndMAEForWindowAtEntry(candles, candles[0].Close, side)
+}
+
+func deepMFEAndMAEForWindowAtEntry(candles []protocol.Candle, entry float64, side string) (float64, float64) {
+	if len(candles) == 0 || entry <= 0 {
+		return 0, 0
+	}
 	high := candles[0].High
 	low := candles[0].Low
 	for _, candle := range candles {
@@ -1238,6 +1268,10 @@ func deepThresholdFirst(candles []protocol.Candle, side string, favorableBps, ad
 	return simulateDeepBracketEvent(candles, side, favorableBps, adverseBps, 0).Outcome == "win"
 }
 
+func deepThresholdFirstAtEntry(candles []protocol.Candle, entry float64, side string, favorableBps, adverseBps float64) bool {
+	return simulateDeepBracketEventAtEntry(candles, entry, side, favorableBps, adverseBps, 0).Outcome == "win"
+}
+
 func deepBracketMetric(events []deepCandidateEvent, candles []protocol.Candle, side, name string, tpBps, slBps float64) DeepBracketMetric {
 	return deepBracketMetricConfigured(events, candles, side, name, tpBps, slBps, 240, 5, researchidentity.GateThresholds{MinimumBracketPF: 0.50, MinimumBracketExpectancyBPS: -10})
 }
@@ -1245,13 +1279,14 @@ func deepBracketMetric(events []deepCandidateEvent, candles []protocol.Candle, s
 func deepBracketMetricConfigured(events []deepCandidateEvent, candles []protocol.Candle, side, name string, tpBps, slBps float64, windowMinutes int, costBPS float64, thresholds researchidentity.GateThresholds) DeepBracketMetric {
 	var returns []float64
 	var wins, unresolved, holdSum int
+	tradeCount := 0
 	for _, event := range events {
-		endTarget := candles[event.CandleIndex].OpenTimeMS + int64(windowMinutes)*60*1000
-		endIdx := candleIndexAtOrAfter(candles, event.CandleIndex, endTarget)
-		if endIdx < 0 {
-			endIdx = len(candles) - 1
+		window, err := executionseries.Resolve(event.EventTimeMS, event.DecisionTimeMS, event.DecisionTimeMS, candles, 0, windowMinutes, 0)
+		if err != nil {
+			continue
 		}
-		res := simulateDeepBracketEvent(candles[event.CandleIndex:endIdx+1], side, tpBps, slBps, costBPS)
+		tradeCount++
+		res := simulateDeepBracketEventAtEntry(candles[window.EntryIndex:window.EndIndex+1], window.EntryPrice, side, tpBps, slBps, costBPS)
 		returns = append(returns, res.ReturnBps)
 		if res.Outcome == "win" {
 			wins++
@@ -1263,15 +1298,15 @@ func deepBracketMetricConfigured(events []deepCandidateEvent, candles []protocol
 	}
 	m := deepMetricFromBps(returns)
 	avgHold := 0.0
-	if len(events) > 0 {
-		avgHold = float64(holdSum) / float64(len(events))
+	if tradeCount > 0 {
+		avgHold = float64(holdSum) / float64(tradeCount)
 	}
 	return DeepBracketMetric{
 		Name:                      name,
 		TPBps:                     tpBps,
 		SLBps:                     slBps,
-		TradeCount:                len(events),
-		WinRate:                   float64(wins) / math.Max(1, float64(len(events))),
+		TradeCount:                tradeCount,
+		WinRate:                   float64(wins) / math.Max(1, float64(tradeCount)),
 		PFAfter5bps:               m.PF,
 		NetExpectancyBpsAfter5bps: m.Expectancy,
 		AverageHoldMinutes:        avgHold,
@@ -1284,7 +1319,13 @@ func simulateDeepBracketEvent(candles []protocol.Candle, side string, tpBps, slB
 	if len(candles) == 0 || candles[0].Close == 0 {
 		return deepBracketResult{Outcome: "unresolved", ReturnBps: -costBps}
 	}
-	entry := candles[0].Close
+	return simulateDeepBracketEventAtEntry(candles, candles[0].Close, side, tpBps, slBps, costBps)
+}
+
+func simulateDeepBracketEventAtEntry(candles []protocol.Candle, entry float64, side string, tpBps, slBps, costBps float64) deepBracketResult {
+	if len(candles) == 0 || entry <= 0 {
+		return deepBracketResult{Outcome: "unresolved", ReturnBps: -costBps}
+	}
 	side = strings.ToUpper(side)
 	for i, candle := range candles {
 		if side == "SHORT" {
@@ -1625,6 +1666,7 @@ func deepAcceptanceGatesConfigured(report DeepCandidateReport, thresholds resear
 	m := report.ComparisonMetrics
 	bracketOK := deepAnyBracketNotCatastrophic(report.Brackets)
 	return []DeepGateResult{
+		{Name: "execution_series_identity", Passed: report.ExecutionSeriesID == executionseries.ID && report.ExecutionSeriesVersion == executionseries.Version, Critical: true, Actual: report.ExecutionSeriesID + ".v" + report.ExecutionSeriesVersion, Threshold: executionseries.GenerationVersion},
 		{Name: "H2 PF after 5 bps", Passed: m.H2PFAfter5bps >= thresholds.MinimumH2PF, Critical: true, Actual: fmt.Sprintf("%.4f", m.H2PFAfter5bps), Threshold: fmt.Sprintf(">= %.4f", thresholds.MinimumH2PF)},
 		{Name: "H2 expectancy after 5 bps", Passed: m.H2ExpectancyBps > thresholds.MinimumH2ExpectancyBPS, Critical: true, Actual: fmt.Sprintf("%.4f bps", m.H2ExpectancyBps), Threshold: fmt.Sprintf("> %.4f bps", thresholds.MinimumH2ExpectancyBPS)},
 		{Name: "FY PF after 5 bps", Passed: m.FYPFAfter5bps >= thresholds.MinimumFYPF, Actual: fmt.Sprintf("%.4f", m.FYPFAfter5bps), Threshold: fmt.Sprintf(">= %.4f", thresholds.MinimumFYPF)},
@@ -1632,7 +1674,6 @@ func deepAcceptanceGatesConfigured(report DeepCandidateReport, thresholds resear
 		{Name: "Worst quarter PF after 5 bps", Passed: m.WorstQuarterPFAfter5bps >= thresholds.MinimumWorstQuarterPF, Actual: fmt.Sprintf("%.4f", m.WorstQuarterPFAfter5bps), Threshold: fmt.Sprintf(">= %.4f", thresholds.MinimumWorstQuarterPF)},
 		{Name: "event_count", Passed: m.EventCount >= thresholds.MinimumEvents, Critical: true, Actual: fmt.Sprintf("%d", m.EventCount), Threshold: fmt.Sprintf(">= %d", thresholds.MinimumEvents)},
 		{Name: "positive_month_count", Passed: m.PositiveMonthCount >= thresholds.MinimumPositiveMonths, Actual: fmt.Sprintf("%d", m.PositiveMonthCount), Threshold: fmt.Sprintf(">= %d", thresholds.MinimumPositiveMonths)},
-		{Name: "entry_delay_1c_expectancy_bps", Passed: m.EntryDelay1cExpectancyBps > thresholds.MinimumDelayOneExpectancyBPS, Actual: fmt.Sprintf("%.4f bps", m.EntryDelay1cExpectancyBps), Threshold: fmt.Sprintf("> %.4f bps", thresholds.MinimumDelayOneExpectancyBPS)},
 		{Name: "single_month_contribution_pct", Passed: m.SingleMonthContributionPct <= thresholds.MaximumSingleMonthContribution, Actual: fmt.Sprintf("%.2f%%", m.SingleMonthContributionPct), Threshold: fmt.Sprintf("<= %.2f%%", thresholds.MaximumSingleMonthContribution)},
 		{Name: "leakage_status", Passed: m.LeakageStatus == "PASS", Critical: true, Actual: m.LeakageStatus, Threshold: "PASS"},
 		{Name: "bracket_model_not_catastrophic", Passed: bracketOK, Actual: fmt.Sprintf("%t", bracketOK), Threshold: fmt.Sprintf("at least one bracket PF >= %.4f and expectancy >= %.4f bps", thresholds.MinimumBracketPF, thresholds.MinimumBracketExpectancyBPS)},

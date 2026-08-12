@@ -20,6 +20,8 @@ var (
 	pfTimeframe        string
 	pfMarketType       string
 	pfDatasetManifest  string
+	pfResearchEvidence string
+	pfDecisionInput    string
 	pfResearchLock     string
 	pfSnapshotDir      string
 	pfOutDir           string
@@ -49,20 +51,16 @@ var paperForwardCmd = &cobra.Command{
 		if pfCandidate == "" || pfSymbols == "" || pfTimeframe == "" {
 			return fmt.Errorf("missing required candidate/symbols/timeframe fields")
 		}
-		if pfMaxSignals < 1 {
-			return fmt.Errorf("--max-signals must be >= 1")
-		}
 		if pfMarketType == "" {
 			pfMarketType = "SPOT"
 		}
 
 		symbols := parsePaperSymbols(pfSymbols)
-		if len(symbols) == 0 {
-			return fmt.Errorf("no valid symbols supplied")
+		if len(symbols) != 1 {
+			return fmt.Errorf("canonical paper-forward requires exactly one symbol/evidence/input identity per run")
 		}
-		meta, err := loadPaperCandidateMetadata(pfCandidate, pfTimeframe)
-		if err != nil {
-			return err
+		if pfDatasetManifest != "" {
+			return fmt.Errorf("legacy --dataset-manifest is diagnostic-only and cannot authorize canonical paper-forward")
 		}
 
 		generatedAt := time.Now().UTC()
@@ -73,8 +71,28 @@ var paperForwardCmd = &cobra.Command{
 			}
 			generatedAt = parsed.UTC()
 		}
-		generatedAtStr := generatedAt.Format(time.RFC3339)
-		runID := deterministicPaperRunID(pfCandidate, symbols, pfTimeframe, generatedAtStr, mode, pfDatasetManifest)
+		generatedAtStr := generatedAt.Format(time.RFC3339Nano)
+		evidence, err := loadPaperCanonicalEvidence(pfResearchEvidence, pfCandidate, symbols[0], pfMarketType, pfTimeframe)
+		if err != nil {
+			return err
+		}
+		meta, err := paperMetadataFromEvidence(evidence)
+		if err != nil {
+			return err
+		}
+		decisionPath := pfDecisionInput
+		if decisionPath == "" {
+			var ok bool
+			decisionPath, ok = resolvePaperSnapshotPath(pfSnapshotDir, symbols[0])
+			if !ok {
+				return fmt.Errorf("canonical paper decision input not found for %s", symbols[0])
+			}
+		}
+		decision, err := loadPaperDecision(decisionPath, evidence, generatedAt)
+		if err != nil {
+			return err
+		}
+		runID := deterministicPaperRunID(pfCandidate, symbols, pfTimeframe, generatedAtStr, mode, evidence.EvidenceHash+decision.InputHash)
 
 		researchLockHash := ""
 		if pfResearchLock != "" {
@@ -85,74 +103,55 @@ var paperForwardCmd = &cobra.Command{
 			researchLockHash = hash
 		}
 
-		rif := evaluatePaperRIF(pfDatasetManifest, pfAllowRIFWarnings)
-		hashes := map[string]string{}
-		if pfDatasetManifest != "" {
-			if hash, err := papersignal.HashFile(pfDatasetManifest); err == nil {
-				hashes["dataset_manifest"] = hash
-			}
-		}
-		if rif.DatasetHash != "" {
-			hashes["dataset"] = rif.DatasetHash
-		}
-		if rif.ManifestHash != "" {
-			hashes["manifest"] = rif.ManifestHash
+		hashes := map[string]string{
+			"research_diagnostic": evidence.DiagnosticHash,
+			"research_evidence":   evidence.EvidenceHash,
+			"candidate":           evidence.Candidate.ArtifactHash,
+			"configuration":       evidence.Configuration.ArtifactHash,
+			"dataset":             evidence.DatasetHash,
+			"pit":                 evidence.PITHash,
+			"decision_input":      decision.InputHash,
 		}
 		if researchLockHash != "" {
 			hashes["research_lock"] = researchLockHash
 		}
 
 		runArtifact := papersignal.ForwardObservationRun{
-			SchemaVersion:       "1.0",
-			RunID:               runID,
-			GeneratedAtUTC:      generatedAtStr,
-			Mode:                mode,
-			Candidates:          []string{pfCandidate},
-			Symbols:             symbols,
-			Timeframes:          []string{pfTimeframe},
-			DatasetManifestPath: pfDatasetManifest,
-			RIFStatus:           rif.Status,
-			JournalPath:         pfJournal,
-			Warnings:            append([]string(nil), rif.Warnings...),
-			Hashes:              hashes,
+			SchemaVersion:        "2.0",
+			RunID:                runID,
+			GeneratedAtUTC:       generatedAtStr,
+			Mode:                 mode,
+			Candidates:           []string{pfCandidate},
+			Symbols:              symbols,
+			Timeframes:           []string{pfTimeframe},
+			ResearchEvidencePath: pfResearchEvidence,
+			RIFStatus:            "CANONICAL_RESEARCH_EVIDENCE_VALIDATED_RESEARCH_ONLY",
+			JournalPath:          pfJournal,
+			Warnings:             []string{},
+			Hashes:               hashes,
 		}
 
-		limit := pfMaxSignals
-		if limit > len(symbols) {
-			limit = len(symbols)
+		sig := buildCanonicalPaperSignal(meta, evidence, decision, symbols[0], pfMarketType, pfTimeframe, generatedAtStr)
+		row := canonicalPaperJournalRow(sig, decision, meta.TargetBPS, meta.StopBPS)
+		runArtifact.GeneratedSignals = 1
+		if papersignal.IsActionableStatus(sig.SignalStatus) {
+			runArtifact.AllowedSignals = 1
+			runArtifact.PendingOutcomes = 1
+		} else {
+			runArtifact.WaitObservations = 1
 		}
-		for _, symbol := range symbols[:limit] {
-			entryPrice, snapshotHash, priceWarnings, err := loadPaperReferencePrice(pfSnapshotDir, symbol, 100.0)
-			if err != nil {
-				return err
-			}
-			runArtifact.Warnings = append(runArtifact.Warnings, priceWarnings...)
-			sig := buildPaperSignal(meta, rif, symbol, pfMarketType, pfTimeframe, generatedAtStr, pfResearchLock, researchLockHash, entryPrice, snapshotHash)
-			sig.RIFWarnings = append(sig.RIFWarnings, priceWarnings...)
-
-			row := paperJournalRowFromSignal(sig, entryPrice, meta.TargetBPS, meta.StopBPS, snapshotHash)
-			if !papersignal.IsActionableStatus(sig.SignalStatus) {
-				row.OutcomeStatus = ""
-				row.OutcomeDueAtUTC = ""
-			}
-
-			runArtifact.GeneratedSignals++
-			if papersignal.IsActionableStatus(sig.SignalStatus) {
-				runArtifact.AllowedSignals++
-				runArtifact.PendingOutcomes++
-			}
-			if papersignal.IsBlockedStatus(sig.SignalStatus) {
-				runArtifact.BlockedSignals++
-			}
-
-			if !pfDryRun {
-				if err := papersignal.WritePaperSignal(pfOutDir, sig); err != nil {
-					return fmt.Errorf("failed to write paper signal: %w", err)
+		if !pfDryRun {
+			if pfJournal != "" {
+				if err := validateCanonicalPaperJournalDestination(pfJournal, row); err != nil {
+					return err
 				}
-				if pfJournal != "" {
-					if err := papersignal.AppendToJournal(pfJournal, row); err != nil {
-						return fmt.Errorf("failed to append to journal: %w", err)
-					}
+			}
+			if err := papersignal.WritePaperSignal(pfOutDir, sig); err != nil {
+				return fmt.Errorf("failed to write paper signal: %w", err)
+			}
+			if pfJournal != "" {
+				if err := appendCanonicalPaperObservation(pfJournal, row); err != nil {
+					return fmt.Errorf("failed to append to journal: %w", err)
 				}
 			}
 		}
@@ -207,6 +206,8 @@ func init() {
 	paperForwardCmd.Flags().StringVar(&pfTimeframe, "timeframe", "", "Timeframe")
 	paperForwardCmd.Flags().StringVar(&pfMarketType, "market-type", "SPOT", "Market type")
 	paperForwardCmd.Flags().StringVar(&pfDatasetManifest, "dataset-manifest", "", "Path to dataset manifest")
+	paperForwardCmd.Flags().StringVar(&pfResearchEvidence, "research-evidence", "", "Canonical Engine research diagnostic containing exact candidate evidence")
+	paperForwardCmd.Flags().StringVar(&pfDecisionInput, "decision-input", "", "Versioned local as-of decision input JSON")
 	paperForwardCmd.Flags().StringVar(&pfResearchLock, "research-lock", "", "Path to research lock (optional)")
 	paperForwardCmd.Flags().StringVar(&pfSnapshotDir, "snapshot-dir", "", "Read-only snapshot directory or file for reference prices")
 	paperForwardCmd.Flags().StringVar(&pfOutDir, "out-dir", "runs/paper/forward", "Output directory")

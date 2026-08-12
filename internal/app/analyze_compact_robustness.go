@@ -338,7 +338,10 @@ func writeCompactCoverageAndInventoryOutputs(cfg compactSummaryAnalyzerConfig, f
 		Side:    strings.ToLower(strings.TrimSpace(ainvSide)),
 		Horizon: strings.TrimSpace(ainvHorizon),
 	}
-	inventoryCandidates := buildRankedInventoryCandidates(scan, inventoryCfg, defaultCompactThresholds())
+	inventoryCandidates, err := buildRankedInventoryCandidates(scan, inventoryCfg, defaultCompactThresholds())
+	if err != nil {
+		return compactSummaryAnalyzerConfig{}, err
+	}
 	inventory := buildRankedInventoryReport(inventoryCandidates, coverage, finalLabel, inventoryCfg)
 	if err := writeCompactCoverageOutputs(cfg.ReportsDir, coverage, inventory, inventoryCfg); err != nil {
 		return compactSummaryAnalyzerConfig{}, err
@@ -703,13 +706,17 @@ func buildCompactCandidateReports(cfg compactSummaryAnalyzerConfig, chunks []com
 	sort.Strings(keys)
 	out := make([]compactCandidateReport, 0, len(keys))
 	for _, key := range keys {
-		out = append(out, evaluateCompactCandidate(key, byCandidate[key], integrity, thresholds))
+		candidate, err := evaluateCompactCandidate(key, byCandidate[key], integrity, thresholds)
+		if err != nil {
+			return nil, fmt.Errorf("aggregate compact candidate %s: %w", key, err)
+		}
+		out = append(out, candidate)
 	}
 	sort.Slice(out, func(i, j int) bool { return compactCandidateBetter(out[i], out[j]) })
 	return out, nil
 }
 
-func buildRankedInventoryCandidates(scan retainedSummaryScan, cfg compactSummaryAnalyzerConfig, thresholds compactThresholds) []compactCandidateReport {
+func buildRankedInventoryCandidates(scan retainedSummaryScan, cfg compactSummaryAnalyzerConfig, thresholds compactThresholds) ([]compactCandidateReport, error) {
 	keys := make([]string, 0, len(scan.ValidRowsByCandidate))
 	for key := range scan.ValidRowsByCandidate {
 		parts := strings.Split(key, "|")
@@ -731,19 +738,41 @@ func buildRankedInventoryCandidates(scan retainedSummaryScan, cfg compactSummary
 	out := make([]compactCandidateReport, 0, len(keys))
 	integrity := compactIntegrityReport{Status: "PASS", RawRequired: false}
 	for _, key := range keys {
-		out = append(out, evaluateCompactCandidate(key, scan.ValidRowsByCandidate[key], integrity, thresholds))
+		candidate, err := evaluateCompactCandidate(key, scan.ValidRowsByCandidate[key], integrity, thresholds)
+		if err != nil {
+			return nil, fmt.Errorf("aggregate retained candidate %s: %w", key, err)
+		}
+		out = append(out, candidate)
 	}
 	sort.Slice(out, func(i, j int) bool { return compactCandidateBetter(out[i], out[j]) })
-	return out
+	return out, nil
 }
 
-func evaluateCompactCandidate(candidateKey string, rows []FundingAlphaSummaryRow, integrity compactIntegrityReport, thresholds compactThresholds) compactCandidateReport {
+func evaluateCompactCandidate(candidateKey string, rows []FundingAlphaSummaryRow, integrity compactIntegrityReport, thresholds compactThresholds) (compactCandidateReport, error) {
 	parts := strings.Split(candidateKey, "|")
-	baseline := aggregateMetricsFromAlphaSummaries(rows)
-	bySymbol := aggregateCompactDimensions(rows, "symbol")
-	byMonth := aggregateCompactDimensions(rows, "month")
-	byQuarter := aggregateCompactDimensions(rows, "quarter")
-	byBucket, bucketBasis := aggregateCompactBucketDimensions(rows)
+	if len(parts) != 3 {
+		return compactCandidateReport{}, fmt.Errorf("invalid compact candidate key %q", candidateKey)
+	}
+	baseline, err := aggregateFundingAlphaRowsExact(rows)
+	if err != nil {
+		return compactCandidateReport{}, err
+	}
+	bySymbol, err := aggregateCompactDimensions(rows, "symbol")
+	if err != nil {
+		return compactCandidateReport{}, err
+	}
+	byMonth, err := aggregateCompactDimensions(rows, "month")
+	if err != nil {
+		return compactCandidateReport{}, err
+	}
+	byQuarter, err := aggregateCompactDimensions(rows, "quarter")
+	if err != nil {
+		return compactCandidateReport{}, err
+	}
+	byBucket, bucketBasis, err := aggregateCompactBucketDimensions(rows)
+	if err != nil {
+		return compactCandidateReport{}, err
+	}
 	delay := compactDelaySensitivity(baseline.DelayStress)
 	missing := compactMissingRequiredMetrics(baseline, delay, byMonth, byQuarter)
 	symbolLOO := compactLeaveOneOut(bySymbol)
@@ -781,10 +810,10 @@ func evaluateCompactCandidate(candidateKey string, rows []FundingAlphaSummaryRow
 	report.Failures = failures
 	report.Warnings = warnings
 	report.RecommendedNextAction = next
-	return report
+	return report, nil
 }
 
-func aggregateCompactDimensions(rows []FundingAlphaSummaryRow, level string) []compactDimensionRow {
+func aggregateCompactDimensions(rows []FundingAlphaSummaryRow, level string) ([]compactDimensionRow, error) {
 	grouped := make(map[string][]FundingAlphaSummaryRow)
 	for _, row := range rows {
 		var key string
@@ -800,7 +829,10 @@ func aggregateCompactDimensions(rows []FundingAlphaSummaryRow, level string) []c
 	}
 	out := make([]compactDimensionRow, 0, len(grouped))
 	for key, groupRows := range grouped {
-		agg := aggregateMetricsFromAlphaSummaries(groupRows)
+		agg, err := aggregateFundingAlphaRowsExact(groupRows)
+		if err != nil {
+			return nil, fmt.Errorf("aggregate compact %s %s: %w", level, key, err)
+		}
 		out = append(out, compactDimensionRow{
 			Key:            key,
 			EventCount:     agg.EventCount,
@@ -814,11 +846,14 @@ func aggregateCompactDimensions(rows []FundingAlphaSummaryRow, level string) []c
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Key < out[j].Key })
 	addPositiveContribution(out)
-	return out
+	return out, nil
 }
 
-func aggregateCompactBucketDimensions(rows []FundingAlphaSummaryRow) ([]compactDimensionRow, string) {
-	agg := aggregateMetricsFromAlphaSummaries(rows)
+func aggregateCompactBucketDimensions(rows []FundingAlphaSummaryRow) ([]compactDimensionRow, string, error) {
+	agg, err := aggregateFundingAlphaRowsExact(rows)
+	if err != nil {
+		return nil, "missing", err
+	}
 	var filtered []FundingBucketMetric
 	basis := "missing"
 	for _, bucketType := range []string{"funding_x_regime", "regime", "funding_severity"} {
@@ -847,7 +882,7 @@ func aggregateCompactBucketDimensions(rows []FundingAlphaSummaryRow) ([]compactD
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Key < out[j].Key })
 	addPositiveContribution(out)
-	return out, basis
+	return out, basis, nil
 }
 
 func compactDelaySensitivity(rows []FundingDelayStressMetric) compactDelayReport {

@@ -12,6 +12,9 @@ import (
 )
 
 func TestPaperSignalFlow(t *testing.T) {
+	if err := paperSignalCmd.RunE(paperSignalCmd, nil); err == nil || !strings.Contains(err.Error(), "retired") {
+		t.Fatalf("legacy synthetic paper writer remained active: %v", err)
+	}
 	// 1. Candidate with clean RIF evidence emits PAPER_SIGNAL_ALLOWED
 	sigID := papersignal.GenerateSignalID("cand1", "BTC", time.Now().UTC().Format(time.RFC3339))
 	if sigID == "" {

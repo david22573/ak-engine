@@ -8,6 +8,11 @@ import (
 )
 
 func TestLeakageChecker(t *testing.T) {
+	truthful := []features.Row{{EventTimeMS: 1000, AvailableAtMS: 60_999}}
+	if report := CheckFeatureRows(truthful); report.Status != "PASS" {
+		t.Fatalf("truthful close availability failed: %#v", report)
+	}
+
 	// 1. Duplicate timestamps in features
 	rowsDup := []features.Row{
 		{EventTimeMS: 1000, AvailableAtMS: 2000},

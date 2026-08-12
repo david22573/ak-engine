@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"os"
 	"sort"
 
+	"github.com/david22573/ak-engine/internal/atomicfile"
 	"github.com/david22573/ak-engine/internal/canonicalcontract"
 	"github.com/david22573/ak-engine/internal/researchidentity"
 )
@@ -63,9 +63,19 @@ var (
 // derivation request. It intentionally has no lifecycle, readiness,
 // authorization, caller-validated boolean, or caller-supplied identity hash.
 type ResearchAssessment struct {
-	Stem            string
-	Classification  string
-	IdentityRequest researchidentity.DerivationRequest
+	Stem                      string
+	Classification            string
+	ClassificationGates       []ClassificationGate
+	ExecutionSeriesGeneration string
+	IdentityRequest           researchidentity.DerivationRequest
+}
+
+// ClassificationGate is the minimal fact set needed for the bridge to verify
+// that a caller's classification is the deterministic result of its gates.
+type ClassificationGate struct {
+	Name     string
+	Passed   bool
+	Critical bool
 }
 
 // ResearchDiagnosticsResult reports only local artifact and integrity outcomes.
@@ -234,7 +244,7 @@ func writeResearchDiagnosticsFile(path string, value LocalResearchDiagnostics) e
 	if _, err := canonicalcontract.ValidateArtifact(data, true); err != nil {
 		return fmt.Errorf("%w: %v", ErrResearchDiagnosticsSerialization, err)
 	}
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := atomicfile.WriteFile(path, data, 0644); err != nil {
 		return fmt.Errorf("%w: %v", ErrResearchDiagnosticsPersistence, err)
 	}
 	return nil

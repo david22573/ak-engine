@@ -162,7 +162,6 @@ func LoadExactParquetFiles(ctx context.Context, req CandleRequest, paths []strin
 	if len(allCandles) == 0 {
 		return nil, fmt.Errorf("empty candle result")
 	}
-	sort.Slice(allCandles, func(i, j int) bool { return allCandles[i].OpenTimeMS < allCandles[j].OpenTimeMS })
 	filtered := make([]protocol.Candle, 0, len(allCandles))
 	for _, candle := range allCandles {
 		if !req.From.IsZero() && candle.OpenTimeMS < req.From.UnixMilli() {
@@ -176,7 +175,7 @@ func LoadExactParquetFiles(ctx context.Context, req CandleRequest, paths []strin
 	if len(filtered) == 0 {
 		return nil, fmt.Errorf("empty candle result")
 	}
-	if err := ValidateCandles(req.Interval, filtered); err != nil {
+	if err := ValidateCandlesForRequest(req, filtered); err != nil {
 		return nil, err
 	}
 	return filtered, nil
@@ -278,23 +277,10 @@ func readParquetFile(path string, req CandleRequest) (candles []protocol.Candle,
 				c.TakerBuyQuoteVolume = *pc.TakerBuyQuoteVolume
 			}
 
-			if pc.Market != nil && *pc.Market != "" {
-				c.Market = *pc.Market
-			} else {
-				c.Market = req.Market
+			if pc.Market == nil || *pc.Market == "" || pc.Symbol == nil || *pc.Symbol == "" || pc.Interval == nil || *pc.Interval == "" {
+				return nil, fmt.Errorf("missing market/symbol/interval metadata at index %d", i)
 			}
-
-			if pc.Symbol != nil && *pc.Symbol != "" {
-				c.Symbol = *pc.Symbol
-			} else {
-				c.Symbol = req.Symbol
-			}
-
-			if pc.Interval != nil && *pc.Interval != "" {
-				c.Interval = *pc.Interval
-			} else {
-				c.Interval = req.Interval
-			}
+			c.Market, c.Symbol, c.Interval = *pc.Market, *pc.Symbol, *pc.Interval
 
 			res = append(res, c)
 		}
@@ -355,23 +341,10 @@ func readParquetFile(path string, req CandleRequest) (candles []protocol.Candle,
 				c.TakerBuyQuoteVolume = *pc.TakerBuyQuoteVolume
 			}
 
-			if pc.Market != nil && *pc.Market != "" {
-				c.Market = *pc.Market
-			} else {
-				c.Market = req.Market
+			if pc.Market == nil || *pc.Market == "" || pc.Symbol == nil || *pc.Symbol == "" || pc.Interval == nil || *pc.Interval == "" {
+				return nil, fmt.Errorf("missing market/symbol/interval metadata at index %d", i)
 			}
-
-			if pc.Symbol != nil && *pc.Symbol != "" {
-				c.Symbol = *pc.Symbol
-			} else {
-				c.Symbol = req.Symbol
-			}
-
-			if pc.Interval != nil && *pc.Interval != "" {
-				c.Interval = *pc.Interval
-			} else {
-				c.Interval = req.Interval
-			}
+			c.Market, c.Symbol, c.Interval = *pc.Market, *pc.Symbol, *pc.Interval
 
 			res = append(res, c)
 		}

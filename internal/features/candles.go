@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/david22573/ak-engine/internal/data"
+	"github.com/david22573/ak-engine/internal/temporal"
 	"github.com/david22573/ak-engine/pkg/protocol"
 )
 
@@ -30,6 +31,10 @@ func BuildRows(candles []protocol.Candle, opts BuildOptions) ([]Row, error) {
 	// Validate candles using data.ValidateCandles
 	if err := data.ValidateCandles(opts.Interval, candles); err != nil {
 		return nil, fmt.Errorf("validate primary candles: %w", err)
+	}
+	intervalMS, err := data.ParseIntervalToMS(opts.Interval)
+	if err != nil {
+		return nil, fmt.Errorf("parse feature interval: %w", err)
 	}
 
 	// Sort context candles if present
@@ -79,11 +84,8 @@ func BuildRows(candles []protocol.Candle, opts BuildOptions) ([]Row, error) {
 	var rows []Row
 	for i := 0; i < n; i++ {
 		c := candles[i]
-		availableAt := c.CloseTimeMS
-		if availableAt <= c.OpenTimeMS {
-			// Fallback: estimate close time
-			// standard interval duration could be derived, but CloseTimeMS should be correct.
-			availableAt = c.OpenTimeMS + 60000 // default 1m fallback if invalid
+		if err := temporal.ValidateCandleClose(c.OpenTimeMS, c.CloseTimeMS, intervalMS); err != nil {
+			return nil, fmt.Errorf("validate candle time at index %d: %w", i, err)
 		}
 
 		row := Row{
@@ -91,7 +93,7 @@ func BuildRows(candles []protocol.Candle, opts BuildOptions) ([]Row, error) {
 			Symbol:        opts.Symbol,
 			Interval:      opts.Interval,
 			EventTimeMS:   c.OpenTimeMS,
-			AvailableAtMS: availableAt,
+			AvailableAtMS: c.CloseTimeMS,
 			Close:         c.Close,
 		}
 

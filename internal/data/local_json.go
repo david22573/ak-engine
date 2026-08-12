@@ -47,7 +47,7 @@ func ParseJSONCandles(data []byte, req CandleRequest) ([]protocol.Candle, error)
 		return nil, err
 	}
 
-	if err := ValidateCandles(req.Interval, candles); err != nil {
+	if err := ValidateCandlesForRequest(req, candles); err != nil {
 		return nil, err
 	}
 

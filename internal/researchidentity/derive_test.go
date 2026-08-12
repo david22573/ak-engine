@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/david22573/ak-engine/internal/canonicalcontract"
+	"github.com/david22573/ak-engine/internal/executionseries"
+	"github.com/david22573/ak-engine/internal/features"
 )
 
 type fixedRepositoryProvider struct {
@@ -36,6 +38,43 @@ func TestDeriverProducesCompleteStableIdentity(t *testing.T) {
 	}
 	if first.Identity.Series.ObservationCount != len(request.Returns) || first.Identity.ConsumedInput.Hash == "" {
 		t.Fatalf("series/consumed identity missing: %#v", first.Identity)
+	}
+	if first.Identity.Series.SeriesGenerationVersion != executionseries.GenerationVersion {
+		t.Fatalf("series generation = %q, want %q", first.Identity.Series.SeriesGenerationVersion, executionseries.GenerationVersion)
+	}
+}
+
+func TestBuildRowsTruthfulAvailabilityPassesCanonicalIdentity(t *testing.T) {
+	request, deriver := completeIdentityFixture(t)
+	rows, err := features.BuildRows(request.Candles, features.BuildOptions{
+		Market: request.Configuration.Market, Symbol: request.Configuration.Symbol,
+		Interval: request.Configuration.Interval,
+	})
+	if err != nil {
+		t.Fatalf("BuildRows() error = %v", err)
+	}
+	if len(rows) != len(request.FeatureRows) {
+		t.Fatalf("BuildRows() rows = %d, want %d", len(rows), len(request.FeatureRows))
+	}
+	request.FeatureRows = rows
+	for i := range request.RegimeLabels {
+		request.RegimeLabels[i].EventTimeMS = rows[i].EventTimeMS
+		request.RegimeLabels[i].AvailableAtMS = rows[i].AvailableAtMS
+	}
+	writeFixtureJSON(t, request.FeatureArtifactPath, request.FeatureRows)
+	writeFixtureJSON(t, request.RegimeArtifactPath, request.RegimeLabels)
+
+	assessment, err := deriver.Derive(request)
+	if err != nil {
+		t.Fatalf("canonical identity rejected BuildRows output: %v", err)
+	}
+	if assessment.Status != StatusComplete || assessment.Identity == nil {
+		t.Fatalf("canonical identity incomplete for BuildRows output: %#v", assessment)
+	}
+	for i, row := range rows {
+		if row.AvailableAtMS != request.Candles[i].CloseTimeMS || row.AvailableAtMS <= row.EventTimeMS {
+			t.Fatalf("row %d is not truthfully close-available: %#v", i, row)
+		}
 	}
 }
 
@@ -259,19 +298,15 @@ func TestFeatureRegimeConsumedAndSeriesChangesAreBound(t *testing.T) {
 	}
 
 	request, deriver = completeIdentityFixture(t)
-	base, _ = deriver.Derive(request)
 	request.Returns[1] += 0.01
-	changed, err = deriver.Derive(request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if changed.Identity.Series.SeriesHash == base.Identity.Series.SeriesHash || changed.Identity.IdentityHash == base.Identity.IdentityHash {
-		t.Fatal("return change did not change series/top identity")
+	assessment, err := deriver.Derive(request)
+	if err == nil || assessment.Status != StatusConsumedIncomplete || assessment.Identity != nil {
+		t.Fatalf("caller-invented return passed canonical execution recomputation: %#v %v", assessment, err)
 	}
 
 	request, deriver = completeIdentityFixture(t)
 	request.Candles[1].Close++
-	assessment, err := deriver.Derive(request)
+	assessment, err = deriver.Derive(request)
 	if err == nil || assessment.Status != StatusConsumedIncomplete {
 		t.Fatalf("claimed consumed values without matching parquet rows did not fail: %#v %v", assessment, err)
 	}

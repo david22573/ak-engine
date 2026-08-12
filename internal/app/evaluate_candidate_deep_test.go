@@ -2,11 +2,13 @@ package app
 
 import (
 	"encoding/json"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/david22573/ak-engine/internal/executionseries"
 	"github.com/david22573/ak-engine/internal/features"
 	"github.com/david22573/ak-engine/internal/regime"
 	"github.com/david22573/ak-engine/internal/researchidentity"
@@ -174,13 +176,13 @@ func TestDeepConfiguredThresholdChangesGateBehavior(t *testing.T) {
 
 func TestDeepReturnSeriesCarriesExactUntruncatedEventTimestamps(t *testing.T) {
 	candles := []protocol.Candle{
-		{OpenTimeMS: 1_000, Close: 100},
-		{OpenTimeMS: 61_000, Close: 101},
-		{OpenTimeMS: 121_000, Close: 102},
+		{OpenTimeMS: 1_000, Open: 100, Close: 100},
+		{OpenTimeMS: 61_000, Open: 100.5, Close: 101},
+		{OpenTimeMS: 121_000, Open: 101.5, Close: 102},
 	}
 	events := []deepCandidateEvent{
-		{CandleIndex: 0, EventTimeMS: 1_000, Side: "LONG"},
-		{CandleIndex: 2, EventTimeMS: 121_000, Side: "LONG"},
+		{CandleIndex: 0, EventTimeMS: 1_000, DecisionTimeMS: 60_999, Side: "LONG"},
+		{CandleIndex: 2, EventTimeMS: 121_000, DecisionTimeMS: 180_999, Side: "LONG"},
 	}
 	set := deepReturnsForEvents(events, candles, 1, 0, 0, 0)
 	if len(set.ReturnsBps) != 1 || len(set.EventTimestamps) != 1 || set.EventTimestamps[0] != events[0].EventTimeMS || set.TruncatedCount != 1 {
@@ -188,16 +190,63 @@ func TestDeepReturnSeriesCarriesExactUntruncatedEventTimestamps(t *testing.T) {
 	}
 }
 
-func TestDeepLateFeatureAvailabilityIsRejectedAsLeakage(t *testing.T) {
-	row := features.Row{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 1_001, Close: 101, EMA20: 100}
-	label := regime.Label{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 1_000, Volatility: "compressed", MarketBeta: "btc_up"}
+func TestDeepTruthfulCloseAvailabilityPasses(t *testing.T) {
+	row := features.Row{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 60_999, Close: 101, EMA20: 100}
+	label := regime.Label{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 60_999, Volatility: "compressed", MarketBeta: "btc_up"}
 	candle := protocol.Candle{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", OpenTimeMS: 1_000, CloseTimeMS: 60_999, Open: 100, High: 101, Low: 99, Close: 100, Volume: 1}
 	events, _, issues, err := generateDeepCandidateEvents([]features.Row{row}, []regime.Label{label}, []protocol.Candle{candle}, "CompressionBreakout", "LONG")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(events) != 0 || len(issues) != 1 || !strings.Contains(issues[0], "feature available_at_ms") {
-		t.Fatalf("late feature was not rejected as leakage: events=%v issues=%v", events, issues)
+	if len(events) != 1 || len(issues) != 0 {
+		t.Fatalf("truthful close availability rejected: events=%v issues=%v", events, issues)
+	}
+	if events[0].EventTimeMS != row.EventTimeMS || events[0].DecisionTimeMS != row.AvailableAtMS {
+		t.Fatalf("event/decision timestamps not preserved: %#v", events[0])
+	}
+}
+
+func TestDeepBackdatedFeatureAvailabilityFails(t *testing.T) {
+	row := features.Row{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 999, Close: 101, EMA20: 100}
+	label := regime.Label{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", EventTimeMS: 1_000, AvailableAtMS: 60_999, Volatility: "compressed", MarketBeta: "btc_up"}
+	candle := protocol.Candle{Market: "futures-um", Symbol: "BTCUSDT", Interval: "1m", OpenTimeMS: 1_000, CloseTimeMS: 60_999, Open: 100, High: 101, Low: 99, Close: 100, Volume: 1}
+	if _, _, _, err := generateDeepCandidateEvents([]features.Row{row}, []regime.Label{label}, []protocol.Candle{candle}, "CompressionBreakout", "LONG"); err == nil || !strings.Contains(err.Error(), "source availability") {
+		t.Fatalf("backdated feature availability did not fail canonical contract: %v", err)
+	}
+}
+
+func TestCanonicalExecutionSeriesExcludesDecisionCandleExtrema(t *testing.T) {
+	candles := []protocol.Candle{
+		// These pre-decision extremes would hit either side of a 50 bps bracket.
+		{OpenTimeMS: 1_000, Open: 100, High: 110, Low: 90, Close: 100},
+		// The first tradable candle after the close-derived decision stays inside it.
+		{OpenTimeMS: 61_000, Open: 100, High: 100.02, Low: 99.98, Close: 100.01},
+		{OpenTimeMS: 121_000, Open: 100.01, High: 100.03, Low: 99.99, Close: 100.02},
+	}
+	event := deepCandidateEvent{CandleIndex: 0, EventTimeMS: 1_000, DecisionTimeMS: 60_999, Side: "LONG"}
+
+	excursion := deepExcursionMetric([]deepCandidateEvent{event}, candles, 1, "LONG")
+	if excursion.EventCount != 1 || excursion.AverageMFEBps >= 5 || excursion.AverageMAEBps >= 5 {
+		t.Fatalf("decision-candle extrema affected excursion: %#v", excursion)
+	}
+	bracket := deepBracketMetricConfigured(
+		[]deepCandidateEvent{event}, candles, "LONG", "adversarial", 50, 50, 1, 0,
+		researchidentity.GateThresholds{MinimumBracketPF: 0, MinimumBracketExpectancyBPS: -100},
+	)
+	if bracket.TradeCount != 1 || bracket.UnresolvedCount != 1 {
+		t.Fatalf("decision-candle extrema affected bracket: %#v", bracket)
+	}
+	returns := deepReturnsForEvents([]deepCandidateEvent{event}, candles, 1, 0, 0, 0)
+	if len(returns.ReturnsBps) != 1 || math.Abs(returns.ReturnsBps[0]-1) > 1e-9 {
+		t.Fatalf("canonical return did not use next open to fill-candle close: %#v", returns)
+	}
+}
+
+func TestAuthoritativeGatesDoNotUseAlternateDelaySeries(t *testing.T) {
+	for _, gate := range deepAcceptanceGates(deepPassingGateReport()) {
+		if gate.Name == "entry_delay_1c_expectancy_bps" {
+			t.Fatal("alternate delay sensitivity remains an authoritative classification gate")
+		}
 	}
 }
 
@@ -268,7 +317,9 @@ func TestDeepNoAKTraderImport(t *testing.T) {
 
 func deepPassingGateReport() DeepCandidateReport {
 	return DeepCandidateReport{
-		LeakageStatus: "PASS",
+		LeakageStatus:          "PASS",
+		ExecutionSeriesID:      executionseries.ID,
+		ExecutionSeriesVersion: executionseries.Version,
 		Brackets: []DeepBracketMetric{
 			{NotCatastrophicAfter5bps: true},
 		},

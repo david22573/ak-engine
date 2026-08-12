@@ -5,6 +5,7 @@ import (
 
 	"github.com/david22573/ak-engine/internal/features"
 	"github.com/david22573/ak-engine/internal/regime"
+	"github.com/david22573/ak-engine/internal/temporal"
 )
 
 type LeakageIssue struct {
@@ -23,28 +24,12 @@ func CheckFeatureRows(rows []features.Row) LeakageReport {
 	var issues []LeakageIssue
 	for i := 0; i < len(rows); i++ {
 		r := rows[i]
-		if r.EventTimeMS <= 0 {
+		if err := (temporal.Observation{SourceEventMS: r.EventTimeMS, SourceAvailableMS: r.AvailableAtMS}).Validate(); err != nil {
 			issues = append(issues, LeakageIssue{
 				Index:         i,
 				EventTimeMS:   r.EventTimeMS,
 				AvailableAtMS: r.AvailableAtMS,
-				Reason:        "event_time_ms <= 0",
-			})
-		}
-		if r.AvailableAtMS <= 0 {
-			issues = append(issues, LeakageIssue{
-				Index:         i,
-				EventTimeMS:   r.EventTimeMS,
-				AvailableAtMS: r.AvailableAtMS,
-				Reason:        "available_at_ms <= 0",
-			})
-		}
-		if r.AvailableAtMS < r.EventTimeMS {
-			issues = append(issues, LeakageIssue{
-				Index:         i,
-				EventTimeMS:   r.EventTimeMS,
-				AvailableAtMS: r.AvailableAtMS,
-				Reason:        "available_at_ms < event_time_ms",
+				Reason:        err.Error(),
 			})
 		}
 		if i > 0 && r.EventTimeMS < rows[i-1].EventTimeMS {
@@ -78,28 +63,12 @@ func CheckLabels(labels []regime.Label) LeakageReport {
 	var issues []LeakageIssue
 	for i := 0; i < len(labels); i++ {
 		l := labels[i]
-		if l.EventTimeMS <= 0 {
+		if err := (temporal.Observation{SourceEventMS: l.EventTimeMS, SourceAvailableMS: l.AvailableAtMS}).Validate(); err != nil {
 			issues = append(issues, LeakageIssue{
 				Index:         i,
 				EventTimeMS:   l.EventTimeMS,
 				AvailableAtMS: l.AvailableAtMS,
-				Reason:        "event_time_ms <= 0",
-			})
-		}
-		if l.AvailableAtMS <= 0 {
-			issues = append(issues, LeakageIssue{
-				Index:         i,
-				EventTimeMS:   l.EventTimeMS,
-				AvailableAtMS: l.AvailableAtMS,
-				Reason:        "available_at_ms <= 0",
-			})
-		}
-		if l.AvailableAtMS < l.EventTimeMS {
-			issues = append(issues, LeakageIssue{
-				Index:         i,
-				EventTimeMS:   l.EventTimeMS,
-				AvailableAtMS: l.AvailableAtMS,
-				Reason:        "available_at_ms < event_time_ms",
+				Reason:        err.Error(),
 			})
 		}
 		if i > 0 && l.EventTimeMS < labels[i-1].EventTimeMS {

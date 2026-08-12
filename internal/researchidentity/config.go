@@ -110,7 +110,7 @@ func defaultConfiguration(context ConfigurationContext) ResolvedResearchConfigur
 		EntryDelayCostBPS:         5,
 		SeriesHorizonMinutes:      1440,
 		SeriesCostBPS:             5,
-		SeriesEntryDelayCandles:   1,
+		SeriesEntryDelayCandles:   0,
 		ExcursionWindowsMinutes:   []int{30, 60, 120, 240},
 		Brackets: []BracketConfiguration{
 			{Name: "TP 5 bps / SL 5 bps", TPBPS: 5, SLBPS: 5},
@@ -285,6 +285,9 @@ func validateResolvedConfiguration(config ResolvedResearchConfiguration) error {
 	}
 	if config.CostHaircutHorizonMinutes <= 0 || config.EntryDelayHorizonMinutes <= 0 || config.SeriesHorizonMinutes <= 0 || config.SeriesEntryDelayCandles < 0 || config.BracketWindowMinutes <= 0 || config.StabilityHorizonMinutes <= 0 || config.StabilityEntryDelay < 0 || config.RegimeHorizonMinutes <= 0 || config.RegimeLowSampleMinimum <= 0 || config.ClusterSeparationMinutes <= 0 || config.DiagnosticMinimumSamples <= 0 || config.ObservationsPerParameter <= 0 || config.ModelParameterCount < 0 || config.MetricPeriodsPerYear <= 0 {
 		return fmt.Errorf("configuration contains invalid numeric bounds")
+	}
+	if config.SeriesEntryDelayCandles != 0 || config.StabilityEntryDelay != 0 {
+		return fmt.Errorf("authoritative series and stability delay must be zero additional candles after canonical next-tradable entry")
 	}
 	for name, values := range map[string][]int{
 		"forward_horizons_minutes":  config.ForwardHorizonsMinutes,

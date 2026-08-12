@@ -36,12 +36,14 @@ func TestConfigurationThresholdEnvironmentAndInvariantValidation(t *testing.T) {
 	}
 
 	for name, raw := range map[string]string{
-		"immutable feature version":  `{"feature_set_version":"invented"}`,
-		"immutable filtering policy": `{"filtering_policy":"invented"}`,
-		"nested duplicate":           `{"gate_thresholds":{"minimum_events":300,"minimum_events":301}}`,
-		"empty mandatory array":      `{"brackets":[]}`,
-		"duplicate horizon":          `{"forward_horizons_minutes":[5,5]}`,
-		"nonfinite":                  `{"series_cost_bps":1e999}`,
+		"immutable feature version":            `{"feature_set_version":"invented"}`,
+		"immutable filtering policy":           `{"filtering_policy":"invented"}`,
+		"alternate authoritative series delay": `{"series_entry_delay_candles":1}`,
+		"alternate stability series delay":     `{"stability_entry_delay_candles":1}`,
+		"nested duplicate":                     `{"gate_thresholds":{"minimum_events":300,"minimum_events":301}}`,
+		"empty mandatory array":                `{"brackets":[]}`,
+		"duplicate horizon":                    `{"forward_horizons_minutes":[5,5]}`,
+		"nonfinite":                            `{"series_cost_bps":1e999}`,
 	} {
 		t.Run(name, func(t *testing.T) {
 			if _, err := ResolveConfiguration(context, []byte(raw)); err == nil {
@@ -166,13 +168,13 @@ func TestFeatureRegimeAndConsumedEvidenceMustMatchActualArtifacts(t *testing.T) 
 			t.Fatalf("feature mismatch passed: %#v %v", assessment, err)
 		}
 	})
-	t.Run("feature unavailable at event", func(t *testing.T) {
+	t.Run("feature availability backdated before event", func(t *testing.T) {
 		request, deriver := completeIdentityFixture(t)
-		request.FeatureRows[1].AvailableAtMS = request.FeatureRows[1].EventTimeMS + 1
+		request.FeatureRows[1].AvailableAtMS = request.FeatureRows[1].EventTimeMS - 1
 		writeFixtureJSON(t, request.FeatureArtifactPath, request.FeatureRows)
 		assessment, err := deriver.Derive(request)
 		if err == nil || assessment.Status != StatusFeatureIncomplete {
-			t.Fatalf("late feature passed: %#v %v", assessment, err)
+			t.Fatalf("backdated feature passed: %#v %v", assessment, err)
 		}
 	})
 	t.Run("regime missing", func(t *testing.T) {
@@ -192,13 +194,13 @@ func TestFeatureRegimeAndConsumedEvidenceMustMatchActualArtifacts(t *testing.T) 
 			t.Fatalf("regime mismatch passed: %#v %v", assessment, err)
 		}
 	})
-	t.Run("regime unavailable at event", func(t *testing.T) {
+	t.Run("regime availability backdated before event", func(t *testing.T) {
 		request, deriver := completeIdentityFixture(t)
-		request.RegimeLabels[1].AvailableAtMS = request.RegimeLabels[1].EventTimeMS + 1
+		request.RegimeLabels[1].AvailableAtMS = request.RegimeLabels[1].EventTimeMS - 1
 		writeFixtureJSON(t, request.RegimeArtifactPath, request.RegimeLabels)
 		assessment, err := deriver.Derive(request)
 		if err == nil || assessment.Status != StatusRegimeIncomplete {
-			t.Fatalf("late regime passed: %#v %v", assessment, err)
+			t.Fatalf("backdated regime passed: %#v %v", assessment, err)
 		}
 	})
 	t.Run("event timestamp lacks consumed row", func(t *testing.T) {

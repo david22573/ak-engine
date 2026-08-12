@@ -246,6 +246,10 @@ func evaluateFundingChunkFiles(cfg fundingChunkConfig) (FundingChunkSummary, []F
 			}
 			symbol, family, side, horizon := parts[0], parts[1], parts[2], parts[3]
 			metrics := computeFundingMetrics(groupEvents, horizon)
+			sufficient, err := buildFundingSufficientStatistics(groupEvents, cfg.Month, symbol, family, side)
+			if err != nil {
+				return summary, events, err
+			}
 			alphaSummary = append(alphaSummary, FundingAlphaSummaryRow{
 				Symbol:               symbol,
 				Year:                 monthYear(cfg.Month),
@@ -257,6 +261,7 @@ func evaluateFundingChunkFiles(cfg fundingChunkConfig) (FundingChunkSummary, []F
 				SummarySchemaVersion: fundingAlphaSummarySchemaVersion,
 				ClusterKeyVersion:    "1.0-native",
 				Stats:                metrics,
+				SufficientStatistics: sufficient,
 			})
 		}
 		sort.Slice(alphaSummary, func(i, j int) bool {
@@ -278,19 +283,20 @@ func evaluateFundingChunkFiles(cfg fundingChunkConfig) (FundingChunkSummary, []F
 }
 
 type FundingAlphaSummaryRow struct {
-	Symbol               string         `json:"symbol"`
-	Year                 string         `json:"year"`
-	Quarter              string         `json:"quarter"`
-	Month                string         `json:"month"`
-	Family               string         `json:"family"`
-	Side                 string         `json:"side"`
-	Horizon              string         `json:"horizon"`
-	SummarySchemaVersion string         `json:"summary_schema_version"`
-	ClusterKeyVersion    string         `json:"cluster_key_version"`
-	Stats                FundingMetrics `json:"stats"`
+	Symbol               string                        `json:"symbol"`
+	Year                 string                        `json:"year"`
+	Quarter              string                        `json:"quarter"`
+	Month                string                        `json:"month"`
+	Family               string                        `json:"family"`
+	Side                 string                        `json:"side"`
+	Horizon              string                        `json:"horizon"`
+	SummarySchemaVersion string                        `json:"summary_schema_version"`
+	ClusterKeyVersion    string                        `json:"cluster_key_version"`
+	Stats                FundingMetrics                `json:"stats"`
+	SufficientStatistics FundingSufficientStatisticsV1 `json:"sufficient_statistics"`
 }
 
-const fundingAlphaSummarySchemaVersion = "10.7K-native"
+const fundingAlphaSummarySchemaVersion = fundingSufficientStatisticsContract
 
 func readFundingFeatureRows(path string) ([]ResearchFeatureRow, error) {
 	data, err := os.ReadFile(path)

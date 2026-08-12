@@ -270,31 +270,16 @@ func TestCompactCoverageOutputWritingAndInventoryCounts(t *testing.T) {
 func TestWriteCompactCoverageAndInventoryOutputsCoverageOnlyWithoutTargetCandidate(t *testing.T) {
 	chunksDir := t.TempDir()
 	reportsDir := t.TempDir()
+	events := []FundingEventRow{
+		fundingTestEvent("XRPUSDT", "FundingFlipShort", "short", 1704067200000, 12),
+	}
+	canonicalRows, err := fundingAlphaRowsFromEvents(events, "2024-01")
+	if err != nil {
+		t.Fatal(err)
+	}
 	writeRetainedTestChunk(t, chunksDir, "XRPUSDT", "2024-01", []FundingAlphaSummaryRow{
-		{
-			Symbol:  "XRPUSDT",
-			Year:    "2024",
-			Quarter: "2024-Q1",
-			Month:   "2024-01",
-			Family:  "FundingFlipShort",
-			Side:    "short",
-			Horizon: "120m",
-			Stats: FundingMetrics{
-				EventCount:                 100,
-				RawEventCount:              100,
-				DeClusteredEventCount:      10,
-				ClusterCount:               10,
-				PFCombined_5bps:            1.2,
-				ExpectancyCombined_5bpsBps: 1.5,
-				CostStress: []FundingCostStressMetric{
-					{CostBps: 5, EventCount: 100, DeClusteredEventCount: 10, ExpectancyBps: 1.5, PF: 1.2},
-				},
-				DelayStress: []FundingDelayStressMetric{
-					{DelayCandles: 0, Label: "baseline", Available: true, EventCount: 100, DeClusteredEventCount: 10, ExpectancyBps: 1.5, PF: 1.2},
-				},
-			},
-		},
-	}, FundingChunkSummary{Status: "PASS", EventCount: 100})
+		fundingFindAlphaSummary(t, canonicalRows, "120m"),
+	}, FundingChunkSummary{Status: "PASS", EventCount: 1})
 
 	prevSymbols, prevFrom, prevTo := acompSymbols, acompFrom, acompTo
 	prevInvFamily, prevInvSide, prevInvHorizon := ainvFamily, ainvSide, ainvHorizon
