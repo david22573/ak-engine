@@ -130,7 +130,7 @@ github.com/aws/smithy-go/time
 github.com/aws/smithy-go/transport/http
 github.com/aws/smithy-go/transport/http/internal/io
 github.com/aws/smithy-go/waiter
-# github.com/david22573/ak-rif v0.0.0-20260720214045-23be9a8ef9b7
+# github.com/david22573/ak-rif v0.0.0-20260720214045-23be9a8ef9b7 => ../ak-rif
 ## explicit; go 1.25.6
 github.com/david22573/ak-rif/core
 github.com/david22573/ak-rif/persistence
@@ -182,7 +182,12 @@ github.com/xitongsys/parquet-go/writer
 ## explicit; go 1.16
 github.com/xitongsys/parquet-go-source/local
 github.com/xitongsys/parquet-go-source/writerfile
+# golang.org/x/text v0.28.0
+## explicit; go 1.23.0
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 ## explicit; go 1.11
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
+# github.com/david22573/ak-rif => ../ak-rif
