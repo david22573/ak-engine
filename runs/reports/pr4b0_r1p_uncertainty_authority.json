@@ -1,0 +1,45 @@
+{
+  "accepted_method_recovered": false,
+  "accepted_search_result": {
+    "block_construction": null,
+    "confidence_level": null,
+    "estimator": null,
+    "gate": "lower confidence bound must be positive",
+    "interval_type": null,
+    "number_of_resamples": null,
+    "resampling_method": null,
+    "sampling_unit": null,
+    "seed": null
+  },
+  "alternatives": [
+    "analytical cluster-robust interval",
+    "studentized cluster bootstrap",
+    "moving-block bootstrap"
+  ],
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
+  "generated_at": "2026-07-13T08:00:00Z",
+  "governance_requirement": "Explicit acceptance is required before a future PR4B0-R1 rerun.",
+  "historian_result_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
+  "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
+  "method": {
+    "version": "ak.engine.uncertainty.cluster-bootstrap.v1",
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "estimator": "arithmetic mean of one frozen-cost net observation per independent cluster",
+    "confidence_level": 0.95,
+    "sampling_unit": "independent cluster",
+    "resampling_method": "nonparametric cluster bootstrap with replacement",
+    "block_construction": "one complete independent cluster is one indivisible block",
+    "seed": 5787745930007687504,
+    "number_of_resamples": 4096,
+    "interval_type": "one-sided lower percentile bound",
+    "treatment_of_costs": "input observations must already apply the frozen declared cost vector",
+    "invalid_observation_rule": "missing IDs, non-finite values, and conflicting duplicate cluster IDs fail closed; exact duplicates are deduplicated",
+    "deterministic_output_rule": "sort by cluster ID; SplitMix64 PRNG; ascending replicate means; floor((1-confidence)*B) index"
+  },
+  "method_hash": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
+  "real_candidate_observations_used": 0,
+  "rif_result_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
+  "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
+  "schema_version": "ak.engine.pr4b0-r1p-uncertainty-authority.v1"
+}

@@ -1,0 +1,65 @@
+{
+  "artifact_hashes": {
+    "authority_report": "sha256:def2e0913392636d1072e22d78199ef7145183d8dac422918aaeb144355bed23",
+    "collection_authority_design": "sha256:74fe491335a94f9865e789df12a5adbb05d9680d01c6ce5de9fa45d2df587beb",
+    "historian_availability_authority": "sha256:2e6808b21aeedcb51a259600b13ab5284086c3a913430f724d9967ad27f471ce",
+    "historian_physical_identity": "sha256:24163d84065594fc9d6196f98b1053ea62d0d5e619fce037f6f466ed10169e1d",
+    "historian_source_schema_authority": "sha256:4ff5ef49773e3d9a65d50e64d3a7d3ecc6a50d32699c8af1de41ed3518cc99c5",
+    "independence_governance_packet": "sha256:3104a1d8a5ed53ce7056f4d2dd280836618c3943c60d6f57dae63cad5d5bdf0f",
+    "inspection_audit": "sha256:68b25e70267ea1459520f3fb545b4247dbf03be6b041269284ce6529165878c2",
+    "prospective_manifest_contract_file": "sha256:a07c34075721250db17e56a13d55d66cbcea934d013866305b61506a37323882",
+    "prospective_receipt_schema_file": "sha256:7b69a348fed2facf918a869a333c79d5c2d6d9df2bd10c9c52efd2f179398ff1",
+    "provenance_resolution": "sha256:099f40d80e4626bfadfa429fae49e1a5dde16409b43fe816f40273b2f4cd0bec",
+    "uncertainty_governance_packet": "sha256:20b49127e87dd4c89ee6224de6e7d47dae5c1a803ee84e50c2a20d7e63d42703"
+  },
+  "bounded_remaining_items": [
+    {
+      "blocks_packet": false,
+      "blocks_pit_eligibility": true,
+      "item": "historical source availability",
+      "state": "324 MISSING precisely gap-manifested"
+    },
+    {
+      "blocks_packet": false,
+      "blocks_research": true,
+      "item": "independence governance decision",
+      "state": "ACCEPT/REJECT/REVISE pending"
+    },
+    {
+      "blocks_packet": false,
+      "blocks_research": true,
+      "item": "uncertainty governance decision",
+      "state": "ACCEPT/REJECT/REVISE pending"
+    },
+    {
+      "blocks_packet": false,
+      "blocks_research": true,
+      "item": "future unexposed collection",
+      "state": "designed, not run"
+    },
+    {
+      "blocks_packet": false,
+      "blocks_validation_or_holdout_for_affected_period": true,
+      "item": "preserved artifact source commits",
+      "state": "unrecoverable; conservatively treated as exposed"
+    }
+  ],
+  "candidate_executions": 0,
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "candidate_outcome_calculations": 0,
+  "decision_hash": "sha256:5414511773327c7163c790b1814d7983eb1790b1367308cac2dfc92a1698bf79",
+  "engine_starting_commit": "0d70c068898c91521e391b65ee4299a53b9cf394",
+  "executive_verdict": "All static authority scopes are resolved or precisely fail-closed, both proposed governance contracts are reviewable, and prospective collection/RIF mechanics are synthetically specified without candidate execution.",
+  "fresh_preregistration_required": true,
+  "historian_starting_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
+  "holdout_content_reads": 0,
+  "label": "PR4B0_R1P2_AUTHORITY_AND_GOVERNANCE_PACKET_READY",
+  "pit_valid_research_data_exists": false,
+  "policies_accepted": false,
+  "real_future_dataset_collected": false,
+  "real_rif_state_created": false,
+  "recommended_next_action": "USER_GOVERNANCE_REVIEW_REQUIRED",
+  "rif_starting_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
+  "schema_version": "ak.engine.pr4b0-r1p2-final-decision.v1",
+  "validation_content_reads": 0
+}

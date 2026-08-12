@@ -1,0 +1,148 @@
+{
+  "artifact_hash": "sha256:0cebaf64599b4d681f284dcd7a2fa7e9b94cb23be142db540200c0b702c30b3c",
+  "concentration_authority_recovery": [
+    {
+      "name": "largest-cluster concentration",
+      "definition": "",
+      "threshold": "",
+      "comparison_operator": "",
+      "denominator": "",
+      "failure_semantics": "fail closed; independence policy cannot be accepted",
+      "source_report": "",
+      "source_commit": "",
+      "authority_status": "UNRESOLVED_NO_ACCEPTED_SOURCE_REPORT"
+    },
+    {
+      "name": "cluster concentration",
+      "definition": "",
+      "threshold": "",
+      "comparison_operator": "",
+      "denominator": "",
+      "failure_semantics": "fail closed; independence policy cannot be accepted",
+      "source_report": "",
+      "source_commit": "",
+      "authority_status": "UNRESOLVED_NO_ACCEPTED_SOURCE_REPORT"
+    },
+    {
+      "name": "symbol concentration",
+      "definition": "maximum symbol contribution in a legal evaluated scope",
+      "threshold": "50%",
+      "comparison_operator": "\u003c=",
+      "denominator": "not normatively specified by the accepted source report",
+      "failure_semantics": "values greater than 50% fail; missing denominator authority fails closed",
+      "source_report": "runs/reports/pr4b0_candidate_qualification.json",
+      "source_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+      "authority_status": "THRESHOLD_RECOVERED_DEFINITION_INCOMPLETE"
+    },
+    {
+      "name": "temporal concentration",
+      "definition": "maximum temporal contribution in a legal evaluated scope",
+      "threshold": "50%",
+      "comparison_operator": "\u003c=",
+      "denominator": "not normatively specified by the accepted source report",
+      "failure_semantics": "values greater than 50% fail; missing denominator authority fails closed",
+      "source_report": "runs/reports/pr4b0_candidate_qualification.json",
+      "source_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+      "authority_status": "THRESHOLD_RECOVERED_DEFINITION_INCOMPLETE"
+    }
+  ],
+  "contract_hashes": {
+    "independence_v1_proposal": "sha256:68641244ae31bb47dd7752410763308bf8a88362660f9df347362f42fbbb339a",
+    "independence_v2_revised_unaccepted": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+    "prospective_manifest_contract": "sha256:a07c34075721250db17e56a13d55d66cbcea934d013866305b61506a37323882",
+    "prospective_source_schema_authority": "sha256:4ff5ef49773e3d9a65d50e64d3a7d3ecc6a50d32699c8af1de41ed3518cc99c5",
+    "uncertainty_v1_proposal": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
+    "uncertainty_v2_accepted": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb"
+  },
+  "executive_verdict": "Uncertainty contracts are accepted; independence is revised but cannot be accepted because exact historical largest-cluster and aggregate cluster-concentration authority is unrecoverable.",
+  "final_label": "PR4B0_R1P3_GOVERNANCE_PARTIALLY_RESOLVED",
+  "independence_decision": {
+    "accepted": false,
+    "blocker": "missing accepted source-report thresholds and denominators",
+    "decision": "REVISE",
+    "hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+    "version": "ak.engine.independence.downtrend-midvol-relief.v2"
+  },
+  "phase": "PR4B0-R1P3",
+  "recommended_next_phase": "Restore and govern exact concentration authority before PR4B0-R1P4; do not activate prospective collection",
+  "remaining_blockers": [
+    "accepted source report, threshold, operator, denominator, and failure semantics for largest-cluster concentration",
+    "accepted source report, threshold, operator, denominator, and failure semantics for aggregate cluster concentration",
+    "accepted denominator definitions for symbol and temporal contribution percentages"
+  ],
+  "research_boundary": {
+    "fixtures": "synthetic only",
+    "real_candidate_executions": 0,
+    "real_candidate_outcome_calculations": 0,
+    "real_prospective_records_collected": 0,
+    "real_rif_state_reads_or_mutations": 0
+  },
+  "resulting_code_commits": {
+    "engine_artifact_container": "the later commit containing this self-referentially immutable report is recorded in the final response",
+    "engine_contract_implementation": "2426acb4060618b485cde88eb149de07f68d3198",
+    "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif_governance_binding": "e22357692e5b0e837451805f61c6ec3fb2fd6529"
+  },
+  "schema_version": "ak.engine.pr4b0-r1p3-governance-report.v1",
+  "starting_commits": {
+    "engine": "c009664dc6778ad2b8f257bc7d0f881c2387ec75",
+    "historian": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "9a2865e13071f39a1d24524bfe5f97c0f2f717cd"
+  },
+  "synthetic_rif_compatibility": {
+    "four_hash_binding": "SUPPORTED_WITH_REVISED_INDEPENDENCE_HASH; FUTURE ACCEPTED BINDING BLOCKED UNTIL INDEPENDENCE ACCEPTANCE",
+    "identity_shape": "PASS",
+    "persistent_real_state": false,
+    "temporary_lifecycle_sequence": "PASS"
+  },
+  "synthetic_tests": {
+    "canonical_hash_mutation": "PASS",
+    "independence_required_vectors": "PASS",
+    "real_candidate_records_used": 0,
+    "uncertainty_required_vectors": "PASS"
+  },
+  "uncertainty_decision": {
+    "accepted": true,
+    "decision": "REVISE_V1_ACCEPT_V2",
+    "hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+    "version": "ak.engine.uncertainty.cluster-bootstrap.v2"
+  },
+  "verification_results": {
+    "engine": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS"
+    },
+    "fresh_clone": {
+      "clean_worktrees": "PASS",
+      "engine": "PASS",
+      "no_sibling_ak_repositories": "PASS",
+      "rif": "PASS"
+    },
+    "json_validation": "PASS",
+    "recorded_sha256_validation": "PASS",
+    "rif": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS"
+    },
+    "scans": {
+      "absolute_paths": "PASS",
+      "network_dependencies": "PASS",
+      "secret_credentials": "PASS",
+      "sibling_dependencies": "PASS",
+      "trader_imports": "PASS"
+    }
+  },
+  "verification_status": "PASS"
+}

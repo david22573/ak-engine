@@ -1,0 +1,151 @@
+{
+  "accepted_report_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+  "artifact_hash": "sha256:c5fef46b2c4f8bf0369440b8a6a772ba623e3d0af4f68d41b7f3868ffcb55f64",
+  "classification_conclusion": "the accepted report displayed thresholds and copied historical statuses but did not numerically calculate or enforce any of the four metrics",
+  "field_traces": [
+    {
+      "accepted_threshold": "50% displayed",
+      "calculation_path": "none",
+      "metric": "symbol_concentration",
+      "reason_code": "none numeric",
+      "schema_field": "candidate concentration_results strings / displayed gate policy",
+      "test_proof": "literal output and generic structure",
+      "trace_status": "THRESHOLD_DISPLAYED_ONLY"
+    },
+    {
+      "accepted_threshold": "50% displayed",
+      "calculation_path": "none; Phase 10.4 status copied",
+      "metric": "temporal_concentration",
+      "reason_code": "none numeric",
+      "schema_field": "candidate concentration_results strings / displayed gate policy",
+      "test_proof": "literal output and generic structure",
+      "trace_status": "THRESHOLD_DISPLAYED_ONLY"
+    },
+    {
+      "accepted_threshold": "none",
+      "calculation_path": "none",
+      "metric": "largest_cluster_concentration",
+      "reason_code": "none",
+      "schema_field": "absent; only average_events_per_cluster and cluster_pnl_available appear for one row",
+      "test_proof": "absence from generator and gate registry",
+      "trace_status": "THRESHOLD_NOT_RECOVERABLE"
+    },
+    {
+      "accepted_threshold": "none",
+      "calculation_path": "none",
+      "metric": "aggregate_cluster_concentration",
+      "reason_code": "none",
+      "schema_field": "absent",
+      "test_proof": "absence from generator and gate registry",
+      "trace_status": "THRESHOLD_NOT_RECOVERABLE"
+    },
+    {
+      "accepted_threshold": "not encoded",
+      "calculation_path": "copied string",
+      "metric": "phase10_4_status_label",
+      "reason_code": "historical label",
+      "schema_field": "concentration_failed/top_month_concentration",
+      "test_proof": "fixture only",
+      "trace_status": "THRESHOLD_INFERRED_FROM_STATUS"
+    },
+    {
+      "accepted_threshold": "50/40/60 conflict",
+      "calculation_path": "historical producer defaults",
+      "metric": "phase10_8_concentration",
+      "reason_code": "historical",
+      "schema_field": "present in hash-matched input but omitted from accepted candidate rows",
+      "test_proof": "not used by accepted report",
+      "trace_status": "THRESHOLD_PRESENT_BUT_UNUSED"
+    }
+  ],
+  "final_label": "PR4B0_R1P3A_CONCENTRATION_GOVERNANCE_PACKET_READY",
+  "generator": {
+    "git_blob": "59f04150763ea7a180969798e8baf2d816c98959",
+    "path": "internal/app/pr4b0_candidate_qualification.go",
+    "sha256": "sha256:e04b57f560aa4ac1c693dccbc95b30a1e9df06a2ae97d53cafcc5abea6d12f23",
+    "test_git_blob": "39300f9867045cfabdeee7edfc0b0e0664646ae0",
+    "test_path": "internal/app/pr4b0_candidate_qualification_test.go",
+    "test_sha256": "sha256:4afcad1cceb51e2e0a285607b8d4edae97a6b422368617df33e28652c2a0bd6d"
+  },
+  "input_inventory": [
+    "tracked Phase 10.4 closure JSON",
+    "workspace-hash-verified Phase 10.8/11/12/13 artifacts",
+    "literal candidate inventory rows",
+    "accepted reusable gate-policy declarations"
+  ],
+  "invocation": "GOWORK=off go run ./cmd/ak-engine pr4b0-candidate-qualification --out-dir runs/reports --resulting-commit 25efa97ca89f8dcb724f9872e798bc789123caac --verification-complete --fresh-clone-commit 25efa97ca89f8dcb724f9872e798bc789123caac",
+  "phase": "PR4B0-R1P3A",
+  "producing_source_commit": "25efa97ca89f8dcb724f9872e798bc789123caac",
+  "research_boundary": {
+    "fixtures": "synthetic only",
+    "new_candidate_outcome_calculations": 0,
+    "prospective_validation_or_holdout_content_inspections": 0,
+    "real_candidate_executions": 0,
+    "real_prospective_records_collected": 0,
+    "real_rif_state_reads_or_mutations": 0
+  },
+  "resulting_code_commits": {
+    "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
+    "engine": "0226b8731badb74becb3e02c1454b948c5239e24",
+    "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
+  },
+  "schema_and_gate_registry": {
+    "concentration_schema": "free-form copied strings plus generic required booleans",
+    "largest_and_aggregate_gate_fields": "absent",
+    "numeric_evaluator": "none in the accepted report generator",
+    "reason_codes": "generic missing/failed gate reasons only; no numeric concentration reason code is emitted by this report path",
+    "required_boolean": "GateEvidence.ConcentrationResults must be true when a populated qualification record is evaluated"
+  },
+  "schema_version": "ak.engine.pr4b0-r1p3a.report-production-trace.v1",
+  "starting_commits": {
+    "engine": "4973a36a8d7a9f236011a4936dbf8229a6e41160",
+    "historian": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "e22357692e5b0e837451805f61c6ec3fb2fd6529"
+  },
+  "verification_results": {
+    "artifacts": {
+      "embedded_hashes": "PASS",
+      "generator_verify_only": "PASS",
+      "git_blob_ids": "PASS",
+      "json_parse": "PASS",
+      "recorded_sha256": "PASS"
+    },
+    "engine": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS",
+      "standalone_fresh_clone": "PASS"
+    },
+    "historian": {
+      "clean_worktree": "PASS",
+      "unchanged": "PASS"
+    },
+    "rif": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS",
+      "standalone_fresh_clone": "PASS"
+    },
+    "scans": {
+      "absolute_paths": "PASS",
+      "network_dependencies": "PASS",
+      "prohibited_real_candidate_identity": "PASS",
+      "secrets_credentials": "PASS",
+      "sibling_dependencies": "PASS",
+      "trader_imports": "PASS"
+    },
+    "zero_prospective_work": "PASS"
+  },
+  "verification_status": "PASS"
+}

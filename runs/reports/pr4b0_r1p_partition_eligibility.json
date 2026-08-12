@@ -1,0 +1,25 @@
+{
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "development": null,
+  "eligibility": "INELIGIBLE_MISSING_PIT_AND_LATER_UNEXPOSED_COVERAGE",
+  "engine_starting_commit": "8fdc59e129446a140630c83f2d13628681035b75",
+  "final_holdout": null,
+  "generated_at": "2026-07-13T08:00:00Z",
+  "historian_result_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
+  "historian_starting_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b",
+  "minimum_independent_decision_gate": 300,
+  "outcome_data_accessed": false,
+  "pit_coverage_available": false,
+  "policy_hash": "sha256:be53d5206e089fc2e20f80a9084711df2878a3734b97ce276e4c725a559dcfcc",
+  "policy_version": "ak.engine.partition-eligibility.v1",
+  "rif_result_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
+  "rif_starting_commit": "29350344a57e46f064442eada26e9418515990be",
+  "schema_version": "ak.engine.pr4b0-r1p-partition-eligibility.v1",
+  "structural_findings": [
+    "All previously exposed candidate periods are DEVELOPMENT-only.",
+    "No all-input PIT-valid interval is currently provable.",
+    "No chronologically later all-symbol archive scope exists for unexposed VALIDATION and FINAL_HOLDOUT.",
+    "Warm-up and embargo boundaries therefore cannot yet be instantiated."
+  ],
+  "validation": null
+}

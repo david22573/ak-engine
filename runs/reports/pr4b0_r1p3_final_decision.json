@@ -1,0 +1,86 @@
+{
+  "accepted_independence_hash": null,
+  "accepted_independence_version": null,
+  "accepted_uncertainty_hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+  "accepted_uncertainty_version": "ak.engine.uncertainty.cluster-bootstrap.v2",
+  "artifact_hash": "sha256:49d565628f1842f44466fc9ebfc0673312df7f7392da2551abe1ab7443778d11",
+  "contract_hashes": {
+    "independence_v1_proposal": "sha256:68641244ae31bb47dd7752410763308bf8a88362660f9df347362f42fbbb339a",
+    "independence_v2_revised_unaccepted": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+    "prospective_manifest_contract": "sha256:a07c34075721250db17e56a13d55d66cbcea934d013866305b61506a37323882",
+    "prospective_source_schema_authority": "sha256:4ff5ef49773e3d9a65d50e64d3a7d3ecc6a50d32699c8af1de41ed3518cc99c5",
+    "uncertainty_v1_proposal": "sha256:8dfe7591c0bf2b9cbb3b3d9ce4ad6af8a1898d5d199bb4756b3d2b17e9e4a76d",
+    "uncertainty_v2_accepted": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb"
+  },
+  "decision_timestamp": "2026-07-13T19:00:00Z",
+  "executive_verdict": "Uncertainty contracts are accepted; independence is revised but cannot be accepted because exact historical largest-cluster and aggregate cluster-concentration authority is unrecoverable.",
+  "final_label": "PR4B0_R1P3_GOVERNANCE_PARTIALLY_RESOLVED",
+  "independence_governance_decision": "REVISE",
+  "next_phase": "GOVERNANCE_REMEDIATION_REQUIRED; PR4B0-R1P4 NOT AUTHORIZED",
+  "phase": "PR4B0-R1P3",
+  "remaining_blockers": [
+    "accepted source report, threshold, operator, denominator, and failure semantics for largest-cluster concentration",
+    "accepted source report, threshold, operator, denominator, and failure semantics for aggregate cluster concentration",
+    "accepted denominator definitions for symbol and temporal contribution percentages"
+  ],
+  "research_boundary": {
+    "fixtures": "synthetic only",
+    "real_candidate_executions": 0,
+    "real_candidate_outcome_calculations": 0,
+    "real_prospective_records_collected": 0,
+    "real_rif_state_reads_or_mutations": 0
+  },
+  "resulting_code_commits": {
+    "engine_artifact_container": "the later commit containing this self-referentially immutable report is recorded in the final response",
+    "engine_contract_implementation": "2426acb4060618b485cde88eb149de07f68d3198",
+    "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif_governance_binding": "e22357692e5b0e837451805f61c6ec3fb2fd6529"
+  },
+  "revised_independence_hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+  "revised_independence_version": "ak.engine.independence.downtrend-midvol-relief.v2",
+  "schema_version": "ak.engine.pr4b0-r1p3-final-decision.v1",
+  "starting_commits": {
+    "engine": "c009664dc6778ad2b8f257bc7d0f881c2387ec75",
+    "historian": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "9a2865e13071f39a1d24524bfe5f97c0f2f717cd"
+  },
+  "uncertainty_governance_decision": "REVISE_V1_ACCEPT_V2",
+  "verification_results": {
+    "engine": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS"
+    },
+    "fresh_clone": {
+      "clean_worktrees": "PASS",
+      "engine": "PASS",
+      "no_sibling_ak_repositories": "PASS",
+      "rif": "PASS"
+    },
+    "json_validation": "PASS",
+    "recorded_sha256_validation": "PASS",
+    "rif": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS"
+    },
+    "scans": {
+      "absolute_paths": "PASS",
+      "network_dependencies": "PASS",
+      "secret_credentials": "PASS",
+      "sibling_dependencies": "PASS",
+      "trader_imports": "PASS"
+    }
+  },
+  "verification_status": "PASS"
+}

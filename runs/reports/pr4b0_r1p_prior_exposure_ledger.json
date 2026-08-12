@@ -1,0 +1,197 @@
+{
+  "schema_version": "ak.engine.prior-exposure-ledger.v1",
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "entries": [
+    {
+      "source_report": "runs/reports/phase12_3_downtrend_midvol_relief_eval.json",
+      "source_commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "symbol",
+        "month",
+        "quarter"
+      ],
+      "metrics_exposed": [
+        "event/sample summaries",
+        "return summaries",
+        "profit factor",
+        "expectancy",
+        "win/loss summaries",
+        "cost/delay sensitivity",
+        "worst-period behavior"
+      ],
+      "symbol_level_exposed": true,
+      "month_level_exposed": true,
+      "quarter_level_exposed": true,
+      "evidence_hash": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066"
+    },
+    {
+      "source_report": "preserved:runs/reports/phase12_4_downtrend_midvol_relief_near_miss_audit.json",
+      "source_commit": "UNTRACKED_PRESERVED_EVIDENCE",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "symbol",
+        "month",
+        "quarter"
+      ],
+      "metrics_exposed": [
+        "sample summaries",
+        "net outcome summaries",
+        "worst-period behavior",
+        "concentration summaries"
+      ],
+      "symbol_level_exposed": true,
+      "month_level_exposed": true,
+      "quarter_level_exposed": true,
+      "evidence_hash": "sha256:df4857fa908d3ad044092c84c0d65474ab5b2f7d339a0e571ad4974d42b7a38b"
+    },
+    {
+      "source_report": "preserved:runs/reports/phase12_5_candidate_risk_filter_design.json",
+      "source_commit": "UNTRACKED_PRESERVED_EVIDENCE",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "variant",
+        "month",
+        "quarter"
+      ],
+      "metrics_exposed": [
+        "variant exclusions",
+        "net outcome summaries",
+        "period behavior",
+        "parameter/filter comparisons"
+      ],
+      "symbol_level_exposed": false,
+      "month_level_exposed": true,
+      "quarter_level_exposed": true,
+      "evidence_hash": "sha256:4c88c2bac766281a8f98b33e34e4a8ad3557dbb2f8730139ff56785056261596"
+    },
+    {
+      "source_report": "runs/reports/pr4b0_candidate_inventory.json",
+      "source_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "symbol",
+        "month",
+        "quarter"
+      ],
+      "metrics_exposed": [
+        "sample summaries",
+        "profit factor",
+        "expectancy",
+        "worst-period behavior",
+        "structural concentration"
+      ],
+      "symbol_level_exposed": true,
+      "month_level_exposed": true,
+      "quarter_level_exposed": true,
+      "evidence_hash": "sha256:3c94708c81788cb7b21219c08c9482ac621d90ae9b58970365cace29fbaf2d6a"
+    },
+    {
+      "source_report": "runs/reports/pr4b0_candidate_qualification.json",
+      "source_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "qualification"
+      ],
+      "metrics_exposed": [
+        "qualification gate evidence",
+        "aggregate outcome summaries"
+      ],
+      "symbol_level_exposed": false,
+      "month_level_exposed": false,
+      "quarter_level_exposed": false,
+      "evidence_hash": "sha256:1caac0af112610905229f2c620919508ac9db3a4fe98d1a9640696c066c52765"
+    },
+    {
+      "source_report": "runs/reports/pr4b0_r1_variant_results.json",
+      "source_commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "variant",
+        "quarter"
+      ],
+      "metrics_exposed": [
+        "legacy aggregate reproduction",
+        "variant comparisons",
+        "worst-period behavior"
+      ],
+      "symbol_level_exposed": false,
+      "month_level_exposed": false,
+      "quarter_level_exposed": true,
+      "evidence_hash": "sha256:01567396a66e60aa062a4c44067e9bcf06111827623d619237b1c338b989017e"
+    },
+    {
+      "source_report": "runs/reports/pr4b0_r1_final_decision.json",
+      "source_commit": "945640fcd16537b8e1a82c49c4de28b5899982b9",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "decision"
+      ],
+      "metrics_exposed": [
+        "legacy aggregate reproduction",
+        "research blockers"
+      ],
+      "symbol_level_exposed": false,
+      "month_level_exposed": false,
+      "quarter_level_exposed": false,
+      "evidence_hash": "sha256:dad471ecbbfc0ae2eb380cc0b19308763ad30e67f3c436f07757c1993696b645"
+    },
+    {
+      "source_report": "runs/reports/pr4b0_r1_evidence_supplement.json",
+      "source_commit": "8fdc59e129446a140630c83f2d13628681035b75",
+      "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+      "exposed_window": {
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2026-01-01T00:00:00Z"
+      },
+      "granularity_exposed": [
+        "aggregate",
+        "evidence correction"
+      ],
+      "metrics_exposed": [
+        "legacy aggregate reproduction",
+        "replay-evidence status"
+      ],
+      "symbol_level_exposed": false,
+      "month_level_exposed": false,
+      "quarter_level_exposed": false,
+      "evidence_hash": "sha256:63dd0d21e1b839ce72e46f8330a2d3a567bbdd201c5b2dcd2dffb25a9cf82848"
+    }
+  ],
+  "ledger_hash": "sha256:5756897fe8f38591a0b181433242667b4f0fe477b6aaa92aa13cf2ae61f2bab2"
+}

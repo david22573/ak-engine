@@ -1,0 +1,41 @@
+{
+  "schema_version": "ak.engine.pr4b0-r1p2-inspection-audit.v1",
+  "tool": "exec_command",
+  "command": "sed -n '1,320p' internal/qualification/qualification.go; sed -n '1,360p' internal/qualification/qualification_test.go; sed -n '1,320p' internal/app/pr4b0_candidate_qualification.go",
+  "timestamp": "2026-07-14T00:30:34.218Z",
+  "repository": "ak-engine",
+  "commit": "8fdc59e129446a140630c83f2d13628681035b75",
+  "files_displayed": [
+    "internal/app/pr4b0_candidate_qualification.go",
+    "internal/qualification/qualification.go",
+    "internal/qualification/qualification_test.go"
+  ],
+  "literal_categories": [
+    "aggregate historical expectancy literals",
+    "aggregate historical sample/count literals",
+    "aggregate historical worst-quarter profit-factor literals",
+    "cost-stress and status literals",
+    "qualification gate thresholds",
+    "synthetic unit-test literals"
+  ],
+  "candidate_family": "DowntrendMidVolReliefLong240m",
+  "affected_periods": [
+    {
+      "start": "2024-01-01T00:00:00Z",
+      "end": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "symbol_level_information_appeared": false,
+  "month_level_information_appeared": false,
+  "quarter_level_information_appeared": true,
+  "later_than_known_research_period_appeared": false,
+  "prospective_validation_exposed": false,
+  "prospective_holdout_exposed": false,
+  "affected_implementation_or_policy_decision": false,
+  "inspection_count": 1,
+  "classification": "LEGACY_ALREADY_EXPOSED_CONTENT_ONLY",
+  "validation_eligible": false,
+  "holdout_eligible": false,
+  "fresh_preregistration_required": true,
+  "audit_hash": "sha256:68b25e70267ea1459520f3fb545b4247dbf03be6b041269284ce6529165878c2"
+}

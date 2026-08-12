@@ -1,0 +1,29 @@
+{
+  "artifact_hash": "sha256:abb5eb368abdc21586de3196c5e49bcc346e79b01af426d7f0199d74452e16cd",
+  "canonical_decision_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+  "engine_start_commit": "da034953de936de11b3f8cab21d41c3104685ead",
+  "governance_decision": {
+    "authority_responsible": "HUMAN_GOVERNANCE_AUTHORITY",
+    "canonical_decision_hash": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5",
+    "decision": "ACCEPT_ALTERNATIVE",
+    "decision_id": "pr4b0-r1p3b-structural-count-based-concentration",
+    "decision_scope": "FUTURE_PR4B0_R1_RESEARCH_ONLY",
+    "decision_timestamp": "2026-07-14T00:00:00Z",
+    "historical_authority_claimed": false,
+    "historical_authority_disclaimer": "It does not claim recovery of historical authority.",
+    "prior_packet_hash": "sha256:5fa980666b8d11bc405b1d31948041b2ff07f371178d88f2f485e957e356f992",
+    "prospective_authority_statement": "This decision creates prospective governance authority.",
+    "rejected_alternative": "OUTCOME_CONTRIBUTION_BASED_CONCENTRATION",
+    "rejection_reason": "outcome-contribution denominators are endogenous to realized returns, can change with outcome magnitude or sign, and do not measure structural dependence in the independent-cluster result",
+    "retroactive_classification_rule": "prior candidate classifications remain unchanged; this authority applies prospectively only",
+    "schema_version": "ak.engine.governance.concentration-decision.v1",
+    "selected_alternative": "STRUCTURAL_COUNT_BASED_CONCENTRATION"
+  },
+  "historian_unchanged_commit": "cd848370a04f274531fea55a7370509466b6e7bd",
+  "phase": "PR4B0-R1P3B",
+  "prospective_records_collected_or_inspected": 0,
+  "real_candidate_events_used": 0,
+  "real_candidate_outcomes_calculated": 0,
+  "rif_start_commit": "0e91122e898be2e8fb4862110acc24f2d5421245",
+  "schema_version": "ak.engine.pr4b0-r1p3b.concentration-governance-decision.v1"
+}

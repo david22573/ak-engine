@@ -1,0 +1,255 @@
+{
+  "schema_version": "ak.engine.pr4b0_r1.research_protocol.v1",
+  "phase": "PR4B0-R1",
+  "protocol_status": "BLOCKED_DURING_PHASE_A_NON_EXECUTABLE",
+  "candidate_family": "DowntrendMidVolReliefLong240m",
+  "registered_hypothesis": "The family's aggregate effect may be conditional on pre-existing market context or event quality. A small, predeclared constraint using data available at decision time may remove structurally weak events while retaining a sufficiently broad and stable sample.",
+  "accepted_baselines": {
+    "engine_source_commit": "25efa97ca89f8dcb724f9872e798bc789123caac",
+    "engine_final_report_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+    "rif_authority_commit": "29350344a57e46f064442eada26e9418515990be",
+    "historian_authority_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b"
+  },
+  "baseline_implementation": {
+    "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+    "candidate_version": "v1",
+    "implementation_source_commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+    "implementation_path": "internal/app/phase12_downtrend_midvol_relief.go",
+    "implementation_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "source_report_sha256": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
+    "source_report_markdown_sha256": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed",
+    "replay_status": "PASS_BYTE_EQUIVALENT",
+    "replayed_symbol_months": 192,
+    "target_symbols": [
+      "LINKUSDT",
+      "SOLUSDT",
+      "AVAXUSDT",
+      "DOGEUSDT",
+      "ADAUSDT",
+      "BNBUSDT",
+      "XRPUSDT",
+      "ETHUSDT"
+    ],
+    "required_context_symbols": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "market": "futures-um",
+    "input_timeframe": "1m",
+    "evaluation_horizon": "240m",
+    "research_event_window_start": "2024-01-01T00:00:00Z",
+    "research_event_window_end_exclusive": "2026-01-01T00:00:00Z",
+    "input_load_window_start": "2023-11-01T00:00:00Z",
+    "input_load_window_end_exclusive": "2026-01-03T00:00:00Z",
+    "entry_logic": "LONG when Close < EMA50 < EMA200, TrendSlope20 < 0, and 0.0015 <= RealizedVol60 <= 0.006; legacy regime, pullback, and continuation gates then return true",
+    "entry_price": "current completed 1m close",
+    "exit_or_evaluation": "first retained row at or after entry timestamp plus 240 minutes",
+    "event_duplicate_key": "symbol|side|event_time_ms",
+    "legacy_spacing": "one hour independently within each symbol-month summary",
+    "feature_warmup_required": true,
+    "funding_or_basis_trigger_required": false
+  },
+  "baseline_reproduction": {
+    "event_count": 329842,
+    "legacy_declustered_count_unaccepted": 13178,
+    "profit_factor": {
+      "5_bps": 1.168963677,
+      "7_5_bps": 1.141681883,
+      "10_bps": 1.115003906,
+      "15_bps": 1.063413696
+    },
+    "expectancy_bps": {
+      "5_bps": 16.473088653,
+      "7_5_bps": 13.973088653,
+      "10_bps": 11.473088653,
+      "15_bps": 6.473088653
+    },
+    "worst_month": {
+      "period": "2025-03",
+      "pf_5_bps": 0.66171108,
+      "pf_10_bps": 0.634441669
+    },
+    "worst_quarter": {
+      "period": "2025-Q1",
+      "pf_5_bps": 0.847931049,
+      "pf_10_bps": 0.813544771
+    },
+    "prior_status": "NEAR_MISS_STRUCTURAL_WEAKNESS"
+  },
+  "immutable_research_identity": {
+    "status": "UNAVAILABLE",
+    "dataset_id": null,
+    "dataset_version": null,
+    "manifest_id": null,
+    "manifest_hash": null,
+    "evaluation_cutoff": null,
+    "coverage_policy_version": null,
+    "availability_policy_version": null,
+    "historian_pit_evidence_id": null,
+    "historian_pit_evidence_hash": null,
+    "expected_partitions": null,
+    "event_schema_version": "11.2-retained",
+    "cluster_key_version": "1.0-native",
+    "local_source_manifest_file_sha256_diagnostic_only": "sha256:80ed307f181a16026b0b20970dfe4cfaeb8b1acdf1c9f0298181ecb2bb9ff329",
+    "local_source_manifest_limitations": [
+      "covers only 72 AVAXUSDT, LINKUSDT, and SOLUSDT objects",
+      "contains no per-object checksums",
+      "contains no known row counts",
+      "contains no immutable dataset ID or version",
+      "contains no source availability timestamps",
+      "is not accepted Historian PIT evidence"
+    ]
+  },
+  "retained_event_readiness": {
+    "status": "CANDIDATE_EVALUATION_BLOCKED_BY_RETAINED_SCHEMA",
+    "raw_event_detail_retained": false,
+    "baseline_selection_replayable_from_retained_events": false,
+    "variant_constraints_replayable": false,
+    "cross_symbol_clustering_replayable": false,
+    "cluster_pnl_available": false,
+    "deterministic_event_replay_hashes_available": false,
+    "available_aggregate_attribution": [
+      "symbol",
+      "month",
+      "quarter"
+    ],
+    "missing_required_event_fields": [
+      "event rows",
+      "context agreement at decision time",
+      "event-quality values at decision time",
+      "cluster timestamps and membership",
+      "per-event forward returns",
+      "per-event input hashes"
+    ]
+  },
+  "dataset_partitions": {
+    "status": "NOT_CREATED_PHASE_A_BLOCKED",
+    "development": null,
+    "validation": null,
+    "final_holdout": null,
+    "gaps": null,
+    "reason": "Chronological boundaries cannot be selected before complete immutable PIT-valid coverage is established. No dates were invented."
+  },
+  "qualification_gates": {
+    "minimum_events": 300,
+    "minimum_independent_clusters": 300,
+    "minimum_trades_or_decisions": 300,
+    "minimum_symbols": 4,
+    "minimum_months": 12,
+    "minimum_positive_regimes": 1,
+    "minimum_negative_regimes": 1,
+    "minimum_net_expectancy_bps": 0.01,
+    "minimum_net_profit_factor_at_10_bps": 1.1,
+    "maximum_drawdown_bps": 2500,
+    "minimum_expectancy_lower_confidence_bound_bps": 0,
+    "lower_bound_comparison": "strictly_greater_than",
+    "minimum_worst_period_profit_factor": 0.95,
+    "maximum_symbol_contribution_percent": 50,
+    "maximum_temporal_contribution_percent": 50,
+    "maximum_regime_contribution_percent": 60,
+    "minimum_stable_parameter_neighbors": 2,
+    "require_cluster_deduplication": true,
+    "require_missing_context_sensitivity": true,
+    "require_out_of_sample": true,
+    "require_walk_forward": true,
+    "require_implementation_reproducible": true,
+    "require_rif_controlled_final_holdout": true,
+    "uncertainty_method": null,
+    "uncertainty_method_status": "ACCEPTED_METHOD_NOT_SPECIFIED_BLOCKING"
+  },
+  "cost_model": {
+    "decision_stress_bps": 10,
+    "reported_ladder_bps": [
+      5,
+      7.5,
+      10
+    ],
+    "fee_bps": 5,
+    "spread_bps": 1,
+    "slippage_bps": 1,
+    "funding_bps": 1,
+    "adverse_selection_bps": 2,
+    "qualification_uses_net_results": true,
+    "note": "The explicit PR4B0-R1 requirement of PF >= 1.10 at 10 bps controls over the legacy report's inconsistent 1.01 stress field."
+  },
+  "independence_policy": {
+    "status": "NOT_FROZEN_RETAINED_SCHEMA_BLOCKED",
+    "legacy_policy_rejected": "one-hour spacing within each symbol-month does not establish cross-symbol common-market independence or cluster P&L",
+    "required_before_execution": [
+      "event-cluster construction",
+      "minimum spacing",
+      "overlapping-horizon treatment",
+      "same-symbol overlap treatment",
+      "cross-symbol common-market overlap treatment",
+      "independent decision count calculation"
+    ],
+    "raw_event_count_may_replace_independent_count": false
+  },
+  "search_budget": {
+    "maximum_candidate_variants": 12,
+    "declared_candidate_variants": 0,
+    "executed_candidate_variants": 0,
+    "baseline_readiness_replay_counts_as_variant": false,
+    "budget_expansion_allowed": false
+  },
+  "declared_variants": [],
+  "allowed_dimension_families": [
+    "context agreement",
+    "event quality",
+    "independence/cooldown"
+  ],
+  "prohibited_dimensions": [
+    "calendar filters",
+    "quarter exclusions",
+    "loss-derived symbol blacklists",
+    "outcome-derived thresholds",
+    "post-event volatility",
+    "future returns",
+    "new machine-learned rankings",
+    "report-derived exception lists"
+  ],
+  "selection_rule": [
+    "all mandatory gates pass",
+    "highest validation lower confidence bound",
+    "highest worst-period profit factor",
+    "lowest concentration",
+    "simplest variant"
+  ],
+  "walk_forward_slices": null,
+  "walk_forward_status": "NOT_DEFINED_PHASE_A_BLOCKED",
+  "holdout_control": {
+    "rif_capability_verified": true,
+    "candidate_frozen": false,
+    "registration_requested": false,
+    "ledger_created": false,
+    "exposure_authorized": false,
+    "exposure_count": 0,
+    "holdout_read": false
+  },
+  "blockers": [
+    {
+      "code": "IMMUTABLE_DATASET_IDENTITY_NOT_ESTABLISHED",
+      "phase": "A2"
+    },
+    {
+      "code": "COMPLETE_PIT_VALID_DATA_UNAVAILABLE",
+      "phase": "A2/A3"
+    },
+    {
+      "code": "CANDIDATE_EVALUATION_BLOCKED_BY_RETAINED_SCHEMA",
+      "phase": "A4"
+    },
+    {
+      "code": "ACCEPTED_UNCERTAINTY_METHODOLOGY_UNSPECIFIED",
+      "phase": "B2"
+    }
+  ],
+  "execution_controls": {
+    "protocol_executable": false,
+    "development_readable": false,
+    "validation_readable": false,
+    "final_holdout_readable": false,
+    "undeclared_variant_runnable": false,
+    "gate_changes_after_results_allowed": false
+  }
+}

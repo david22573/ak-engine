@@ -1,0 +1,3 @@
+# PR4B0-R1P RIF preflight
+
+Result: **COMPATIBLE_SYNTHETIC_PREFLIGHT_PASS** at RIF commit `0d535c59e94ba93c621f486b9c1965718a4be44f`. Synthetic tests prove exact registered research/candidate/lifecycle and frozen implementation/configuration/parameter/capability/feature/research-lock identities, one-time reservation, durable authorization, exposure and consumption before the protected callback, crash retry, and replay/conflict rejection. The future data owner must expose content only inside that callback; direct filesystem access is outside RIF's process boundary. No real registration, reservation, authorization, exposure, protected-data read, or paper action was created.

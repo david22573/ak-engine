@@ -38,6 +38,14 @@ termux_worker.env
 .planning/
 bin/
 runs/
+!runs/
+runs/*
+!runs/reports/
+runs/reports/*
+!runs/reports/pr4b0_candidate_inventory.json
+!runs/reports/pr4b0_candidate_inventory.md
+!runs/reports/pr4b0_candidate_qualification.json
+!runs/reports/pr4b0_candidate_qualification.md
 .codepicker/
 codepicker.yaml
 policy.json

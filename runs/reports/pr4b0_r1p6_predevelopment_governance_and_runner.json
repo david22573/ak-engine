@@ -1,0 +1,87 @@
+{
+  "schema_version": "ak.report.pr4b0_r1p6.v1",
+  "artifact_id": "pr4b0_r1p6_predevelopment_governance_and_runner",
+  "artifact_hash": "sha256:654aff0f7106c8228cb48f658bdd0f7357339c9e358bfdfa8aa0b69018bbed2a",
+  "generated_at": "2026-07-17T20:41:49Z",
+  "verdict": "PR4B0_R1P6_PREDEVELOPMENT_GOVERNANCE_AND_RUNNER_COMPLETE",
+  "scope_guard": [
+    "No real candidate configuration was executed.",
+    "No DEVELOPMENT outcomes were produced.",
+    "No VALIDATION outcomes were produced.",
+    "No FINAL_HOLDOUT rows were accessed.",
+    "No paper evaluation was started."
+  ],
+  "repository_preflight": {
+    "engine": {"starting_commit": "1d575f4b5331a640b1dc4fa46a2c281aa6a2487a", "source_result": "4852d5e8fe4be30f26dd0156015af2b11a8a50dd", "starting_tree": "82dc5049e48581cbfcb8888782469a6a7a5414f2", "source_result_tree": "889f17ae6110d14ca93366a8db68c498730876d3"},
+    "rif": {"starting_commit": "c5823e88d0f1fd8f25a93ee70c5a3490fc12dbcb", "source_result": "6dd7442d215d10d73fa3702a69c5811cb291e974", "report_result": "50e07b55b88d2c9b98b34ee8d62fe32b4a39eb0a", "starting_tree": "801e8596d728da101bb0ab3f74651484d17f7134", "source_result_tree": "b78e3a6456718e59d3b8a18e2cc8bbd2be8d75e3"},
+    "historian": {"starting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e", "resulting_commit": "14e0b569cc41e3517d2393d87d39c00559ac408e", "tree": "74182d50c8f6dc6639c68cd6af9a82656640701c", "modified": false}
+  },
+  "prior_blocked_evidence_verification": {"commit": "5416be01d35f5e86cf3c14044a8d84674c4d6544", "parent": "1d575f4b5331a640b1dc4fa46a2c281aa6a2487a", "report_only": true, "canonical_json_hash": "sha256:5b3e0c857f8286762e44ff503e390d5dc2dff96a141c52b626dfa210a0b3de36", "cherry_picked": false},
+  "rif_v4_contract": {"identity": "ak.rif.research_identity.v4", "store": "ak.rif.research_governance_store.v1", "envelope": "ak.rif.research_governance_envelope.v1", "additive": true, "v3_compatible": true},
+  "pre_development_holdout_reservation": {"supported": true, "opens_any_partition": false, "candidate_outcomes_required": false, "validated_or_frozen_candidate_required": false, "idempotent_when_identical": true, "conflict_rejected": true},
+  "lifecycle_transition_matrix": ["RESEARCH_IDENTITY_REGISTERED", "HOLDOUT_RESERVED", "DEVELOPMENT_AUTHORIZED", "DEVELOPMENT_SEALED", "VALIDATION_AUTHORIZED", "VALIDATION_SEALED", "CANDIDATE_FROZEN", "FINAL_HOLDOUT_AUTHORIZED", "FINAL_HOLDOUT_SEALED", "QUALIFIED", "REJECTED", "BLOCKED"],
+  "identity_binding_matrix": ["repository and runner commits/binary", "content-addressed protocol", "candidate family/side/horizon", "checkpoint/source/reacquisition/seals/Historian commit", "symbols/cutoff/eligible and barred intervals", "three partitions", "variant ledger/neighborhoods", "authorities/gates/cost/seed", "one-shot durable-access policy"],
+  "partition_access_matrix": {
+    "after_reservation": {"DEVELOPMENT": "CLOSED", "VALIDATION": "CLOSED", "FINAL_HOLDOUT": "CLOSED"},
+    "DEVELOPMENT": "exact reservation and binding; one-shot receipt",
+    "VALIDATION": "sealed DEVELOPMENT and exact nominee; one-shot receipt",
+    "FINAL_HOLDOUT": "sealed VALIDATION and exact frozen candidate; one-shot receipt; no retry"
+  },
+  "rif_authorization_and_receipt_model": {"atomic_locked_sealed_state": true, "sequence_and_state_hash_concurrency": true, "hash_chained_lifecycle_authorizations_receipts": true, "receipt_consumed_before_callback": true, "performance_rejection_distinct_from_integrity_block": true},
+  "engine_runner_contract": {
+    "identity": "pr4b0-r1-qualification-runner",
+    "request_schema": "ak.engine.qualification_execution_request.v1",
+    "readiness_schema": "ak.engine.qualification_structural_readiness.v1",
+    "result_schema": "ak.engine.qualification_execution_result.v1",
+    "source_tree": "5205627d259d3b8039c191b81b7ea5a43f17b141",
+    "deterministic_executable_sha256": "sha256:eefec664f453db2a19bc643263fdce56abc4dde63b1226bd746e77bdbf3e48fd",
+    "dry_label": "NO_CANDIDATE_OUTCOMES_PRODUCED",
+    "caller_executor_or_dataset_path_bypass": false
+  },
+  "v00_and_variant_ledger": {
+    "family": "phase12/DowntrendMidVolReliefLong240m",
+    "source_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "configuration_sha256": "sha256:9a3b4d2797daedac643491b8b420b033d05ca46bf051f9fa42b656eb29ede4de",
+    "maximum_variants": 12,
+    "permitted_dimensions": ["context-agreement", "cooldown/independence", "event-quality"],
+    "unknown_defaults_and_mutation_rejected": true
+  },
+  "authority_execution_proof": {
+    "independence": {"id": "ak.engine.independence.downtrend-midvol-relief.v3", "sha256": "sha256:84a6863b354b453dbe13698b9854ec4adcd116466a0831e7107efb892042cc1f", "invoked": true},
+    "uncertainty": {"id": "ak.engine.uncertainty.cluster-bootstrap.v2", "sha256": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb", "invoked": true},
+    "concentration": {"sha256": "sha256:a126849e4cc0bd6457cf3f11079c4e3e2865ffce6c53a95ce92fa250130d39d5", "invoked": true},
+    "actual_executed_evidence_bound_into_result": true
+  },
+  "qualification_gate_integration": {"id": "ak.engine.qualification-gates.pr4b0.v1", "sha256": "sha256:647e5d0885dbe8b73df736762e2f998bfa88f54d9331ed6aa4604888ab982635", "thresholds_or_semantics_changed": false, "fallback": false, "regression_tested": true},
+  "dataset_substitution_protections": ["checkpoint", "source/version/sealed binary", "newer or regenerated data", "extended or shortened interval", "symbols", "availability cutoff", "barred exposure", "pre-2026 rows", "cross-partition rows", "unregistered cache", "symlink", "caller path"],
+  "prohibited_dimension_protections": ["symbols", "dates", "quarters", "costs", "side", "horizon", "sizing", "outcome-derived filters", "alternate authorities", "new indicators", "new features", "semantic changes"],
+  "synthetic_integration": {"label": "SYNTHETIC_NON_RESEARCH_EVIDENCE", "rif_full_chain": "PASS", "engine_three_partition_modes": "PASS", "mismatched_frozen_candidate": "REJECTED", "final_access_count": 1, "real_checkpoint_rows_used": false},
+  "no_outcome_proof": {"real_candidate_configurations_executed": 0, "real_candidate_outcomes": 0, "dry_rows": 0, "dry_events": 0, "dry_outcomes": 0},
+  "no_partition_access_proof": {"real_DEVELOPMENT": 0, "real_VALIDATION": 0, "real_FINAL_HOLDOUT": 0, "total": 0},
+  "no_trader_modification_proof": {"repositories_modified": 0, "module_dependencies": 0, "order_placement_paths": 0},
+  "tests_and_commands": [
+    {"repository": "ak-rif", "command": "GOWORK=off go test ./... -count=1", "result": "PASS"},
+    {"repository": "ak-rif", "command": "GOWORK=off go vet ./...", "result": "PASS"},
+    {"repository": "ak-rif", "command": "GOWORK=off go build ./...", "result": "PASS"},
+    {"repository": "ak-rif", "command": "GOWORK=off go test -race ./research", "result": "PASS"},
+    {"repository": "ak-rif", "command": "./scripts/verify.sh", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go test ./... -count=1", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go vet ./...", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go test -race ./internal/qualificationrunner ./internal/rifbridge ./internal/qualification -count=1", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOFLAGS=-buildvcs=false ./scripts/verify.sh", "result": "PASS"},
+    {"repository": "ak-engine", "command": "GOWORK=off go build ./...", "result": "ENVIRONMENTAL_VCS_STAMP_FAILURE_EXIT_128; passes with -buildvcs=false"},
+    {"repository": "all scoped repositories", "command": "gofmt, go mod tidy -diff, diff --check, exact-diff, no-trader, no-outcome, dirty-worktree, Historian audits", "result": "PASS"}
+  ],
+  "exact_files_changed_by_commit": {
+    "rif_implementation_de3883207c36baeca3a267170937892d355acf43": ["research/authority.go", "research/canonical.go", "research/store.go", "research/types.go", "rif.go"],
+    "rif_tests_6dd7442d215d10d73fa3702a69c5811cb291e974": ["docs/pr4b0_r1p6_predevelopment_governance.md", "research/governance_test.go", "rif_test.go"],
+    "rif_reports_50e07b55b88d2c9b98b34ee8d62fe32b4a39eb0a": ["runs/reports/pr4b0_r1p6_predevelopment_governance_and_runner.json", "runs/reports/pr4b0_r1p6_predevelopment_governance_and_runner.md"],
+    "engine_implementation_9cf545ab75e09954b08c1e1aa85c6db36aa22a64": ["internal/app/pr4b0_candidate_qualification.go", "internal/app/pr4b0_r1_qualification_runner.go", "internal/qualification/gate_set.go", "internal/qualificationrunner/contracts.go", "internal/qualificationrunner/execution.go", "internal/qualificationrunner/runner.go", "internal/qualificationrunner/variants.go", "internal/qualificationrunner/wire.go", "internal/rifbridge/research_governance.go"],
+    "engine_tests_4852d5e8fe4be30f26dd0156015af2b11a8a50dd": ["docs/pr4b0_r1p6_qualification_runner.md", "internal/app/pr4b0_candidate_qualification_test.go", "internal/app/pr4b0_r1_qualification_runner_test.go", "internal/qualificationrunner/runner_test.go"]
+  },
+  "resulting_commits": {"engine_source": "4852d5e8fe4be30f26dd0156015af2b11a8a50dd", "rif_source": "6dd7442d215d10d73fa3702a69c5811cb291e974", "rif_reports": "50e07b55b88d2c9b98b34ee8d62fe32b4a39eb0a", "historian": "14e0b569cc41e3517d2393d87d39c00559ac408e", "engine_report_commit_note": "recorded in external closeout because this artifact cannot self-reference its containing commit"},
+  "final_verdict": "PR4B0_R1P6_PREDEVELOPMENT_GOVERNANCE_AND_RUNNER_COMPLETE",
+  "remaining_blockers": [],
+  "pr4b0_r1_may_now_be_restarted": true,
+  "pr4b0_r1_restarted_by_this_task": false
+}

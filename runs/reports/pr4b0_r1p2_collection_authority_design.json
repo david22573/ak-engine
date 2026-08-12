@@ -1,0 +1,80 @@
+{
+  "candidate_executions": 0,
+  "candidate_id": "phase12/DowntrendMidVolReliefLong240m",
+  "candidate_outcome_calculations": 0,
+  "collector_contract": {
+    "acquire_once": true,
+    "all_primary_and_context_coverage_required": true,
+    "hash_before_append_only_registration": true,
+    "local_paths_excluded_from_identity": true,
+    "mutable_aliases_rejected": true,
+    "network_not_required_for_deterministic_revalidation": true,
+    "schema_validate_before_eligibility": true,
+    "source_availability_at_birth": true
+  },
+  "conflict_behavior": "same identity with different bytes or receipt fails closed and quarantines both claims",
+  "design_hash": "sha256:74fe491335a94f9865e789df12a5adbb05d9680d01c6ce5de9fa45d2df587beb",
+  "duplicate_behavior": "same identity and byte/receipt hashes is idempotent",
+  "engine_starting_commit": "0d70c068898c91521e391b65ee4299a53b9cf394",
+  "historian_contract_artifacts": {
+    "prospective_ingestion_receipt_schema": "authority/prospective_ingestion_receipt_schema.json",
+    "prospective_manifest_contract": "authority/prospective_manifest_contract.json"
+  },
+  "historian_starting_commit": "71edbf30c23bf830906be8944ccc0521f2dcc20f",
+  "holdout_content_reads": 0,
+  "ingestion_receipt_schema_hash": "sha256:7b69a348fed2facf918a869a333c79d5c2d6d9df2bd10c9c52efd2f179398ff1",
+  "manifest_contract_hash": "sha256:a07c34075721250db17e56a13d55d66cbcea934d013866305b61506a37323882",
+  "real_rif_state_created": false,
+  "recovery_behavior": "resume only from last verified receipt hash; quarantine orphaned bytes",
+  "rif_starting_commit": "0d535c59e94ba93c621f486b9c1965718a4be44f",
+  "rif_synthetic_compatibility": {
+    "authorizations": 0,
+    "consumptions": 0,
+    "dataset_binding": "prospective dataset ID/version -\u003e RIF research identity dataset fields",
+    "paper_authorizations": 0,
+    "partition_binding": "synthetic future partition manifest hash -\u003e frozen final-holdout manifest identity",
+    "protected_reads": 0,
+    "receipt_binding": "receipt/manifest hashes become frozen evidence inputs",
+    "registered_candidates": 0,
+    "reservations": 0,
+    "result": "PASS_SYNTHETIC_NO_REAL_STATE"
+  },
+  "schema_version": "ak.engine.pr4b0-r1p2-collection-authority-design.v1",
+  "status": "DESIGN_ONLY_REAL_COLLECTION_NOT_STARTED",
+  "synthetic_fixture_results": [
+    {
+      "case": "immutable receipt",
+      "result": "PASS"
+    },
+    {
+      "case": "missing availability",
+      "result": "REJECTED"
+    },
+    {
+      "case": "missing schema",
+      "result": "REJECTED"
+    },
+    {
+      "case": "missing context",
+      "result": "REJECTED"
+    },
+    {
+      "case": "identical duplicate",
+      "result": "IDEMPOTENT"
+    },
+    {
+      "case": "conflicting duplicate",
+      "result": "REJECTED"
+    },
+    {
+      "case": "mutable alias",
+      "result": "REJECTED"
+    },
+    {
+      "case": "local path variance",
+      "result": "IDENTITY_UNCHANGED"
+    }
+  ],
+  "validation_command": "ak-historian validate-prospective-manifest --manifest \u003cmanifest.json\u003e",
+  "validation_content_reads": 0
+}

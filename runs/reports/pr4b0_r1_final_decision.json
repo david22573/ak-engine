@@ -1,0 +1,330 @@
+{
+  "schema_version": "ak.engine.pr4b0_r1.final_decision.v1",
+  "phase": "PR4B0-R1",
+  "executive_verdict": "Legacy aggregate baseline metrics were reproduced exactly from the available accepted summary artifacts. Event-level and canonical-input reproduction could not be established. The epoch remains blocked before variant creation by missing immutable dataset/PIT identity, replayable event/cluster data, and accepted uncertainty methodology.",
+  "final_label": "PR4B0_R1_RESEARCH_BLOCKED",
+  "accepted_baselines": {
+    "engine_source_commit": "25efa97ca89f8dcb724f9872e798bc789123caac",
+    "engine_final_report_commit": "205cf59555006ce23fc58bc2c73262660a894850",
+    "rif_authority_commit": "29350344a57e46f064442eada26e9418515990be",
+    "historian_authority_commit": "3eeff1eb45da281e0003dc1577ec55aa6cda1b1b"
+  },
+  "result_commits": {
+    "protocol_commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+    "result_source_commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
+    "final_report_commit": "RESOLVE_WITH_GIT_LOG_AFTER_REPORT_COMMIT"
+  },
+  "protocol": {
+    "sha256": "sha256:7d1305bb418d2463c966f1383be4e9b7e30b0aa08dd254cd60eb55e7825cb072",
+    "preceded_results": true,
+    "proof_commit": "ce1377682975c8bc3d5b947d35900500b03403bf",
+    "artifact_ordering_only": true,
+    "execution_order_reference": "runs/reports/pr4b0_r1_evidence_supplement.json",
+    "baseline_command_ran_before_protocol_commit": true
+  },
+  "immutable_dataset_identity": {
+    "status": "NOT_RECOVERED_AFTER_CONCRETE_INVENTORY",
+    "dataset_id": null,
+    "dataset_version": null,
+    "manifest_id": null,
+    "manifest_hash": null,
+    "historian_pit_evidence_id": null,
+    "historian_pit_evidence_hash": null,
+    "evaluation_cutoff": null,
+    "coverage_policy_version": null,
+    "availability_policy_version": null,
+    "inventory_reference": "runs/reports/pr4b0_r1_evidence_supplement.json"
+  },
+  "partition_boundaries": {
+    "status": "NOT_CREATED_PHASE_A_BLOCKED",
+    "development": null,
+    "validation": null,
+    "final_holdout": null,
+    "gaps": null
+  },
+  "baseline_reproduction": {
+    "status": "LEGACY_AGGREGATE_ARTIFACT_REPRODUCTION_ONLY",
+    "implementation_commit": "c2c7988712699b26ba7ab28e1cebb1f5312812a6",
+    "implementation_sha256": "sha256:3c2e20fd5bf615864aebc5be35ce86c15a6ed8f83de33b2f1d33b00dae6fbfa1",
+    "report_json_sha256": "sha256:fb27fe46ab1139ccafea3a7b3cbb7bfdfc7fb3bd2f7e545f1b7b566d2e6c9066",
+    "report_markdown_sha256": "sha256:fba5947aad5dad971b24e634cb553dd8c4c3694f907bd3bdf0ef40060e95a9ed",
+    "json_byte_equality_explicitly_checked": true,
+    "markdown_byte_equality_explicitly_checked": false,
+    "event_level_reproduction_established": false,
+    "canonical_input_reproduction_established": false,
+    "legal_qualification_result": false,
+    "event_count": 329842,
+    "legacy_declustered_count_unaccepted": 13178,
+    "pf_5_bps": 1.168963677,
+    "pf_10_bps": 1.115003906,
+    "expectancy_10_bps": 11.473088653,
+    "worst_quarter": "2025-Q1",
+    "worst_quarter_pf_10_bps": 0.813544771
+  },
+  "search": {
+    "maximum_variants": 12,
+    "declared_modified_variants": 0,
+    "executed_modified_variants": 0,
+    "a1_treated_as_v00": false,
+    "a1_readiness_calculation_preceded_protocol_freeze": true,
+    "gates_changed_after_results": false
+  },
+  "development_results": [],
+  "validation_results": [],
+  "walk_forward_results": [],
+  "holdout": {
+    "authorization_status": "NOT_REQUESTED_NO_FROZEN_SURVIVOR",
+    "exposure_status": "NO_EXPOSURE_RECORDED",
+    "exposure_count": 0,
+    "holdout_read": false,
+    "final_holdout_result": null
+  },
+  "qualification_gates": [
+    {
+      "gate": "implementation identity",
+      "threshold": "exact source identity",
+      "status": "PASS",
+      "evidence": "Commit, path, source hash, and tests were recovered."
+    },
+    {
+      "gate": "legacy report artifact equality",
+      "threshold": "exact artifact evidence",
+      "status": "PASS",
+      "evidence": "JSON original/reproduced hashes match and cmp passed; Markdown hashes match."
+    },
+    {
+      "gate": "immutable dataset/manifest/PIT identity",
+      "threshold": "all exact identities present and verified",
+      "status": "FAIL",
+      "evidence": "Concrete inventory found no candidate identities or accepted PIT evidence."
+    },
+    {
+      "gate": "retained event replay and canonical clustering",
+      "threshold": "required",
+      "status": "BLOCKED",
+      "evidence": "Event/cluster rows and input hashes were not retained."
+    },
+    {
+      "gate": "independent decisions",
+      "threshold": ">= 300",
+      "status": "BLOCKED",
+      "evidence": "Legacy spacing count is not accepted cluster independence."
+    },
+    {
+      "gate": "net PF and expectancy at 10 bps",
+      "threshold": "PF >= 1.10 and expectancy >= 0.01 bps",
+      "status": "NOT RUN",
+      "evidence": "Legacy aggregates are not legal partition qualification results."
+    },
+    {
+      "gate": "expectancy lower confidence bound",
+      "threshold": "> 0",
+      "status": "BLOCKED",
+      "evidence": "Accepted uncertainty method is not specified."
+    },
+    {
+      "gate": "worst-period PF",
+      "threshold": ">= 0.95",
+      "status": "NOT RUN",
+      "evidence": "Legacy Q1 value is not a legal partition qualification result."
+    },
+    {
+      "gate": "OOS/validation",
+      "threshold": "required",
+      "status": "NOT RUN",
+      "evidence": "No legal partition boundaries."
+    },
+    {
+      "gate": "walk-forward stability",
+      "threshold": "required",
+      "status": "NOT RUN",
+      "evidence": "Phase A blocked execution."
+    },
+    {
+      "gate": "concentration and parameter-neighborhood stability",
+      "threshold": "50% / 50% / 60% limits and >= 2 stable neighbors",
+      "status": "NOT RUN",
+      "evidence": "Zero variants; required event and cluster data were not retained."
+    },
+    {
+      "gate": "RIF-controlled final holdout",
+      "threshold": "required one-time exposure after freeze",
+      "status": "NOT RUN",
+      "evidence": "No candidate was frozen; holdout not read."
+    }
+  ],
+  "complete_qualification_gate_table": "runs/reports/pr4b0_r1_evidence_supplement.json",
+  "qualified_candidate_identity": null,
+  "frozen_descriptor_hash": null,
+  "registration_request_hash": null,
+  "qualified_only_parity_fixtures": null,
+  "blocking_reasons": [
+    "IMMUTABLE_DATASET_IDENTITY_NOT_ESTABLISHED",
+    "COMPLETE_PIT_VALID_DATA_UNAVAILABLE",
+    "CANDIDATE_EVALUATION_BLOCKED_BY_RETAINED_SCHEMA",
+    "ACCEPTED_UNCERTAINTY_METHODOLOGY_UNSPECIFIED"
+  ],
+  "tests_and_race_results": {
+    "status": "PASS_LOCAL_AND_FRESH_CLONE",
+    "commands": [
+      {
+        "command": "gofmt -w <changed-go-files>",
+        "status": "NOT_APPLICABLE_NO_CHANGED_GO_FILES",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off GOFLAGS=-buildvcs=false go mod tidy",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --exit-code -- go.mod go.sum",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off GOFLAGS=-buildvcs=false go vet ./...",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off GOFLAGS=-buildvcs=false go test ./...",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off GOFLAGS=-buildvcs=false go test -race ./...",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off GOFLAGS=-buildvcs=false go build ./...",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off GOFLAGS=-buildvcs=false make verify",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "jq empty runs/reports/pr4b0_r1_*.json",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "path, secret, sibling-import, trader-import, qualified-artifact, module-diff, and diff-check scans",
+        "status": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "linked_worktree_note": "The workspace parent contains an invalid empty .git directory, so local Go commands disabled VCS stamping. Exact commands run without the workaround in the isolated clone."
+  },
+  "security_review": [
+    {
+      "area": "future-data and publication-delay leakage",
+      "status": "BLOCKING_FAIL_CLOSED",
+      "finding": "No accepted availability/PIT evidence; no research execution permitted."
+    },
+    {
+      "area": "holdout inspection and repeated exposure",
+      "status": "PASS",
+      "finding": "No holdout read, ledger, authorization, or exposure."
+    },
+    {
+      "area": "threshold, calendar, symbol, and variant overfitting",
+      "status": "PASS",
+      "finding": "Zero variants; no Q1 exclusion, blacklist, or threshold addition."
+    },
+    {
+      "area": "dataset/report/implementation substitution",
+      "status": "PASS_FAIL_CLOSED",
+      "finding": "Exact source/report hashes verified; missing data identity caused a block rather than substitution."
+    },
+    {
+      "area": "cluster-count inflation and concentration masking",
+      "status": "PASS_FAIL_CLOSED",
+      "finding": "Legacy count explicitly rejected and never used for qualification."
+    },
+    {
+      "area": "cost omission and fail-open qualification",
+      "status": "PASS",
+      "finding": "Full accepted 10 bps decomposition preserved; mandatory failures prevent qualification."
+    }
+  ],
+  "fresh_clone": {
+    "status": "PASS",
+    "commit": "8f4df1e61455541262cc1c95e6a32e6b8948f980",
+    "no_sibling_repositories": true,
+    "commands": [
+      {
+        "command": "GOWORK=off go mod tidy",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --exit-code -- go.mod go.sum",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go vet ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go test ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go test -race ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off go build ./...",
+        "exit_code": 0
+      },
+      {
+        "command": "GOWORK=off make verify",
+        "exit_code": 0
+      },
+      {
+        "command": "jq, protocol-hash, path, secret, sibling-import, trader-import, qualified-artifact, Go-diff, diff-check, and clean-tree checks",
+        "exit_code": 0
+      }
+    ],
+    "working_tree_clean": true
+  },
+  "documentation_closeout_verification": {
+    "status": "PASS_LOCAL_AND_FRESH_CLONE_WITH_MANDATED_EXACT_COMMAND_EXCEPTION",
+    "follow_up_commit": "RESOLVE_WITH_GIT_LOG_FOR_SUPPLEMENT",
+    "evidence": "runs/reports/pr4b0_r1_evidence_supplement.json",
+    "original_absolute_path_scan_hits": 2,
+    "hits_are_exact_command_fields_only": true
+  },
+  "files_changed": [
+    "runs/reports/pr4b0_r1_research_protocol.json",
+    "runs/reports/pr4b0_r1_research_protocol.md",
+    "runs/reports/pr4b0_r1_variant_results.json",
+    "runs/reports/pr4b0_r1_variant_results.md",
+    "runs/reports/pr4b0_r1_final_decision.json",
+    "runs/reports/pr4b0_r1_final_decision.md",
+    "runs/reports/pr4b0_r1_evidence_supplement.json",
+    "runs/reports/pr4b0_r1_evidence_supplement.md"
+  ],
+  "generated_report_paths": [
+    "runs/reports/pr4b0_r1_research_protocol.md",
+    "runs/reports/pr4b0_r1_research_protocol.json",
+    "runs/reports/pr4b0_r1_variant_results.md",
+    "runs/reports/pr4b0_r1_variant_results.json",
+    "runs/reports/pr4b0_r1_final_decision.md",
+    "runs/reports/pr4b0_r1_final_decision.json",
+    "runs/reports/pr4b0_r1_evidence_supplement.md",
+    "runs/reports/pr4b0_r1_evidence_supplement.json"
+  ],
+  "explicit_statements": {
+    "gates_were_not_altered_after_results": true,
+    "no_paper_evaluator_was_implemented": true,
+    "no_rif_paper_authorization_was_issued": true,
+    "no_trader_behavior_changed": true,
+    "no_next_phase_was_started": true
+  },
+  "recommended_next_phase": "NONE_BLOCKED_REMEDIATE_PIT_AND_RETAINED_SCHEMA_THEN_RERUN_PR4B0_R1"
+}

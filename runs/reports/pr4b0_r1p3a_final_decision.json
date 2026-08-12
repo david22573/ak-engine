@@ -1,0 +1,90 @@
+{
+  "accepted_independence_hash": null,
+  "accepted_independence_version": null,
+  "accepted_uncertainty_hash": "sha256:1a91541c94378cc6f34e62a39ae504d3d013b5dab63a2b622641cdd1088148fb",
+  "artifact_hash": "sha256:99ba67b340019cb1ba8692e1254a7206503c28bff942b225d6bf114d402018a9",
+  "authority_result": "NO_COMPLETE_ACCEPTED_CONCENTRATION_CONTRACT",
+  "candidate_rerun_authorized": false,
+  "engine_qualification_boundary": "fail closed: all-pass report booleans return CONCENTRATION_AUTHORITY_MISSING, and no accepted independence-policy hash is registered for V2 candidate registration",
+  "executive_verdict": "The accepted report provenance is fully reconstructed, but accepted denominator authority is incomplete for symbol/temporal concentration and absent for largest/top-five cluster concentration. A decision-ready two-alternative packet is ready; no alternative is accepted.",
+  "fail_closed_proofs": {
+    "legacy_rejected_near_miss_and_probe_labels_cannot_upgrade": "PASS",
+    "missing_or_mutated_threshold_cannot_default_to_pass": "PASS",
+    "missing_or_zero_denominator_cannot_default_to_zero": "PASS",
+    "pending_v2_registration_cannot_reach_rif": "PASS",
+    "report_only_all_pass_cannot_qualify": "PASS"
+  },
+  "final_label": "PR4B0_R1P3A_CONCENTRATION_GOVERNANCE_PACKET_READY",
+  "governance_packet_status": "READY_FOR_USER_DECISION",
+  "next_phase": "USER_CONCENTRATION_GOVERNANCE_DECISION_REQUIRED",
+  "pending_independence_hash": "sha256:006f19c3f89650f6905931164d6c98ead20800a2346369dadda708cfadf36528",
+  "pending_independence_version": "ak.engine.independence.downtrend-midvol-relief.v2",
+  "phase": "PR4B0-R1P3A",
+  "prospective_collection_authorized": false,
+  "research_boundary": {
+    "fixtures": "synthetic only",
+    "new_candidate_outcome_calculations": 0,
+    "prospective_validation_or_holdout_content_inspections": 0,
+    "real_candidate_executions": 0,
+    "real_prospective_records_collected": 0,
+    "real_rif_state_reads_or_mutations": 0
+  },
+  "resulting_code_commits": {
+    "artifact_container": "the subsequent Engine report-only commit is recorded in the completion response to avoid a self-referential Git hash",
+    "engine": "0226b8731badb74becb3e02c1454b948c5239e24",
+    "historian_unchanged": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "0e91122e898be2e8fb4862110acc24f2d5421245"
+  },
+  "rif_real_lifecycle_boundary": "fail closed: persistent V2 registration requires an explicitly configured governance verifier and rejects pending/unapproved identity without state mutation",
+  "schema_version": "ak.engine.pr4b0-r1p3a.final-decision.v1",
+  "starting_commits": {
+    "engine": "4973a36a8d7a9f236011a4936dbf8229a6e41160",
+    "historian": "cd848370a04f274531fea55a7370509466b6e7bd",
+    "rif": "e22357692e5b0e837451805f61c6ec3fb2fd6529"
+  },
+  "verification_results": {
+    "artifacts": {
+      "embedded_hashes": "PASS",
+      "generator_verify_only": "PASS",
+      "git_blob_ids": "PASS",
+      "json_parse": "PASS",
+      "recorded_sha256": "PASS"
+    },
+    "engine": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS",
+      "standalone_fresh_clone": "PASS"
+    },
+    "historian": {
+      "clean_worktree": "PASS",
+      "unchanged": "PASS"
+    },
+    "rif": {
+      "git_diff_check": "PASS",
+      "go_build": "PASS",
+      "go_mod_tidy_diff": "PASS",
+      "go_test": "PASS",
+      "go_test_race": "PASS",
+      "go_vet": "PASS",
+      "gofmt": "PASS",
+      "make_verify": "PASS",
+      "standalone_fresh_clone": "PASS"
+    },
+    "scans": {
+      "absolute_paths": "PASS",
+      "network_dependencies": "PASS",
+      "prohibited_real_candidate_identity": "PASS",
+      "secrets_credentials": "PASS",
+      "sibling_dependencies": "PASS",
+      "trader_imports": "PASS"
+    },
+    "zero_prospective_work": "PASS"
+  },
+  "verification_status": "PASS"
+}

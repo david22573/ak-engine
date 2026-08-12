@@ -1,0 +1,14 @@
+{
+  "schema_version": "ak.engine.pr4b0-r1p9.boundary-regression.v1",
+  "symbol": "ADAUSDT",
+  "membership_start_utc": "2026-04-09T00:00:00Z",
+  "membership_end_utc": "2026-04-10T00:00:00Z",
+  "parent_start_utc": "2026-04-09T14:40:00Z",
+  "parent_end_utc": "2026-04-10T07:20:00Z",
+  "parent_row_count": 1000,
+  "expected_child_row_count": 560,
+  "expected_excluded_right_rows": 440,
+  "expected_boundary_class": "RIGHT_CLIPPED",
+  "receipt_sha256": "sha256:a51a972bdec54aa84149458e9fe3de472973a6673aa4121725fef06dd4ba1735",
+  "fragment_sha256": "sha256:cfad25fa5ee30f53f012f6ce9e6d92565dfe6cec21af063ecff3c61e250506b1"
+}
