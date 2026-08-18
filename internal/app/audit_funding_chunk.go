@@ -1,13 +1,14 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 
+	"github.com/david22573/ak-engine/internal/duckdbutil"
 	"github.com/spf13/cobra"
 )
 
@@ -48,9 +49,8 @@ var auditFundingChunkCmd = &cobra.Command{
 		}
 
 		if _, err := os.Stat(parquetPath); err == nil {
-			query := fmt.Sprintf(`SELECT value FROM read_parquet('%s')`, parquetPath)
-			c := exec.Command("duckdb", "-json", "-c", query)
-			out, err := c.CombinedOutput()
+			query := fmt.Sprintf(`SELECT value FROM read_parquet(%s)`, duckdbutil.QuoteString(parquetPath))
+			out, err := duckdbutil.RunQuery(context.Background(), query, "-json")
 			if err == nil {
 				var res []struct {
 					Value float64 `json:"value"`
@@ -60,6 +60,7 @@ var auditFundingChunkCmd = &cobra.Command{
 				if report.RowsWithFunding > report.FeatureRows {
 					report.RowsWithFunding = report.FeatureRows
 				}
+
 
 				var rates []float64
 				for _, r := range res {

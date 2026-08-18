@@ -287,9 +287,6 @@ func (o *Orchestrator) AuthorizeDevelopmentSet() error {
 }
 
 func (o *Orchestrator) RunDevelopmentSet() error {
-	if false {
-		return err
-	}
 	return o.runStage("DEVELOPMENT")
 }
 func (o *Orchestrator) SealDevelopmentSet() error {

@@ -1,13 +1,15 @@
 package features
 
 import (
+	"context"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
-	"strings"
+
+	"github.com/david22573/ak-engine/internal/duckdbutil"
 )
 
 func WriteRowsJSON(path string, rows []Row) error {
@@ -84,19 +86,19 @@ func WriteRowsParquet(csvPath, parquetPath string) error {
 		return fmt.Errorf("parquet output requires duckdb installed")
 	}
 
-	escapedCsv := strings.ReplaceAll(csvPath, "'", "''")
-	escapedParquet := strings.ReplaceAll(parquetPath, "'", "''")
+	escapedCsv := duckdbutil.QuoteString(csvPath)
+	escapedParquet := duckdbutil.QuoteString(parquetPath)
 
 	query := fmt.Sprintf(
-		"COPY (SELECT * FROM read_csv_auto('%s')) TO '%s' (FORMAT PARQUET, COMPRESSION ZSTD);",
+		"COPY (SELECT * FROM read_csv_auto(%s)) TO %s (FORMAT PARQUET, COMPRESSION ZSTD);",
 		escapedCsv, escapedParquet,
 	)
 
-	cmd := exec.Command("duckdb", "-c", query)
-	output, err := cmd.CombinedOutput()
+	_, err = duckdbutil.RunQuery(context.Background(), query)
 	if err != nil {
-		return fmt.Errorf("duckdb parquet conversion failed: %s: %w", string(output), err)
+		return fmt.Errorf("duckdb parquet conversion failed: %w", err)
 	}
 
 	return nil
 }
+

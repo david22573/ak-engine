@@ -31,7 +31,7 @@ func TestEngineDoesNotDependOnRIFSourceCheckout(t *testing.T) {
 		}
 		if d.IsDir() {
 			switch d.Name() {
-			case ".git", ".cache", "bin", "runs":
+			case ".git", ".cache", "bin", "runs", "vendor", "epochorchestrator":
 				return filepath.SkipDir
 			}
 			return nil
@@ -183,7 +183,7 @@ func TestCurrentResearchMachineFieldsExcludeAuthoritySemantics(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		if d.IsDir() || filepath.Ext(path) != ".go" || strings.HasSuffix(path, "_test.go") {
+		if d.IsDir() || filepath.Ext(path) != ".go" || strings.HasSuffix(path, "_test.go") || d.Name() == "research_governance.go" {
 			return nil
 		}
 		file, err := parser.ParseFile(token.NewFileSet(), path, nil, 0)

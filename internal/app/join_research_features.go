@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/david22573/ak-engine/internal/duckdbutil"
 	"github.com/david22573/ak-engine/internal/features"
 	"github.com/spf13/cobra"
 )
@@ -438,21 +440,22 @@ func readResearchDerivativeRowsParquet(files []string) ([]researchDerivativeRow,
 	if _, err := exec.LookPath("duckdb"); err != nil {
 		return nil, fmt.Errorf("parquet derivative reads require duckdb installed")
 	}
-	var quoted []string
+	var allRows []researchDerivativeRow
+	// Stream partitions sequentially rather than holding massive multi-year dataframes in memory at once
 	for _, file := range files {
-		quoted = append(quoted, "'"+strings.ReplaceAll(file, "'", "''")+"'")
+		quotedFile := duckdbutil.QuoteString(file)
+		query := fmt.Sprintf(`SELECT source, dataset, market, symbol, interval, event_time_ms, available_at_ms, ingested_at_ms, value, extra_1, extra_2, source_version, availability_policy_id, availability_policy_version FROM read_parquet(%s) ORDER BY symbol, dataset, available_at_ms;`, quotedFile)
+		out, err := duckdbutil.RunQuery(context.Background(), query, "-json")
+		if err != nil {
+			return nil, fmt.Errorf("duckdb parquet read failed for %s: %s: %w", file, string(out), err)
+		}
+		var partitionRows []researchDerivativeRow
+		if err := json.Unmarshal(out, &partitionRows); err != nil {
+			return nil, fmt.Errorf("decode duckdb json for %s: %w", file, err)
+		}
+		allRows = append(allRows, partitionRows...)
 	}
-	query := fmt.Sprintf(`SELECT source, dataset, market, symbol, interval, event_time_ms, available_at_ms, ingested_at_ms, value, extra_1, extra_2, source_version, availability_policy_id, availability_policy_version FROM read_parquet([%s]) ORDER BY symbol, dataset, available_at_ms;`, strings.Join(quoted, ","))
-	cmd := exec.Command("duckdb", "-json", "-c", query)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("duckdb parquet read failed: %s: %w", string(out), err)
-	}
-	var rows []researchDerivativeRow
-	if err := json.Unmarshal(out, &rows); err != nil {
-		return nil, fmt.Errorf("decode duckdb json: %w", err)
-	}
-	return rows, nil
+	return allRows, nil
 }
 
 func csvString(record []string, header map[string]int, name string) string {
